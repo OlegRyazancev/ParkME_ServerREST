@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/parking_db?currentSchema=parking
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: classpath:liquibase/db.changelog.yaml
+    enabled: true
+    default-schema: parking
+

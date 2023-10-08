@@ -1,11 +1,13 @@
 package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
+import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {

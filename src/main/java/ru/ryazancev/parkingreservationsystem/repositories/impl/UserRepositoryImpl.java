@@ -1,5 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
+import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
@@ -7,6 +8,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAll() {

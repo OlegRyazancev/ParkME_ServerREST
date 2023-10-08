@@ -6,7 +6,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.ReservationDTO;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ReservationMapper {
 
     ReservationDTO toDTO(Reservation reservation);

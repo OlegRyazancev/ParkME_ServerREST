@@ -4,11 +4,10 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Spliterator;
 
 public interface ZoneRepository {
 
-    List<Zone> finaAll();
+    List<Zone> findAll();
 
     Optional<Zone> findById(Long zoneId);
 
@@ -18,4 +17,5 @@ public interface ZoneRepository {
 
     void delete(Long zoneId);
 
+    Optional<Zone> findByNumber(Integer number);
 }

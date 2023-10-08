@@ -33,7 +33,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place create(Place place, Long zoneId) {
 
-        if (placeRepository.findByNumberAndZoneNumber(place.getNumber(), place.getZone().getNumber()).isPresent())
+        if (placeRepository.findAllByZoneId(zoneId).contains(place))
             throw new IllegalStateException("Place is already exists");
 
         place.setStatus(Status.FREE);

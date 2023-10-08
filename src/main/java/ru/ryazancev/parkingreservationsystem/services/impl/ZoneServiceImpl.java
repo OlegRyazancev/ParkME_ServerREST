@@ -9,6 +9,8 @@ import ru.ryazancev.parkingreservationsystem.services.ZoneService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,7 +21,7 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public List<Zone> getAll() {
-        return zoneRepository.finaAll();
+        return zoneRepository.findAll();
     }
 
     @Override
@@ -31,6 +33,8 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public Zone create(Zone zone) {
+        if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
+            throw new IllegalStateException("Zone is already exists");
         zoneRepository.create(zone);
 
         return zone;
@@ -39,8 +43,12 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public Zone update(Zone zone) {
-        zoneRepository.update(zone);
 
+        if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
+            throw new IllegalStateException("Zone is already exists");
+
+        zoneRepository.update(zone);
+        zone.setFreePlaces(Objects.requireNonNull(zoneRepository.findById(zone.getId()).orElse(null)).getFreePlaces());
         return zone;
     }
 

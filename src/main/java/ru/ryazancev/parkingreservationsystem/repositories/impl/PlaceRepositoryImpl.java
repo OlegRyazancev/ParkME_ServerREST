@@ -20,11 +20,6 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    public Optional<Place> findByNumberAndZoneNumber(Integer placeNumber, Integer zoneNumber) {
-        return Optional.empty();
-    }
-
-    @Override
     public void assignPlaceToZone(Long placeId, Long zoneId) {
 
     }

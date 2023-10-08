@@ -3,11 +3,9 @@ package ru.ryazancev.parkingreservationsystem.web.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
 
-import java.util.List;
 
 @Data
 public class ZoneDTO {
@@ -18,5 +16,8 @@ public class ZoneDTO {
     @NotNull(message = "Number must not be null", groups = {OnCreate.class, OnUpdate.class})
     @Min(value = 1, message = "Number should be greater than 1", groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
+
+    @NotNull(message = "Free places must be not null", groups = OnCreate.class)
+    private Integer freePlaces;
 
 }

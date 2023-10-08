@@ -12,7 +12,6 @@ public interface PlaceRepository {
     Optional<Place> findById(Long placeId);
 
     List<Place> findAllByZoneId(Long zoneId);
-    Optional<Place> findByNumberAndZoneNumber(Integer placeNumber, Integer zoneNumber);
 
     void assignPlaceToZone(Long placeId, Long zoneId);
 

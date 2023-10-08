@@ -1,5 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,5 +18,8 @@ public class PlaceDTO {
     @NotNull(message = "Number must be not null", groups = {OnCreate.class, OnUpdate.class})
     @Min(value = 1, message = "Number should be greater than 1", groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Status status;
 
 }

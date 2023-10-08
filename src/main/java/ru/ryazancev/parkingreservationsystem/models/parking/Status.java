@@ -1,5 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.models.parking;
 
-public enum Status {
+import java.io.Serializable;
+
+public enum Status implements Serializable {
     FREE, OCCUPIED, DISABLE
 }

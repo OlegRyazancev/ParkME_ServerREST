@@ -13,6 +13,6 @@ public class CarDTO {
     private Long id;
 
     @NotNull(message = "Number must not be null", groups = {OnCreate.class, OnUpdate.class})
-    @Pattern(regexp = "^[A-Z]\\d{2}[A-Z]{2}\\d{2}$\n", message = "Car number should be in this format: A000AA00", groups = {OnCreate.class, OnUpdate.class})
+    @Pattern(regexp = "^[A-Z]\\d{3}[A-Z]{2}\\d{2,3}$", message = "Car number should be in this format: A000AA00", groups = {OnCreate.class, OnUpdate.class})
     private String number;
 }

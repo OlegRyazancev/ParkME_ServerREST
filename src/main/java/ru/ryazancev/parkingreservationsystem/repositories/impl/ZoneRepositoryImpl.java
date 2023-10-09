@@ -58,13 +58,13 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     private final String UPDATE = """
             UPDATE zones
             SET number = ?
-            WHERE id=?
+            WHERE id = ?
             """;
 
     private final String DELETE = """
             DELETE
             FROM zones
-            WHERE id=?;
+            WHERE id = ?;
             """;
 
     @Override
@@ -87,6 +87,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
         try {
             Connection connection = dataSourceConfig.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID);
+
             preparedStatement.setLong(1, zoneId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -105,6 +106,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER);
 
             preparedStatement.setInt(1, number);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return Optional.ofNullable(ZoneRowMapper.mapRow(resultSet));
             }
@@ -117,8 +119,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     public void create(Zone zone) {
         try {
             Connection connection = dataSourceConfig.getConnection();
-
             PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
+
             preparedStatement.setInt(1, zone.getNumber());
             preparedStatement.executeUpdate();
 
@@ -140,7 +142,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
             preparedStatement.setInt(1, zone.getNumber());
             preparedStatement.setLong(2, zone.getId());
-
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while updating zone");
@@ -154,7 +155,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             PreparedStatement preparedStatement = connection.prepareStatement(DELETE);
 
             preparedStatement.setLong(1, zoneId);
-
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting zone");

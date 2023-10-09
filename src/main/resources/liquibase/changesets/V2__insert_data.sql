@@ -4,9 +4,9 @@ values ('John Doe', 'johndoe@gmail.com', '12345'),
        ('Sam Nilson', 'samnilson@icloud.com', '12345');
 
 insert into parking.cars (number)
-values ('GT784W88'),
-       ('QW568F33'),
-       ('KJ156H51');
+values ('G784TW777'),
+       ('Q568WF33'),
+       ('K156JH31');
 
 insert into parking.reservations (time_from, time_to)
 values ('2023-01-29 12:00:00', '2023-01-23 14:00:00'),

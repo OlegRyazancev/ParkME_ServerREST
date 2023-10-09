@@ -1,7 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.repositories.mappers;
 
 import lombok.SneakyThrows;
-import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.sql.ResultSet;

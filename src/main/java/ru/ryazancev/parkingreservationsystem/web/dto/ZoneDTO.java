@@ -17,7 +17,6 @@ public class ZoneDTO {
     @Min(value = 1, message = "Number should be greater than 1", groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
-    @NotNull(message = "Free places must be not null", groups = OnCreate.class)
     private Integer freePlaces;
 
 }

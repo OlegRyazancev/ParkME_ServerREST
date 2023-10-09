@@ -1,5 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
+import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface ZoneRepository {
 
     Optional<Zone> findById(Long zoneId);
 
+    List<Place> findNonFreePlacesByZoneId(Long zoneId);
+
     void create(Zone zone);
 
     void update(Zone zone);
@@ -18,4 +21,6 @@ public interface ZoneRepository {
     void delete(Long zoneId);
 
     Optional<Zone> findByNumber(Integer number);
+
+
 }

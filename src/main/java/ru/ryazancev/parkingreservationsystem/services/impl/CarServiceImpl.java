@@ -55,7 +55,9 @@ public class CarServiceImpl implements CarService {
     public Car update(Car car) {
         if (carRepository.findByNumber(car.getNumber()).isPresent())
             throw new IllegalStateException("Car already exists");
-
+        if (carRepository.findById(car.getId()).isEmpty()) {
+            throw new IllegalStateException("Car does not exists");
+        }
         carRepository.update(car);
 
         return car;
@@ -64,6 +66,9 @@ public class CarServiceImpl implements CarService {
     @Transactional
     @Override
     public void delete(Long carId) {
+        if (carRepository.findById(carId).isEmpty()) {
+            throw new IllegalStateException("Car does not exists");
+        }
         carRepository.delete(carId);
     }
 }

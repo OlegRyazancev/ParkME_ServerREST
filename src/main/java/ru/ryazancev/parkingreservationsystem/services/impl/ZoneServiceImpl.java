@@ -55,6 +55,9 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public void delete(Long zoneId) {
+        if (!zoneRepository.findNonFreePlacesByZoneId(zoneId).isEmpty()){
+            throw new IllegalStateException("Zone have occupied/disable places");
+        }
         zoneRepository.delete(zoneId);
     }
 }

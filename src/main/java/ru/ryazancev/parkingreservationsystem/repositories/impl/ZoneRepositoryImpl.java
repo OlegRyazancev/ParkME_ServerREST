@@ -2,9 +2,11 @@ package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
+import ru.ryazancev.parkingreservationsystem.repositories.mappers.PlaceRowMapper;
 import ru.ryazancev.parkingreservationsystem.repositories.mappers.ZoneRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
@@ -50,6 +52,14 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE z.number = ?
             GROUP BY z.id, z.number
             """;
+    private final String FIND_NON_FREE_PLACES_BY_ZONE_ID = """
+            SELECT p.id     as place_id,
+                   p.number as place_number
+            FROM places p
+                     JOIN zones_places zp on p.id = zp.place_id
+            WHERE zone_id = ?
+              AND p.status != 'FREE';
+            """;
     private final String CREATE = """
             INSERT INTO zones(number)
             VALUES (?)
@@ -61,10 +71,15 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE id = ?
             """;
 
-    private final String DELETE = """
+    private final String DELETE_ZONE = """
             DELETE
             FROM zones
             WHERE id = ?;
+            """;
+    private final String DELETE_ASSOCIATED_PLACES = """
+            DELETE
+            FROM places
+            WHERE id IN (SELECT place_id FROM zones_places WHERE zone_id = ?);
             """;
 
     @Override
@@ -96,6 +111,21 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while finding zone by id");
+        }
+    }
+
+    @Override
+    public List<Place> findNonFreePlacesByZoneId(Long zoneId) {
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_NON_FREE_PLACES_BY_ZONE_ID);
+            preparedStatement.setLong(1, zoneId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return PlaceRowMapper.mapRows(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding non-free places by zone id");
         }
     }
 
@@ -152,10 +182,18 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     public void delete(Long zoneId) {
         try {
             Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(DELETE);
+            connection.setAutoCommit(false);
 
-            preparedStatement.setLong(1, zoneId);
-            preparedStatement.executeUpdate();
+            try (PreparedStatement firstPreparedStatement = connection.prepareStatement(DELETE_ASSOCIATED_PLACES)) {
+                firstPreparedStatement.setLong(1, zoneId);
+                firstPreparedStatement.executeUpdate();
+            }
+
+            try (PreparedStatement secondPreparedStatement = connection.prepareStatement(DELETE_ZONE);) {
+                secondPreparedStatement.setLong(1, zoneId);
+                secondPreparedStatement.executeUpdate();
+            }
+            connection.commit();
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting zone");
         }

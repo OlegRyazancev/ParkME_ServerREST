@@ -15,7 +15,7 @@ public interface ReservationRepository {
 
     void assignToUserById(Reservation reservation, Long userId);
 
-    Reservation update(Reservation reservation);
+    void extend(Reservation reservation);
 
     void create(Reservation reservation);
 

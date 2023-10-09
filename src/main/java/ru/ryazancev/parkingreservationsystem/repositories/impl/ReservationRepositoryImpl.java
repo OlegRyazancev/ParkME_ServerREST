@@ -30,8 +30,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation update(Reservation reservation) {
-        return null;
+    public void extend(Reservation reservation) {
     }
 
     @Override

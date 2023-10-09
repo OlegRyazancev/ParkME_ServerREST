@@ -45,12 +45,13 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public Place makeDisable(Place place) {
-        Place foundPlace = placeRepository.findById(place.getId())
+    public Place makeDisable(Long placeId) {
+        Place foundPlace = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
-            throw new IllegalStateException("Place is already occupied. You can change status");
+        if (foundPlace.getStatus().equals(Status.OCCUPIED)||foundPlace.getStatus().equals(Status.DISABLE)) {
+            throw new IllegalStateException("Place is already occupied/disable. You can not change status");
         }
+        placeRepository.makeDisable(foundPlace);
         foundPlace.setStatus(Status.DISABLE);
 
         return foundPlace;

@@ -1,11 +1,9 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface PlaceRepository {
 
@@ -17,7 +15,7 @@ public interface PlaceRepository {
 
     void create(Place place);
 
-    void update(Place place);
+    void makeDisable(Place place);
 
     void delete(Long placeId);
 }

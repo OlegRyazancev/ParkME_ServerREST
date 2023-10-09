@@ -12,7 +12,7 @@ public interface PlaceService {
 
     Place create(Place place, Long zoneId);
 
-    Place makeDisable(Place place);
+    Place makeDisable(Long placeId);
 
     void delete(Long placeId);
 }

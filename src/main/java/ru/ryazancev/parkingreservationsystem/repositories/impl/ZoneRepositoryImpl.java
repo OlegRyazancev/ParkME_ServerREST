@@ -54,7 +54,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             """;
     private final String FIND_NON_FREE_PLACES_BY_ZONE_ID = """
             SELECT p.id     as place_id,
-                   p.number as place_number
+                   p.number as place_number,
+                   p.status as place_status
             FROM places p
                      JOIN zones_places zp on p.id = zp.place_id
             WHERE zone_id = ?

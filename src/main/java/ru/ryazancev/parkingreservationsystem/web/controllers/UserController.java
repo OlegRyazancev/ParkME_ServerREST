@@ -87,7 +87,6 @@ public class UserController {
 
         return reservationMapper.toDTO(createdReservation);
     }
-
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") Long id) {
         userService.delete(id);

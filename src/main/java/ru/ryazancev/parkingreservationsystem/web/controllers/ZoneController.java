@@ -49,10 +49,10 @@ public class ZoneController {
         return placeMapper.toDTO(places);
     }
 
-    @PostMapping("{id}/places")
-    public PlaceDTO createPlace(@PathVariable Long id, @Validated(OnCreate.class) @RequestBody PlaceDTO placeDTO) {
+    @PostMapping("{zoneId}/places")
+    public PlaceDTO createPlace(@PathVariable Long zoneId, @Validated(OnCreate.class) @RequestBody PlaceDTO placeDTO) {
         Place place = placeMapper.toEntity(placeDTO);
-        Place createdPlace = placeService.create(place, id);
+        Place createdPlace = placeService.create(place, zoneId);
 
         return placeMapper.toDTO(createdPlace);
     }

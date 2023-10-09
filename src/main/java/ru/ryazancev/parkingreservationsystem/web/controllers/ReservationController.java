@@ -34,15 +34,13 @@ public class ReservationController {
 
         return reservationMapper.toDTO(reservation);
     }
-
     @PutMapping
-    public ReservationDTO extendReservation(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {
+    public ReservationDTO extendReservationByUserId(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
-        Reservation updatedReservation = reservationService.update(reservation);
+        Reservation updatedReservation = reservationService.extend(reservation);
 
         return reservationMapper.toDTO(updatedReservation);
     }
-
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") Long id) {
         reservationService.delete(id);

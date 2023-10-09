@@ -10,7 +10,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.mappers.PlaceMapper;
 
 @RestController
-@RequestMapping("/api/vi/places")
+@RequestMapping("/api/v1/places")
 @RequiredArgsConstructor
 public class PlaceController {
 
@@ -20,14 +20,13 @@ public class PlaceController {
     @GetMapping("/{id}")
     public PlaceDTO getById(@PathVariable("id") Long id) {
         Place place = placeService.getById(id);
-
         return placeMapper.toDTO(place);
     }
 
-    @PutMapping
-    public PlaceDTO makeDisable(@Validated(OnUpdate.class) @RequestBody PlaceDTO placeDTO) {
-        Place place = placeMapper.toEntity(placeDTO);
-        Place disabledPlace = placeService.makeDisable(place);
+    @PutMapping("/{id}")
+    public PlaceDTO makeDisableById(@PathVariable("id") Long id) {
+
+        Place disabledPlace = placeService.makeDisable(id);
 
         return placeMapper.toDTO(disabledPlace);
     }

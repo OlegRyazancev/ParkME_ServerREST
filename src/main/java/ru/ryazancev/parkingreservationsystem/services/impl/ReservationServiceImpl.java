@@ -55,9 +55,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public Reservation update(Reservation reservation) {
-        reservationRepository.update(reservation);
-
+    public Reservation extend(Reservation reservation) {
+        if (reservation.getTimeFrom().isBefore(reservation.getTimeTo())) {
+            throw new IllegalStateException("Can not extend reservation, because time from is before time to");
+        }
+        reservationRepository.extend(reservation);
         return reservation;
     }
 

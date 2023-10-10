@@ -1,6 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
+import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,6 @@ public interface CarRepository {
     void delete(Long carId);
 
     Optional<Car> findByNumber(String number);
+
+    Optional<Reservation> findReservationByCarId(Long carId);
 }

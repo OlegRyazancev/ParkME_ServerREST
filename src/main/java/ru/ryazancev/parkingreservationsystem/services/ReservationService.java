@@ -8,7 +8,7 @@ public interface ReservationService {
 
     List<Reservation> getAll();
 
-    Reservation getById(Long reservationId);
+    Reservation getInfo(Long reservationId);
 
     List<Reservation> getAllByUserId(Long userId);
 

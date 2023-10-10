@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.dto;
+package ru.ryazancev.parkingreservationsystem.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

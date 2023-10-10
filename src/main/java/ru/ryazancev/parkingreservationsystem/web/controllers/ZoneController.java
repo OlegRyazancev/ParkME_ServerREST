@@ -7,12 +7,12 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.services.ZoneService;
-import ru.ryazancev.parkingreservationsystem.web.dto.PlaceDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.ZoneDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
-import ru.ryazancev.parkingreservationsystem.web.mappers.PlaceMapper;
-import ru.ryazancev.parkingreservationsystem.web.mappers.ZoneMapper;
+import ru.ryazancev.parkingreservationsystem.web.mappers.place.PlaceMapper;
+import ru.ryazancev.parkingreservationsystem.web.mappers.zone.ZoneMapper;
 
 import java.util.List;
 

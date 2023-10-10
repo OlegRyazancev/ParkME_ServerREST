@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.dto;
+package ru.ryazancev.parkingreservationsystem.web.dto.place;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;

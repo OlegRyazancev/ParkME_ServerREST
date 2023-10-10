@@ -5,9 +5,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
-import ru.ryazancev.parkingreservationsystem.web.dto.ReservationDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
-import ru.ryazancev.parkingreservationsystem.web.mappers.ReservationMapper;
+import ru.ryazancev.parkingreservationsystem.web.mappers.reservation.ReservationInfoMapper;
+import ru.ryazancev.parkingreservationsystem.web.mappers.reservation.ReservationMapper;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
+    private final ReservationInfoMapper reservationInfoMapper;
 
 
     @GetMapping
@@ -29,11 +32,12 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ReservationDTO getById(@PathVariable("id") Long id) {
-        Reservation reservation = reservationService.getById(id);
+    public ReservationInfoDTO getInfo(@PathVariable("id") Long id) {
+        Reservation reservation = reservationService.getInfo(id);
 
-        return reservationMapper.toDTO(reservation);
+        return reservationInfoMapper.toDTO(reservation);
     }
+
     @PutMapping
     public ReservationDTO extendReservationByUserId(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
@@ -41,6 +45,7 @@ public class ReservationController {
 
         return reservationMapper.toDTO(updatedReservation);
     }
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") Long id) {
         reservationService.delete(id);

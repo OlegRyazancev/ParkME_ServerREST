@@ -1,8 +1,8 @@
-package ru.ryazancev.parkingreservationsystem.web.mappers;
+package ru.ryazancev.parkingreservationsystem.web.mappers.user;
 
 import org.mapstruct.Mapper;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
-import ru.ryazancev.parkingreservationsystem.web.dto.UserDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 
 import java.util.List;
 

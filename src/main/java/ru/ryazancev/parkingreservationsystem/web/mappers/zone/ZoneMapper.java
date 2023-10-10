@@ -1,11 +1,8 @@
-package ru.ryazancev.parkingreservationsystem.web.mappers;
+package ru.ryazancev.parkingreservationsystem.web.mappers.zone;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
-import ru.ryazancev.parkingreservationsystem.web.dto.ZoneDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 
 import java.util.List;
 

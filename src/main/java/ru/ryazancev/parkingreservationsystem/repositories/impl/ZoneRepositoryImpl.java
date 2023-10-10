@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
-import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMapper;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ZoneRowMapper;
@@ -84,16 +83,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE id IN (SELECT place_id FROM zones_places WHERE zone_id = ?);
             """;
 
-    private final String FIND_PLACES_BY_ZONE_NUMBER = """
-            SELECT p.id     as place_id,
-                   p.number as place_number,
-                   p.status as place_status
-            FROM places p
-                     JOIN zones_places zp on p.id = zp.place_id
-                     LEFT JOIN zones z ON zp.zone_id = z.id
-            WHERE z.number = ?;
-                        """;
-
     private final String FIND_PLACE_BY_ZONE_NUMBER_AND_PLACE_NUMBER = """
             SELECT p.id     AS place_id,
                    p.number AS place_number,
@@ -161,21 +150,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             }
         } catch (SQLException e) {
             throw new ResourceMappingException("Exception while finding zone by number");
-        }
-    }
-
-    @Override
-    public List<Place> findPlacesByZoneNumber(Integer zoneNumber) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_PLACES_BY_ZONE_NUMBER)) {
-
-            preparedStatement.setInt(1, zoneNumber);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return PlaceRowMapper.mapRows(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new ResourceMappingException("Error while finding occupied places by zone id");
         }
     }
 

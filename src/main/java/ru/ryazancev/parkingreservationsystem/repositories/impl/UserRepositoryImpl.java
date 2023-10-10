@@ -1,11 +1,9 @@
 package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
-import liquibase.sql.Sql;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
-import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.UserRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;

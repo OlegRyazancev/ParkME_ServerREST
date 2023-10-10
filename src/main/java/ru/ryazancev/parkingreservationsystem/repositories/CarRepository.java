@@ -25,7 +25,5 @@ public interface CarRepository {
 
     Optional<Reservation> findReservationByCarId(Long carId);
 
-    Optional<Reservation> findReservationByCarNumber(String carNumber);
-
     boolean existsReservationByCarNumber(String number);
 }

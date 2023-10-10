@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.CarRowMapper;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ReservationRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
@@ -83,17 +82,6 @@ public class CarRepositoryImpl implements CarRepository {
                      LEFT JOIN reservations r ON rp.reservation_id = r.id
             WHERE c.id = ?;
             """;
-    private final String FIND_RESERVATIONS_BY_CAR_NUMBER = """
-            SELECT r.id        as reservation_id,
-                   r.time_from as time_from,
-                   r.time_to   as time_to
-            FROM cars c
-                     LEFT JOIN cars_places cp on c.id = cp.car_id
-                     LEFT JOIN places p ON cp.place_id = p.id
-                     LEFT JOIN reservations_places rp ON p.id = rp.place_id
-                     LEFT JOIN reservations r ON rp.reservation_id = r.id
-            WHERE c.number = ?;
-            """;
     private final String EXISTS_RESERVATION_BY_CAR_NUMBER = """
             SELECT EXISTS (SELECT 1
                            FROM reservations r
@@ -103,7 +91,6 @@ public class CarRepositoryImpl implements CarRepository {
                                     JOIN cars c ON cp.car_id = c.id
                            WHERE c.number = ?) AS exists_reservation;            
             """;
-
 
     @Override
     public List<Car> findAll() {
@@ -167,22 +154,6 @@ public class CarRepositoryImpl implements CarRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_ID)) {
 
             preparedStatement.setLong(1, carId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return Optional.ofNullable(ReservationRowMapper.mapRow(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new ResourceMappingException("Error while finding reservation by car id");
-        }
-    }
-
-    @Override
-    public Optional<Reservation> findReservationByCarNumber(String carNumber) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_NUMBER)) {
-
-
-            preparedStatement.setString(1, carNumber);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return Optional.ofNullable(ReservationRowMapper.mapRow(resultSet));

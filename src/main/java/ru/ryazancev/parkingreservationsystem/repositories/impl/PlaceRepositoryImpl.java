@@ -2,10 +2,8 @@ package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
-import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;

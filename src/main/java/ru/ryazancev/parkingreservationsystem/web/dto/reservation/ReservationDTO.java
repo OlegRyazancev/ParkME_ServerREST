@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
 

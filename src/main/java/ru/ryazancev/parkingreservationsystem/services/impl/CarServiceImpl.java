@@ -9,6 +9,7 @@ import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)

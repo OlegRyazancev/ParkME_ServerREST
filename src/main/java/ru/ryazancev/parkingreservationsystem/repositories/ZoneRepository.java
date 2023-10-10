@@ -12,7 +12,7 @@ public interface ZoneRepository {
 
     Optional<Zone> findById(Long zoneId);
 
-    List<Place> findNonFreePlacesByZoneId(Long zoneId);
+    List<Place> findOccupiedPlacesByZoneId(Long zoneId);
 
     void create(Zone zone);
 

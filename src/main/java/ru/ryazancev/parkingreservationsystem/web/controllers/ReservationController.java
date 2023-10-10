@@ -32,16 +32,16 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ReservationInfoDTO getInfo(@PathVariable("id") Long id) {
+    public ReservationInfoDTO getInfoById(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.getInfo(id);
 
         return reservationInfoMapper.toDTO(reservation);
     }
 
     @PutMapping
-    public ReservationDTO extendReservationByUserId(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {
+    public ReservationDTO changeTimeTo(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
-        Reservation updatedReservation = reservationService.extend(reservation);
+        Reservation updatedReservation = reservationService.changeTimeTo(reservation);
 
         return reservationMapper.toDTO(updatedReservation);
     }

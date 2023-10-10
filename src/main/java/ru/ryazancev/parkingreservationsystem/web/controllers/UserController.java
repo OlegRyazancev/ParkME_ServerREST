@@ -12,10 +12,12 @@ import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.mappers.car.CarMapper;
+import ru.ryazancev.parkingreservationsystem.web.mappers.reservation.ReservationInfoMapper;
 import ru.ryazancev.parkingreservationsystem.web.mappers.reservation.ReservationMapper;
 import ru.ryazancev.parkingreservationsystem.web.mappers.user.UserMapper;
 
@@ -34,6 +36,7 @@ public class UserController {
     private final UserMapper userMapper;
     private final CarMapper carMapper;
     private final ReservationMapper reservationMapper;
+    private final ReservationInfoMapper reservationInfoMapper;
 
 
     @GetMapping
@@ -74,19 +77,20 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reservations")
-    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
-        List<Reservation> reservations = reservationService.getAllByUserId(id);
+    public List<ReservationInfoDTO> getReservationsByUserId(@PathVariable("id") Long id) {
+        List<Reservation> reservations = reservationService.getReservationsByUserId(id);
 
-        return reservationMapper.toDTO(reservations);
+        return reservationInfoMapper.toDTO(reservations);
     }
 
-    @PostMapping("/{id}/reservations")
-    public ReservationDTO makeReservation(@PathVariable("id") Long id, @Validated(OnCreate.class) @RequestBody ReservationDTO reservationDTO) {
-        Reservation reservation = reservationMapper.toEntity(reservationDTO);
-        Reservation createdReservation = reservationService.create(reservation, id);
+    @PostMapping("/id/reservations")
+    public ReservationDTO makeReservation( @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
+        Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
+        Reservation createdReservation = reservationService.create(reservation);
 
         return reservationMapper.toDTO(createdReservation);
     }
+
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") Long id) {
         userService.delete(id);

@@ -10,7 +10,6 @@ import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundExc
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -55,8 +54,8 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public void delete(Long zoneId) {
-        if (!zoneRepository.findNonFreePlacesByZoneId(zoneId).isEmpty()){
-            throw new IllegalStateException("Zone have occupied/disable places");
+        if (!zoneRepository.findOccupiedPlacesByZoneId(zoneId).isEmpty()){
+            throw new IllegalStateException("Zone have occupied places");
         }
         zoneRepository.delete(zoneId);
     }

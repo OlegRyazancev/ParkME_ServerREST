@@ -10,11 +10,11 @@ public interface ReservationService {
 
     Reservation getInfo(Long reservationId);
 
-    List<Reservation> getAllByUserId(Long userId);
+    List<Reservation> getReservationsByUserId(Long userId);
 
-    Reservation create(Reservation reservation, Long id);
+    Reservation create(Reservation reservation);
 
-    Reservation extend(Reservation reservation);
+    Reservation changeTimeTo(Reservation reservation);
 
     void delete(Long reservationId);
 

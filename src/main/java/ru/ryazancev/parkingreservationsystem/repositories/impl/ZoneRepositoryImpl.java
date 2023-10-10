@@ -20,17 +20,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     private final DataSourceConfig dataSourceConfig;
 
-    private final String FIND_ALL = """
-            SELECT z.id                                                      as zone_id,
-                   z.number                                                  as zone_number,
-                   COALESCE(COUNT(p.id) FILTER (WHERE p.status = 'FREE'), 0) as zone_free_places
-            FROM zones z
-                     LEFT JOIN zones_places zp ON z.id = zp.zone_id
-                     LEFT JOIN places p ON zp.place_id = p.id
-            GROUP BY z.id, z.number
-            ORDER BY z.id
-            """;
-
     private final String FIND_BY_ID = """
             SELECT z.id                                                      as zone_id,
                    z.number                                                  as zone_number,
@@ -52,14 +41,14 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE z.number = ?
             GROUP BY z.id, z.number
             """;
-    private final String FIND_NON_FREE_PLACES_BY_ZONE_ID = """
+    private final String FIND_OCCUPIED_PLACES_BY_ZONE_ID = """
             SELECT p.id     as place_id,
                    p.number as place_number,
                    p.status as place_status
             FROM places p
                      JOIN zones_places zp on p.id = zp.place_id
             WHERE zone_id = ?
-              AND p.status != 'FREE';
+              AND p.status LIKE 'OCCUPIED';
             """;
     private final String CREATE = """
             INSERT INTO zones(number)
@@ -87,6 +76,16 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     public List<Zone> findAll() {
         try {
             Connection connection = dataSourceConfig.getConnection();
+            String FIND_ALL = """
+                    SELECT z.id                                                      as zone_id,
+                           z.number                                                  as zone_number,
+                           COALESCE(COUNT(p.id) FILTER (WHERE p.status = 'FREE'), 0) as zone_free_places
+                    FROM zones z
+                             LEFT JOIN zones_places zp ON z.id = zp.zone_id
+                             LEFT JOIN places p ON zp.place_id = p.id
+                    GROUP BY z.id, z.number
+                    ORDER BY z.id
+                    """;
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -116,17 +115,17 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     }
 
     @Override
-    public List<Place> findNonFreePlacesByZoneId(Long zoneId) {
+    public List<Place> findOccupiedPlacesByZoneId(Long zoneId) {
         try {
             Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_NON_FREE_PLACES_BY_ZONE_ID);
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_OCCUPIED_PLACES_BY_ZONE_ID);
             preparedStatement.setLong(1, zoneId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return PlaceRowMapper.mapRows(resultSet);
             }
         } catch (SQLException e) {
-            throw new ResourceMappingException("Error while finding non-free places by zone id");
+            throw new ResourceMappingException("Error while finding occupied places by zone id");
         }
     }
 

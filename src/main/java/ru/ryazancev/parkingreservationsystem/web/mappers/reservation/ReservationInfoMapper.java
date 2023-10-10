@@ -22,5 +22,5 @@ public interface ReservationInfoMapper {
     List<ReservationInfoDTO> toDTO(List<Reservation> reservations);
 
     @IterableMapping(qualifiedByName = "toDTO")
-    Reservation toInfoEntity(ReservationInfoDTO reservationInfoDTO);
+    Reservation toEntity(ReservationInfoDTO reservationInfoDTO);
 }

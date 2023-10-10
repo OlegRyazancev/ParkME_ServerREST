@@ -15,7 +15,8 @@ public interface PlaceRepository {
 
     void create(Place place);
 
-    void makeDisable(Place place);
+    void changeStatus(Place place);
 
     void delete(Long placeId);
+
 }

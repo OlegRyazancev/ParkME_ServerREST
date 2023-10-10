@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
+import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
@@ -17,6 +19,8 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final CarRepository carRepository;
+    private final PlaceRepository placeRepository;
 
     @Override
     public List<Reservation> getAll() {
@@ -30,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAllByUserId(Long userId) {
+    public List<Reservation> getReservationsByUserId(Long userId) {
         List<Reservation> reservations = reservationRepository.findAllByUserId(userId);
 
         if (reservations.isEmpty())
@@ -39,33 +43,47 @@ public class ReservationServiceImpl implements ReservationService {
         return reservations;
     }
 
-    @Transactional
     @Override
-    public Reservation create(Reservation reservation, Long id) {
+    public Reservation create(Reservation reservation) {
 
-        if (reservation.getPlace().getStatus().equals(Status.OCCUPIED))
-            throw new IllegalStateException("Place is already occupied");
-
+        if (reservation.getPlace().getStatus().equals(Status.OCCUPIED) || reservation.getPlace().getStatus().equals(Status.DISABLE))
+            throw new IllegalStateException("Place is already occupied or disable");
+        if (carRepository.findReservationByCarId(reservation.getCar().getId()).isPresent()) {
+            throw new IllegalStateException("Car already has reservation");
+        }
         reservation.getPlace().setStatus(Status.OCCUPIED);
+        placeRepository.changeStatus(reservation.getPlace());
         reservationRepository.create(reservation);
-        reservationRepository.assignToUserById(reservation, id);
+        reservationRepository.assignToUser(reservation);
 
         return reservation;
     }
 
     @Transactional
     @Override
-    public Reservation extend(Reservation reservation) {
-        if (reservation.getTimeFrom().isBefore(reservation.getTimeTo())) {
+    public Reservation changeTimeTo(Reservation reservation) {
+
+        Reservation foundReservation = reservationRepository
+                .findById(reservation.getId()).orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
+        if (foundReservation.getTimeFrom().isAfter(reservation.getTimeTo())) {
             throw new IllegalStateException("Can not extend reservation, because time from is before time to");
         }
-        reservationRepository.extend(reservation);
-        return reservation;
+
+        foundReservation.setTimeTo(reservation.getTimeTo());
+        reservationRepository.update(foundReservation);
+
+        return foundReservation;
     }
 
     @Transactional
     @Override
     public void delete(Long reservationId) {
-        reservationRepository.delete(reservationId);
+        Reservation foundReservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalStateException("Reservation not found"));
+
+        reservationRepository.delete(foundReservation.getId());
+        foundReservation.getPlace().setStatus(Status.FREE);
+        placeRepository.changeStatus(foundReservation.getPlace());
     }
 }

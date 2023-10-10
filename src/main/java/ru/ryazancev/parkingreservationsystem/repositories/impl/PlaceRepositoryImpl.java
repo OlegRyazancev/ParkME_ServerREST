@@ -1,7 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
@@ -45,15 +44,17 @@ public class PlaceRepositoryImpl implements PlaceRepository {
             """;
 
     private final String CREATE = """
-            INSERT INTO places(number)
-            VALUES (?)
+            INSERT INTO places(number, status)
+            VALUES (?, 'FREE')
             """;
 
-    private final String MAKE_DISABLE = """
+    private final String CHANGE_STATUS = """
             UPDATE places
-            SET status = 'DISABLE'
+            SET status = ?
             WHERE id = ?;
             """;
+
+
     private final String DELETE = """
             DELETE
             FROM places
@@ -126,15 +127,16 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    public void makeDisable(Place place) {
+    public void changeStatus(Place place) {
         try {
             Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(MAKE_DISABLE);
+            PreparedStatement preparedStatement = connection.prepareStatement(CHANGE_STATUS);
 
-            preparedStatement.setLong(1, place.getId());
+            preparedStatement.setString(1, String.valueOf(place.getStatus()));
+            preparedStatement.setLong(2, place.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new ResourceMappingException("Error while making place disable");
+            throw new ResourceMappingException("Error while changing place status");
         }
     }
 
@@ -150,4 +152,6 @@ public class PlaceRepositoryImpl implements PlaceRepository {
             throw new ResourceMappingException("Error while deleting place");
         }
     }
+
+
 }

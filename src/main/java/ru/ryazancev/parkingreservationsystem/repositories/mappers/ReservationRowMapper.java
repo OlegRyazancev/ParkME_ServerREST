@@ -7,11 +7,10 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ReservationRowMapper {
@@ -21,7 +20,8 @@ public class ReservationRowMapper {
         if (resultSet.next()) {
             Reservation reservation = new Reservation();
             map(resultSet, reservation);
-            return reservation;
+            if (reservation.getTimeFrom() != null)
+                return reservation;
         }
         return null;
 
@@ -29,22 +29,34 @@ public class ReservationRowMapper {
 
     @SneakyThrows
     public static List<Reservation> mapRows(ResultSet resultSet) {
-        List<Reservation> reservations = new ArrayList<>();
+        try {
+            List<Reservation> reservations = new ArrayList<>();
 
-        while (resultSet.next()) {
-            Reservation reservation = new Reservation();
-            map(resultSet, reservation);
-            reservations.add(reservation);
+            while (resultSet.next()) {
+                Reservation reservation = new Reservation();
+                map(resultSet, reservation);
+                reservations.add(reservation);
 
+            }
+            return reservations;
+        } catch (SQLException e) {
+            return Collections.emptyList();
         }
-        return reservations;
+
     }
 
-    private static void map(ResultSet resultSet, Reservation reservation) throws SQLException {
-        reservation.setId(resultSet.getLong("reservation_id"));
-        reservation.setTimeFrom(resultSet.getTimestamp("time_from").toLocalDateTime());
-        reservation.setTimeTo(resultSet.getTimestamp("time_to").toLocalDateTime());
 
+    @SneakyThrows
+    private static void map(ResultSet resultSet, Reservation reservation) {
+        reservation.setId(resultSet.getLong("reservation_id"));
+
+        Timestamp timeTo = resultSet.getTimestamp("time_to");
+        if (timeTo != null) reservation.setTimeTo(timeTo.toLocalDateTime());
+        else reservation.setTimeTo(null);
+
+        Timestamp timeFrom = resultSet.getTimestamp("time_from");
+        if (timeFrom != null) reservation.setTimeFrom(timeFrom.toLocalDateTime());
+        else reservation.setTimeFrom(null);
 
         if (hasColumn(resultSet, "zone_id")) {
             Zone zone = new Zone();
@@ -70,6 +82,7 @@ public class ReservationRowMapper {
 
     }
 
+    @SneakyThrows
     private static boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();

@@ -2,6 +2,7 @@ package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
@@ -9,10 +10,8 @@ import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.mappers.ReservationRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Period;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +49,57 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             WHERE r.id = ?;
             """;
 
+    private final String FIND_ALL_BY_USER_ID = """
+            SELECT r.id        as reservation_id,
+                   r.time_from as time_from,
+                   r.time_to   as time_to
+            FROM reservations r
+                     LEFT JOIN reservations_places rp ON r.id = rp.reservation_id
+                     LEFT JOIN places p ON rp.place_id = p.id
+                     LEFT JOIN zones_places zp ON p.id = zp.place_id
+                     LEFT JOIN zones z ON zp.zone_id = z.id
+                     LEFT JOIN cars_places cp on p.id = cp.place_id
+                     LEFT JOIN cars c ON cp.car_id = c.id
+                     LEFT JOIN users_cars uc on c.id = uc.car_id
+                     LEFT JOIN users u ON uc.user_id = u.id
+            WHERE u.id = ?
+            """;
+
+    private final String ASSIGN_RESERVATION_TO_PLACE = """
+            INSERT INTO reservations_places (reservation_id, place_id)
+            VALUES (?, ?);
+            """;
+
+    private final String ASSIGN_PLACE_TO_CAR = """
+            INSERT INTO cars_places(car_id, place_id)
+            VALUES (?, ?);
+            """;
+
+    private final String CREATE = """
+            INSERT INTO reservations(time_from, time_to)
+            VALUES (?, ?)
+            """;
+
+    private final String DELETE = """
+            DELETE
+            FROM reservations r
+            WHERE r.id =?;
+            """;
+
+    private final String DELETE_RELATIONSHIPS = """
+            DELETE
+            FROM cars_places cp
+            WHERE place_id IN (SELECT place_id
+                               FROM reservations_places
+                               WHERE reservation_id = ?);
+            """;
+
+    private final String UPDATE_TIME_TO = """
+            UPDATE reservations
+            SET time_to = ?
+            WHERE id = ?;
+            """;
+
     @Override
     public List<Reservation> findAll() {
         try {
@@ -82,25 +132,102 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByUserId(Long userId) {
-        return null;
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID);
+
+            preparedStatement.setLong(1, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return ReservationRowMapper.mapRows(resultSet);
+            }
+
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding reservations by user id");
+        }
     }
 
     @Override
-    public void assignToUserById(Reservation reservation, Long userId) {
+    public void assignToUser(Reservation reservation) {
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement first = connection.prepareStatement(ASSIGN_PLACE_TO_CAR)) {
+                first.setLong(1, reservation.getCar().getId());
+                first.setLong(2, reservation.getPlace().getId());
+                first.executeUpdate();
+            }
+
+            try (PreparedStatement second = connection.prepareStatement(ASSIGN_RESERVATION_TO_PLACE)) {
+                second.setLong(1, reservation.getId());
+                second.setLong(2, reservation.getPlace().getId());
+                second.executeUpdate();
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Error while assign reservation to user by car");
+        }
 
     }
 
     @Override
-    public void extend(Reservation reservation) {
+    public void update(Reservation reservation) {
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_TIME_TO);
+
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeTo()));
+            preparedStatement.setLong(2, reservation.getId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while changing reservation's time to");
+        }
+
     }
 
     @Override
     public void create(Reservation reservation) {
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
 
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeFrom()));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(reservation.getTimeTo()));
+            preparedStatement.executeUpdate();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                resultSet.next();
+                reservation.setId(resultSet.getLong(1));
+            }
+
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while creating reservation");
+        }
     }
 
     @Override
     public void delete(Long reservationId) {
+
+        try {
+            Connection connection = dataSourceConfig.getConnection();
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RELATIONSHIPS)) {
+                preparedStatement.setLong(1, reservationId);
+                preparedStatement.executeUpdate();
+            }
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
+                preparedStatement.setLong(1, reservationId);
+                preparedStatement.executeUpdate();
+            }
+
+
+            connection.commit();
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while deleting reservation");
+        }
 
     }
 }

@@ -10,6 +10,7 @@ import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,10 +33,11 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place create(Place place, Long zoneId) {
-
-        if (placeRepository.findAllByZoneId(zoneId).contains(place))
-            throw new IllegalStateException("Place is already exists");
-
+        if (placeRepository.findAllByZoneId(zoneId)
+                .stream()
+                .anyMatch(zonePlace -> zonePlace.getNumber().equals(place.getNumber()))) {
+            throw new IllegalStateException("Place is already exists in this zone");
+        }
         place.setStatus(Status.FREE);
         placeRepository.create(place);
         placeRepository.assignPlaceToZone(place.getId(), zoneId);
@@ -45,14 +47,21 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public Place makeDisable(Long placeId) {
+    public Place changeStatus(Long placeId, Status status) {
+        if (status.equals(Status.OCCUPIED)) {
+            throw new IllegalStateException("Can not use OCCUPIED status here");
+        }
         Place foundPlace = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-        if (foundPlace.getStatus().equals(Status.OCCUPIED)||foundPlace.getStatus().equals(Status.DISABLE)) {
-            throw new IllegalStateException("Place is already occupied/disable. You can not change status");
+
+        if (foundPlace.getStatus().equals(status)) {
+            throw new IllegalStateException("Place already has this status");
         }
-        placeRepository.makeDisable(foundPlace);
-        foundPlace.setStatus(Status.DISABLE);
+        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
+            throw new IllegalStateException("Can not change status, because place is occupied");
+        }
+        foundPlace.setStatus(status);
+        placeRepository.changeStatus(foundPlace);
 
         return foundPlace;
     }
@@ -60,6 +69,11 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public void delete(Long placeId) {
+        Place foundPlace = placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+        if (foundPlace.getStatus().equals(Status.OCCUPIED))
+            throw new IllegalStateException("Can not delete occupied place");
+
         placeRepository.delete(placeId);
     }
 }

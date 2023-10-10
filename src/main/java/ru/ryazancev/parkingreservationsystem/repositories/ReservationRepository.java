@@ -13,9 +13,9 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByUserId(Long userId);
 
-    void assignToUserById(Reservation reservation, Long userId);
+    void assignToUser(Reservation reservation);
 
-    void extend(Reservation reservation);
+    void update(Reservation reservation);
 
     void create(Reservation reservation);
 

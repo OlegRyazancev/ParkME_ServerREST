@@ -1,6 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.services;
 
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
+import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface PlaceService {
 
     Place create(Place place, Long zoneId);
 
-    Place makeDisable(Long placeId);
+    Place changeStatus(Long placeId, Status status);
 
     void delete(Long placeId);
 }

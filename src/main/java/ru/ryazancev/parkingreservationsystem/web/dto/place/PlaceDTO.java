@@ -17,6 +17,7 @@ public class PlaceDTO {
     @Min(value = 1, message = "Number should be greater than 1", groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
+
     private Status status;
 
 }

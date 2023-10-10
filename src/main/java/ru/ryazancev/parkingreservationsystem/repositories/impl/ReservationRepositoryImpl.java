@@ -3,11 +3,11 @@ package ru.ryazancev.parkingreservationsystem.repositories.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
-import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ReservationRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReservationRepositoryImpl implements ReservationRepository {
 
-    private final DataSourceConfig dataSourceConfig;
+    private final DataSource dataSource;
 
     private final String FIND_ALL = """
             SELECT r.id as reservation_id,
@@ -83,11 +83,14 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             """;
 
     private final String DELETE_RELATIONSHIPS = """
-            DELETE
-            FROM cars_places cp
-            WHERE place_id IN (SELECT place_id
-                               FROM reservations_places
-                               WHERE reservation_id = ?);
+            DELETE FROM cars_places cp
+            WHERE EXISTS (
+                SELECT 1
+                FROM reservations_places rp
+                WHERE rp.reservation_id = ?
+                AND rp.place_id = cp.place_id
+            );
+                        
             """;
 
     private final String UPDATE_TIME_TO = """
@@ -98,10 +101,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return ReservationRowMapper.mapRows(resultSet);
             }
@@ -112,9 +113,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long reservationId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
 
             preparedStatement.setLong(1, reservationId);
 
@@ -129,7 +129,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAllByUserId(Long userId) {
         try {
-            Connection connection = dataSourceConfig.getConnection();
+            Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID);
 
             preparedStatement.setLong(1, userId);
@@ -146,7 +146,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void assignToUser(Reservation reservation) {
         try {
-            Connection connection = dataSourceConfig.getConnection();
+            Connection connection = dataSource.getConnection();
             connection.setAutoCommit(false);
 
             try (PreparedStatement first = connection.prepareStatement(ASSIGN_PLACE_TO_CAR)) {
@@ -170,7 +170,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void update(Reservation reservation) {
         try {
-            Connection connection = dataSourceConfig.getConnection();
+            Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_TIME_TO);
 
             preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeTo()));
@@ -186,7 +186,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void create(Reservation reservation) {
         try {
-            Connection connection = dataSourceConfig.getConnection();
+            Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeFrom()));
@@ -205,8 +205,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void delete(Long reservationId) {
 
-        try {
-            Connection connection = dataSourceConfig.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RELATIONSHIPS)) {
@@ -224,6 +223,5 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting reservation");
         }
-
     }
 }

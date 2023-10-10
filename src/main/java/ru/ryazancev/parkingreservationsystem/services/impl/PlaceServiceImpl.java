@@ -10,7 +10,6 @@ import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,7 +39,7 @@ public class PlaceServiceImpl implements PlaceService {
         }
         place.setStatus(Status.FREE);
         placeRepository.create(place);
-        placeRepository.assignPlaceToZone(place.getId(), zoneId);
+        placeRepository.assignToZoneById(place.getId(), zoneId);
 
         return place;
     }
@@ -61,7 +60,7 @@ public class PlaceServiceImpl implements PlaceService {
             throw new IllegalStateException("Can not change status, because place is occupied");
         }
         foundPlace.setStatus(status);
-        placeRepository.changeStatus(foundPlace);
+        placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
 
         return foundPlace;
     }

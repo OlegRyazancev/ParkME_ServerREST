@@ -10,6 +10,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.CarRowMappe
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ReservationRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarRepositoryImpl implements CarRepository {
 
-    private final DataSourceConfig dataSourceConfig;
+    private final DataSource dataSource;
 
     private final String FIND_ALL = """
             SELECT c.id     as car_id,
@@ -82,14 +83,32 @@ public class CarRepositoryImpl implements CarRepository {
                      LEFT JOIN reservations r ON rp.reservation_id = r.id
             WHERE c.id = ?;
             """;
+    private final String FIND_RESERVATIONS_BY_CAR_NUMBER = """
+            SELECT r.id        as reservation_id,
+                   r.time_from as time_from,
+                   r.time_to   as time_to
+            FROM cars c
+                     LEFT JOIN cars_places cp on c.id = cp.car_id
+                     LEFT JOIN places p ON cp.place_id = p.id
+                     LEFT JOIN reservations_places rp ON p.id = rp.place_id
+                     LEFT JOIN reservations r ON rp.reservation_id = r.id
+            WHERE c.number = ?;
+            """;
+    private final String EXISTS_RESERVATION_BY_CAR_NUMBER = """
+            SELECT EXISTS (SELECT 1
+                           FROM reservations r
+                                    JOIN reservations_places rp ON r.id = rp.reservation_id
+                                    JOIN places p ON rp.place_id = p.id
+                                    JOIN cars_places cp ON p.id = cp.place_id
+                                    JOIN cars c ON cp.car_id = c.id
+                           WHERE c.number = ?) AS exists_reservation;            
+            """;
 
 
     @Override
     public List<Car> findAll() {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return CarRowMapper.mapRows(resultSet);
             }
@@ -100,9 +119,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public List<Car> findAllByUserId(Long userId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID)) {
 
             preparedStatement.setLong(1, userId);
 
@@ -116,9 +134,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public Optional<Car> findById(Long carId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
 
             preparedStatement.setLong(1, carId);
 
@@ -132,10 +149,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public Optional<Car> findByNumber(String number) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER);
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER);) {
             preparedStatement.setString(1, number);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -148,9 +163,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public Optional<Reservation> findReservationByCarId(Long carId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_ID)) {
 
             preparedStatement.setLong(1, carId);
 
@@ -163,10 +177,42 @@ public class CarRepositoryImpl implements CarRepository {
     }
 
     @Override
-    public void assignCarToUserById(Long carId, Long userId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN);
+    public Optional<Reservation> findReservationByCarNumber(String carNumber) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_NUMBER)) {
+
+
+            preparedStatement.setString(1, carNumber);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return Optional.ofNullable(ReservationRowMapper.mapRow(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding reservation by car id");
+        }
+    }
+
+    @Override
+    public boolean existsReservationByCarNumber(String number) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(EXISTS_RESERVATION_BY_CAR_NUMBER)) {
+
+
+            statement.setString(1, number);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while checkin if car has reservations");
+        }
+    }
+
+    @Override
+    public void assignToUserById(Long carId, Long userId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN)) {
+
 
             preparedStatement.setLong(1, userId);
             preparedStatement.setLong(2, carId);
@@ -178,9 +224,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public void create(Car car) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, car.getNumber());
             preparedStatement.executeUpdate();
@@ -196,9 +241,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public void update(Car car) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE)) {
 
             preparedStatement.setString(1, car.getNumber());
             preparedStatement.setLong(2, car.getId());
@@ -210,9 +254,8 @@ public class CarRepositoryImpl implements CarRepository {
 
     @Override
     public void delete(Long carId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(DELETE);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
 
             preparedStatement.setLong(1, carId);
             preparedStatement.executeUpdate();

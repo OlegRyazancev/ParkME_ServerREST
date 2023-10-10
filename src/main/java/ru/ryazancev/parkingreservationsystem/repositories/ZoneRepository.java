@@ -22,5 +22,7 @@ public interface ZoneRepository {
 
     Optional<Zone> findByNumber(Integer number);
 
+    List<Place> findPlacesByZoneNumber(Integer zoneNumber);
 
+    Optional<Place> findPlaceByZoneNumberAndPlaceNumber(Integer zoneNumber, Integer place_number);
 }

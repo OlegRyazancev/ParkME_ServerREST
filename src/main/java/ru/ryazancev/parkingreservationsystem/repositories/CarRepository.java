@@ -17,11 +17,15 @@ public interface CarRepository {
 
     void update(Car car);
 
-    void assignCarToUserById(Long carId, Long userId);
+    void assignToUserById(Long carId, Long userId);
 
     void delete(Long carId);
 
     Optional<Car> findByNumber(String number);
 
     Optional<Reservation> findReservationByCarId(Long carId);
+
+    Optional<Reservation> findReservationByCarNumber(String carNumber);
+
+    boolean existsReservationByCarNumber(String number);
 }

@@ -2,12 +2,15 @@ package ru.ryazancev.parkingreservationsystem.repositories.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
+import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PlaceRepositoryImpl implements PlaceRepository {
 
-    private final DataSourceConfig dataSourceConfig;
+    private final DataSource dataSource;
 
     private final String FIND_BY_ID = """
             SELECT p.id     as place_id,
@@ -60,13 +63,22 @@ public class PlaceRepositoryImpl implements PlaceRepository {
             FROM places
             WHERE id = ?
             """;
+    private final String FIND_ALL_OCCUPIED_BY_USER_ID = """
+            SELECT p.id     as place_id,
+                   p.number as place_number,
+                   p.status as place_status
+            FROM places p
+                     JOIN cars_places cp ON p.id = cp.place_id
+                     JOIN users_cars uc ON cp.car_id = uc.car_id
+            WHERE uc.user_id = ?
+              AND p.status = 'OCCUPIED'
+            """;
 
 
     @Override
     public Optional<Place> findById(Long placeId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
 
             preparedStatement.setLong(1, placeId);
 
@@ -80,10 +92,8 @@ public class PlaceRepositoryImpl implements PlaceRepository {
 
     @Override
     public List<Place> findAllByZoneId(Long zoneId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_ZONE_ID);
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_ZONE_ID)) {
             preparedStatement.setLong(1, zoneId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -95,10 +105,23 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    public void assignPlaceToZone(Long placeId, Long zoneId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN);
+    public List<Place> findAllOccupiedByUserId(Long userId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_OCCUPIED_BY_USER_ID)) {
+            preparedStatement.setLong(1, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return PlaceRowMapper.mapRows(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding occupied places by user id");
+        }
+    }
+
+    @Override
+    public void assignToZoneById(Long placeId, Long zoneId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN)) {
 
             preparedStatement.setLong(1, zoneId);
             preparedStatement.setLong(2, placeId);
@@ -110,9 +133,8 @@ public class PlaceRepositoryImpl implements PlaceRepository {
 
     @Override
     public void create(Place place) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setInt(1, place.getNumber());
             preparedStatement.executeUpdate();
@@ -127,12 +149,11 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    public void changeStatus(Place place) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(CHANGE_STATUS);
+    public void changeStatus(Place place, Status status) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CHANGE_STATUS)) {
 
-            preparedStatement.setString(1, String.valueOf(place.getStatus()));
+            preparedStatement.setString(1, status.name());
             preparedStatement.setLong(2, place.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -142,9 +163,8 @@ public class PlaceRepositoryImpl implements PlaceRepository {
 
     @Override
     public void delete(Long placeId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(DELETE);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
 
             preparedStatement.setLong(1, placeId);
             preparedStatement.executeUpdate();

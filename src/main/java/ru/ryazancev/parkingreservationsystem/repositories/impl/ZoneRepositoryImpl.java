@@ -10,6 +10,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMap
 import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ZoneRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ZoneRepositoryImpl implements ZoneRepository {
 
-    private final DataSourceConfig dataSourceConfig;
+    private final DataSource dataSource;
+
+    String FIND_ALL = """
+            SELECT z.id                                                      as zone_id,
+                   z.number                                                  as zone_number,
+                   COALESCE(COUNT(p.id) FILTER (WHERE p.status = 'FREE'), 0) as zone_free_places
+            FROM zones z
+                     LEFT JOIN zones_places zp ON z.id = zp.zone_id
+                     LEFT JOIN places p ON zp.place_id = p.id
+            GROUP BY z.id, z.number
+            ORDER BY z.id
+            """;
 
     private final String FIND_BY_ID = """
             SELECT z.id                                                      as zone_id,
@@ -72,21 +84,30 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE id IN (SELECT place_id FROM zones_places WHERE zone_id = ?);
             """;
 
+    private final String FIND_PLACES_BY_ZONE_NUMBER = """
+            SELECT p.id     as place_id,
+                   p.number as place_number,
+                   p.status as place_status
+            FROM places p
+                     JOIN zones_places zp on p.id = zp.place_id
+                     LEFT JOIN zones z ON zp.zone_id = z.id
+            WHERE z.number = ?;
+                        """;
+
+    private final String FIND_PLACE_BY_ZONE_NUMBER_AND_PLACE_NUMBER = """
+            SELECT p.id     AS place_id,
+                   p.number AS place_number,
+                   p.status AS place_status
+            FROM places p
+                     JOIN zones_places zp ON p.id = zp.place_id
+                     JOIN zones z ON z.id = zp.zone_id
+            WHERE z.number = ?
+              AND p.number = ?;""";
+
     @Override
     public List<Zone> findAll() {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            String FIND_ALL = """
-                    SELECT z.id                                                      as zone_id,
-                           z.number                                                  as zone_number,
-                           COALESCE(COUNT(p.id) FILTER (WHERE p.status = 'FREE'), 0) as zone_free_places
-                    FROM zones z
-                             LEFT JOIN zones_places zp ON z.id = zp.zone_id
-                             LEFT JOIN places p ON zp.place_id = p.id
-                    GROUP BY z.id, z.number
-                    ORDER BY z.id
-                    """;
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return ZoneRowMapper.mapRows(resultSet);
@@ -99,9 +120,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public Optional<Zone> findById(Long zoneId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
 
             preparedStatement.setLong(1, zoneId);
 
@@ -116,9 +136,9 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public List<Place> findOccupiedPlacesByZoneId(Long zoneId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_OCCUPIED_PLACES_BY_ZONE_ID);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_OCCUPIED_PLACES_BY_ZONE_ID)) {
+
             preparedStatement.setLong(1, zoneId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -131,9 +151,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public Optional<Zone> findByNumber(Integer number) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NUMBER)) {
 
             preparedStatement.setInt(1, number);
 
@@ -146,10 +165,40 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     }
 
     @Override
+    public List<Place> findPlacesByZoneNumber(Integer zoneNumber) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_PLACES_BY_ZONE_NUMBER)) {
+
+            preparedStatement.setInt(1, zoneNumber);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return PlaceRowMapper.mapRows(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding occupied places by zone id");
+        }
+    }
+
+    @Override
+    public Optional<Place> findPlaceByZoneNumberAndPlaceNumber(Integer zoneNumber, Integer placeNumber) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_PLACE_BY_ZONE_NUMBER_AND_PLACE_NUMBER)) {
+
+            preparedStatement.setInt(1, zoneNumber);
+            preparedStatement.setInt(2, placeNumber);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return Optional.ofNullable(PlaceRowMapper.mapRow(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Exception while finding zone by number");
+        }
+    }
+
+    @Override
     public void create(Zone zone) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setInt(1, zone.getNumber());
             preparedStatement.executeUpdate();
@@ -166,9 +215,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public void update(Zone zone) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE)) {
 
             preparedStatement.setInt(1, zone.getNumber());
             preparedStatement.setLong(2, zone.getId());
@@ -180,8 +228,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public void delete(Long zoneId) {
-        try {
-            Connection connection = dataSourceConfig.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+
             connection.setAutoCommit(false);
 
             try (PreparedStatement firstPreparedStatement = connection.prepareStatement(DELETE_ASSOCIATED_PLACES)) {

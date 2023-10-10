@@ -9,7 +9,6 @@ import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,7 +45,7 @@ public class CarServiceImpl implements CarService {
             throw new IllegalStateException("Car already exists");
 
         carRepository.create(car);
-        carRepository.assignCarToUserById(car.getId(), userId);
+        carRepository.assignToUserById(car.getId(), userId);
 
         return car;
     }

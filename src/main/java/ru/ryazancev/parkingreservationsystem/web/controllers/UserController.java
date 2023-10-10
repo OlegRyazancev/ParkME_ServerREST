@@ -77,13 +77,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reservations")
-    public List<ReservationInfoDTO> getReservationsByUserId(@PathVariable("id") Long id) {
+    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
         List<Reservation> reservations = reservationService.getReservationsByUserId(id);
 
-        return reservationInfoMapper.toDTO(reservations);
+        return reservationMapper.toDTO(reservations);
     }
 
-    @PostMapping("/id/reservations")
+    @PostMapping("/reservations")
     public ReservationDTO makeReservation( @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
         Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
         Reservation createdReservation = reservationService.create(reservation);

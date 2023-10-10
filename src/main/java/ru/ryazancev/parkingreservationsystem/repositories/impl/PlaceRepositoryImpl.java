@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.mappers.PlaceRowMapper;
+import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
 import java.sql.Connection;

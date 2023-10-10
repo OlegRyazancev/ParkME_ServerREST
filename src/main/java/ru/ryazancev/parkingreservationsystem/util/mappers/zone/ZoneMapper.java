@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.mappers.zone;
+package ru.ryazancev.parkingreservationsystem.util.mappers.zone;
 
 import org.mapstruct.Mapper;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;

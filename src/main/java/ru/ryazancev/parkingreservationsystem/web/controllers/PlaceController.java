@@ -6,7 +6,7 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
-import ru.ryazancev.parkingreservationsystem.web.mappers.place.PlaceMapper;
+import ru.ryazancev.parkingreservationsystem.util.mappers.place.PlaceMapper;
 
 @RestController
 @RequestMapping("/api/v1/places")

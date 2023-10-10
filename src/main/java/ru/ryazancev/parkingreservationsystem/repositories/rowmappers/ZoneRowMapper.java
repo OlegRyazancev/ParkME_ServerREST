@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.repositories.mappers;
+package ru.ryazancev.parkingreservationsystem.repositories.rowmappers;
 
 import lombok.SneakyThrows;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;

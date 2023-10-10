@@ -1,13 +1,11 @@
 package ru.ryazancev.parkingreservationsystem.web.dto.place;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
-import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
 @Data
 public class PlaceDTO {

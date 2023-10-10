@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.mappers.user;
+package ru.ryazancev.parkingreservationsystem.util.mappers.user;
 
 import org.mapstruct.Mapper;
 import ru.ryazancev.parkingreservationsystem.models.user.User;

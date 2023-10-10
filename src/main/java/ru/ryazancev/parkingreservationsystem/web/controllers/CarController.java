@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
-import ru.ryazancev.parkingreservationsystem.web.mappers.car.CarMapper;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.util.mappers.car.CarMapper;
 
 import java.util.List;
 

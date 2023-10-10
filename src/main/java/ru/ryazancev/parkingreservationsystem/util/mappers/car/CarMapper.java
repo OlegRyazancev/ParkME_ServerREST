@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.mappers.car;
+package ru.ryazancev.parkingreservationsystem.util.mappers.car;
 
 import org.mapstruct.Mapper;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;

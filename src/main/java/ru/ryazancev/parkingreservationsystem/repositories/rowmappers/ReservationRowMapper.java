@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.repositories.mappers;
+package ru.ryazancev.parkingreservationsystem.repositories.rowmappers;
 
 import lombok.SneakyThrows;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
@@ -8,7 +8,6 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

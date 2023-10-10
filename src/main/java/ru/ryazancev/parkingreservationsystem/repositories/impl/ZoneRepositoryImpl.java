@@ -6,8 +6,8 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.DataSourceConfig;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.mappers.PlaceRowMapper;
-import ru.ryazancev.parkingreservationsystem.repositories.mappers.ZoneRowMapper;
+import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.PlaceRowMapper;
+import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.ZoneRowMapper;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
 import java.sql.*;

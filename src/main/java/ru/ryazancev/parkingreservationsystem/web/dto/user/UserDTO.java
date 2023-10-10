@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
 
 @Data

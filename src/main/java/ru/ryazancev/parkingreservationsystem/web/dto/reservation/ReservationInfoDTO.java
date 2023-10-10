@@ -5,11 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceInfoDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnCreate;
-import ru.ryazancev.parkingreservationsystem.web.dto.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneInfoDTO;
 
 import java.time.LocalDateTime;

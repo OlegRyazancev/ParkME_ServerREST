@@ -39,6 +39,17 @@ public class PlaceRepositoryImpl implements PlaceRepository {
             WHERE zp.zone_id = ?;
             """;
 
+    private final String FIND_ALL_OCCUPIED_BY_USER_ID = """
+            SELECT p.id     as place_id,
+                   p.number as place_number,
+                   p.status as place_status
+            FROM places p
+                     JOIN cars_places cp ON p.id = cp.place_id
+                     JOIN users_cars uc ON cp.car_id = uc.car_id
+            WHERE uc.user_id = ?
+              AND p.status = 'OCCUPIED'
+            """;
+
     private final String ASSIGN = """
             INSERT INTO zones_places (zone_id, place_id)
             VALUES (?, ?)
@@ -55,23 +66,11 @@ public class PlaceRepositoryImpl implements PlaceRepository {
             WHERE id = ?;
             """;
 
-
     private final String DELETE = """
             DELETE
             FROM places
             WHERE id = ?
             """;
-    private final String FIND_ALL_OCCUPIED_BY_USER_ID = """
-            SELECT p.id     as place_id,
-                   p.number as place_number,
-                   p.status as place_status
-            FROM places p
-                     JOIN cars_places cp ON p.id = cp.place_id
-                     JOIN users_cars uc ON cp.car_id = uc.car_id
-            WHERE uc.user_id = ?
-              AND p.status = 'OCCUPIED'
-            """;
-
 
     @Override
     public Optional<Place> findById(Long placeId) {

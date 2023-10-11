@@ -12,6 +12,7 @@ public class UserRowMapper {
     public static User mapRow(ResultSet resultSet) {
         if (resultSet.next()) {
             User user = new User();
+
             user.setId(resultSet.getLong("user_id"));
             user.setName(resultSet.getString("user_name"));
             user.setEmail(resultSet.getString("user_email"));

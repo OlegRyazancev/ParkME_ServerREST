@@ -47,21 +47,16 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place changeStatus(Long placeId, Status status) {
-        if (status.equals(Status.OCCUPIED)) {
+        if (status.equals(Status.OCCUPIED))
             throw new IllegalStateException("Can not use OCCUPIED status here");
-        }
         Place foundPlace = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-
-        if (foundPlace.getStatus().equals(status)) {
+        if (foundPlace.getStatus().equals(status))
             throw new IllegalStateException("Place already has this status");
-        }
-        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
+        if (foundPlace.getStatus().equals(Status.OCCUPIED))
             throw new IllegalStateException("Can not change status, because place is occupied");
-        }
         foundPlace.setStatus(status);
         placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
-
         return foundPlace;
     }
 
@@ -72,7 +67,6 @@ public class PlaceServiceImpl implements PlaceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
         if (foundPlace.getStatus().equals(Status.OCCUPIED))
             throw new IllegalStateException("Can not delete occupied place");
-
         placeRepository.delete(placeId);
     }
 }

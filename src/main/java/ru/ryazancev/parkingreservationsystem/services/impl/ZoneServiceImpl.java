@@ -35,17 +35,14 @@ public class ZoneServiceImpl implements ZoneService {
         if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
             throw new IllegalStateException("Zone is already exists");
         zoneRepository.create(zone);
-
         return zone;
     }
 
     @Override
     @Transactional
     public Zone update(Zone zone) {
-
         if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
             throw new IllegalStateException("Zone is already exists");
-
         zoneRepository.update(zone);
         zone.setFreePlaces(Objects.requireNonNull(zoneRepository.findById(zone.getId()).orElse(null)).getFreePlaces());
         return zone;
@@ -54,9 +51,8 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public void delete(Long zoneId) {
-        if (!zoneRepository.findOccupiedPlacesByZoneId(zoneId).isEmpty()){
+        if (!zoneRepository.findOccupiedPlacesByZoneId(zoneId).isEmpty())
             throw new IllegalStateException("Zone have occupied places");
-        }
         zoneRepository.delete(zoneId);
     }
 }

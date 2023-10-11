@@ -10,7 +10,10 @@ import ru.ryazancev.parkingreservationsystem.repositories.rowmappers.Reservation
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceMappingException;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,14 +29,6 @@ public class CarRepositoryImpl implements CarRepository {
             FROM cars c;
             """;
 
-    private final String FIND_ALL_BY_USER_ID = """
-            SELECT c.id     as car_id,
-                   c.number as car_number
-            FROM cars c
-                     LEFT JOIN users_cars uc on c.id = uc.car_id
-            WHERE uc.user_id = ?;
-            """;
-
     private final String FIND_BY_ID = """
             SELECT c.id     as car_id,
                    c.number as car_number
@@ -47,6 +42,36 @@ public class CarRepositoryImpl implements CarRepository {
                    c.number as car_number
             FROM cars c
             WHERE c.number = ?
+            """;
+
+    private final String FIND_ALL_BY_USER_ID = """
+            SELECT c.id     as car_id,
+                   c.number as car_number
+            FROM cars c
+                     LEFT JOIN users_cars uc on c.id = uc.car_id
+            WHERE uc.user_id = ?;
+            """;
+
+    private final String FIND_RESERVATION_BY_CAR_ID = """
+            SELECT r.id        as reservation_id,
+                   r.time_from as time_from,
+                   r.time_to   as time_to
+            FROM cars c
+                     LEFT JOIN cars_places cp on c.id = cp.car_id
+                     LEFT JOIN places p ON cp.place_id = p.id
+                     LEFT JOIN reservations_places rp ON p.id = rp.place_id
+                     LEFT JOIN reservations r ON rp.reservation_id = r.id
+            WHERE c.id = ?;
+            """;
+
+    private final String EXISTS_RESERVATION_BY_CAR_NUMBER = """
+            SELECT EXISTS (SELECT 1
+                           FROM reservations r
+                                    JOIN reservations_places rp ON r.id = rp.reservation_id
+                                    JOIN places p ON rp.place_id = p.id
+                                    JOIN cars_places cp ON p.id = cp.place_id
+                                    JOIN cars c ON cp.car_id = c.id
+                           WHERE c.number = ?) AS exists_reservation;            
             """;
 
     private final String ASSIGN = """
@@ -71,26 +96,6 @@ public class CarRepositoryImpl implements CarRepository {
             WHERE id = ?;
             """;
 
-    private final String FIND_RESERVATIONS_BY_CAR_ID = """
-            SELECT r.id        as reservation_id,
-                   r.time_from as time_from,
-                   r.time_to   as time_to
-            FROM cars c
-                     LEFT JOIN cars_places cp on c.id = cp.car_id
-                     LEFT JOIN places p ON cp.place_id = p.id
-                     LEFT JOIN reservations_places rp ON p.id = rp.place_id
-                     LEFT JOIN reservations r ON rp.reservation_id = r.id
-            WHERE c.id = ?;
-            """;
-    private final String EXISTS_RESERVATION_BY_CAR_NUMBER = """
-            SELECT EXISTS (SELECT 1
-                           FROM reservations r
-                                    JOIN reservations_places rp ON r.id = rp.reservation_id
-                                    JOIN places p ON rp.place_id = p.id
-                                    JOIN cars_places cp ON p.id = cp.place_id
-                                    JOIN cars c ON cp.car_id = c.id
-                           WHERE c.number = ?) AS exists_reservation;            
-            """;
 
     @Override
     public List<Car> findAll() {
@@ -101,21 +106,6 @@ public class CarRepositoryImpl implements CarRepository {
             }
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while finding all cars");
-        }
-    }
-
-    @Override
-    public List<Car> findAllByUserId(Long userId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID)) {
-
-            preparedStatement.setLong(1, userId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return CarRowMapper.mapRows(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new ResourceMappingException("Error while finding cars by user id");
         }
     }
 
@@ -149,9 +139,24 @@ public class CarRepositoryImpl implements CarRepository {
     }
 
     @Override
+    public List<Car> findAllByUserId(Long userId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID)) {
+
+            preparedStatement.setLong(1, userId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return CarRowMapper.mapRows(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding cars by user id");
+        }
+    }
+
+    @Override
     public Optional<Reservation> findReservationByCarId(Long carId) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_BY_CAR_ID)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATION_BY_CAR_ID)) {
 
             preparedStatement.setLong(1, carId);
 

@@ -25,7 +25,6 @@ public class ControllerAdvice {
         return new ExceptionBody(e.getMessage());
     }
 
-
     @ExceptionHandler(ResourceMappingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionBody handleResourceMapping(ResourceMappingException e) {
@@ -54,7 +53,6 @@ public class ControllerAdvice {
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
         exceptionBody.setErrors(errors.stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
-
         return exceptionBody;
     }
 
@@ -68,7 +66,6 @@ public class ControllerAdvice {
                         violation -> violation.getPropertyPath().toString(),
                         violation -> violation.getMessage()
                 )));
-
         return exceptionBody;
     }
 

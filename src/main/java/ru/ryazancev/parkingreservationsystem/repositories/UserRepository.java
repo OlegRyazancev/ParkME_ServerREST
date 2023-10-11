@@ -14,11 +14,11 @@ public interface UserRepository {
 
     Optional<User> findByEmail(String name);
 
-    void update(User user);
+    void insertUserRole(Long userId, Role role);
 
     void create(User user);
 
-    void insertUserRole(Long userId, Role role);
+    void update(User user);
 
     void delete(Long userId);
 

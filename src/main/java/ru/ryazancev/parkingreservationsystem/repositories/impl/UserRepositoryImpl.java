@@ -48,6 +48,16 @@ public class UserRepositoryImpl implements UserRepository {
             WHERE u.email = ?
             """;
 
+    private final String INSERT_USER_ROLE = """
+            INSERT INTO users_roles (user_id, role)
+            VALUES(?, ?)
+            """;
+
+    private final String CREATE = """
+            INSERT INTO users (name, email, password)
+            VALUES (?, ?, ?)
+            """;
+
     private final String UPDATE = """
             UPDATE users
             SET name     = ?,
@@ -56,27 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
             WHERE id = ?
             """;
 
-    private final String CREATE = """
-            INSERT INTO users (name, email, password)
-            VALUES (?, ?, ?)
-            """;
-    private final String INSERT_USER_ROLE = """
-            INSERT INTO users_roles (user_id, role)
-            VALUES(?, ?)
-            """;
-
     private final String DELETE = """
             DELETE FROM users
             WHERE id = ?
-            """;
-
-    private final String DELETE_CARS_BY_USER_ID = """
-            DELETE FROM cars
-            WHERE id IN (
-                SELECT car_id
-                FROM users_cars
-                WHERE user_id = ?
-            );
             """;
 
     @Override
@@ -118,17 +110,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void update(User user) {
+    public void insertUserRole(Long userId, Role role) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE)) {
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
-            statement.setLong(4, user.getId());
+             PreparedStatement statement = connection.prepareStatement(INSERT_USER_ROLE)) {
+
+            statement.setLong(1, userId);
+            statement.setString(2, role.name());
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ResourceMappingException("Error while updating user");
+            throw new ResourceMappingException("Error while inserting user role");
         }
     }
 
@@ -152,16 +143,17 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void insertUserRole(Long userId, Role role) {
+    public void update(User user) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_USER_ROLE)) {
-
-            statement.setLong(1, userId);
-            statement.setString(2, role.name());
+             PreparedStatement statement = connection.prepareStatement(UPDATE)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setLong(4, user.getId());
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new ResourceMappingException("Error while inserting user role");
+            throw new ResourceMappingException("Error while updating user");
         }
     }
 
@@ -176,6 +168,4 @@ public class UserRepositoryImpl implements UserRepository {
             throw new ResourceMappingException("Error while deleting user");
         }
     }
-
-
 }

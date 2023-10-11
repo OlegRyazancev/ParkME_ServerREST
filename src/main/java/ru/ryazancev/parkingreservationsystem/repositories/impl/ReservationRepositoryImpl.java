@@ -76,6 +76,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             VALUES (?, ?)
             """;
 
+    private final String UPDATE_TIME_TO = """
+            UPDATE reservations
+            SET time_to = ?
+            WHERE id = ?;
+            """;
+
     private final String DELETE = """
             DELETE
             FROM reservations r
@@ -91,12 +97,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 AND rp.place_id = cp.place_id
             );
                         
-            """;
-
-    private final String UPDATE_TIME_TO = """
-            UPDATE reservations
-            SET time_to = ?
-            WHERE id = ?;
             """;
 
     @Override
@@ -164,23 +164,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         } catch (SQLException e) {
             throw new IllegalStateException("Error while assign reservation to user by car");
         }
-
-    }
-
-    @Override
-    public void update(Reservation reservation) {
-        try {
-            Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_TIME_TO);
-
-            preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeTo()));
-            preparedStatement.setLong(2, reservation.getId());
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new ResourceMappingException("Error while changing reservation's time to");
-        }
-
     }
 
     @Override
@@ -196,9 +179,23 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 resultSet.next();
                 reservation.setId(resultSet.getLong(1));
             }
-
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while creating reservation");
+        }
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        try {
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_TIME_TO);
+
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeTo()));
+            preparedStatement.setLong(2, reservation.getId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while changing reservation's time to");
         }
     }
 
@@ -212,13 +209,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 preparedStatement.setLong(1, reservationId);
                 preparedStatement.executeUpdate();
             }
-
             try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
                 preparedStatement.setLong(1, reservationId);
                 preparedStatement.executeUpdate();
             }
-
-
             connection.commit();
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting reservation");

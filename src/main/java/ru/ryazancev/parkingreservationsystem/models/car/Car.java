@@ -1,7 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.models.car;
 
 import lombok.Data;
-import ru.ryazancev.parkingreservationsystem.models.user.User;
 
 import java.io.Serializable;
 

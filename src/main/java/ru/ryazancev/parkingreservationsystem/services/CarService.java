@@ -8,9 +8,9 @@ public interface CarService {
 
     List<Car> getAll();
 
-    List<Car> getAllByUserId(Long userId);
-
     Car getById(Long carId);
+
+    List<Car> getAllByUserId(Long userId);
 
     Car create(Car car, Long userId);
 

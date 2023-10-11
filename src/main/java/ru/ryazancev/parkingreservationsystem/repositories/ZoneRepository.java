@@ -12,6 +12,10 @@ public interface ZoneRepository {
 
     Optional<Zone> findById(Long zoneId);
 
+    Optional<Zone> findByNumber(Integer number);
+
+    Optional<Place> findPlaceByZoneNumberAndPlaceNumber(Integer zoneNumber, Integer place_number);
+
     List<Place> findOccupiedPlacesByZoneId(Long zoneId);
 
     void create(Zone zone);
@@ -19,8 +23,4 @@ public interface ZoneRepository {
     void update(Zone zone);
 
     void delete(Long zoneId);
-
-    Optional<Zone> findByNumber(Integer number);
-
-    Optional<Place> findPlaceByZoneNumberAndPlaceNumber(Integer zoneNumber, Integer place_number);
 }

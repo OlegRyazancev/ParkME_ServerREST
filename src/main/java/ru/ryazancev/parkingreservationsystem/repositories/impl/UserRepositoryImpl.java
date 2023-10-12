@@ -34,19 +34,31 @@ public class UserRepositoryImpl implements UserRepository {
             SELECT u.id       AS user_id,
                    u.name     AS user_name,
                    u.email    AS user_email,
-                   u.password AS user_password
+                   u.password AS user_password,
+                   ur.role    AS user_role,
+                   c.id       as car_id,
+                   c.number   as car_number
             FROM users u
+                     LEFT JOIN users_roles ur ON u.id = ur.user_id
+                     LEFT JOIN users_cars uc ON u.id = uc.user_id
+                     LEFT JOIN cars c ON uc.car_id = c.id
             WHERE u.id = ?
-            """;
+                        """;
 
     private final String FIND_BY_EMAIL = """
             SELECT u.id       AS user_id,
                    u.name     AS user_name,
                    u.email    AS user_email,
-                   u.password AS user_password
+                   u.password AS user_password,
+                   ur.role    AS user_role,
+                   c.id       as car_id,
+                   c.number   as car_number
             FROM users u
+                     LEFT JOIN users_roles ur ON u.id = ur.user_id
+                     LEFT JOIN users_cars uc ON u.id = uc.user_id
+                     LEFT JOIN cars c ON uc.car_id = c.id
             WHERE u.email = ?
-            """;
+                        """;
 
     private final String INSERT_USER_ROLE = """
             INSERT INTO users_roles (user_id, role)
@@ -86,7 +98,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long id) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID,
+                     ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY)) {
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 return Optional.ofNullable(UserRowMapper.mapRow(resultSet));
@@ -99,7 +113,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_EMAIL)) {
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_EMAIL,
+                     ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY)) {
             statement.setString(1, email);
             try (ResultSet resultSet = statement.executeQuery()) {
                 return Optional.ofNullable(UserRowMapper.mapRow(resultSet));

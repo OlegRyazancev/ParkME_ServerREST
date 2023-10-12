@@ -51,41 +51,57 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation create(Reservation reservation) {
         Zone zone = reservation.getZone();
         Place place = reservation.getPlace();
+
         Place foundPlace = zoneRepository.findPlaceByZoneNumberAndPlaceNumber(zone.getNumber(), place.getNumber())
-                .orElseThrow(() -> new IllegalStateException("In the selected zone, there is no place with such a number"));
+                .orElseThrow(() -> new IllegalStateException("No place with the specified number in the selected zone"));
+
         Car foundCar = carRepository.findByNumber(reservation.getCar().getNumber())
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
+
         if (foundPlace.getStatus() != Status.FREE)
             throw new IllegalStateException("Place is already occupied or disabled");
+
         if (carRepository.existsReservationByCarNumber(foundCar.getNumber()))
             throw new IllegalStateException("Car already has a reservation");
+
         foundPlace.setStatus(Status.OCCUPIED);
+        placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
+
         reservation.setCar(foundCar);
         reservation.setPlace(foundPlace);
-        placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
+
         reservationRepository.create(reservation);
+
         reservationRepository.assignToUser(reservation);
+
         return reservation;
     }
 
     @Transactional
     @Override
     public Reservation changeTimeTo(Reservation reservation) {
+
         Reservation foundReservation = reservationRepository.findById(reservation.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+
         if (foundReservation.getTimeFrom().isAfter(reservation.getTimeTo()))
             throw new IllegalStateException("Can not extend reservation, because time from is before time to");
+
         foundReservation.setTimeTo(reservation.getTimeTo());
         reservationRepository.update(foundReservation);
+
         return foundReservation;
     }
 
     @Transactional
     @Override
     public void delete(Long reservationId) {
+
         Reservation foundReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalStateException("Reservation not found"));
-        reservationRepository.delete(foundReservation.getId());
+
         placeRepository.changeStatus(foundReservation.getPlace(), Status.FREE);
+
+        reservationRepository.delete(foundReservation.getId());
     }
 }

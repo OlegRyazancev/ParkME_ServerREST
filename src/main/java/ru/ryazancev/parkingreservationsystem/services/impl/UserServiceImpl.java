@@ -3,9 +3,7 @@ package ru.ryazancev.parkingreservationsystem.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
-import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
@@ -50,12 +48,16 @@ public class UserServiceImpl implements UserService {
     public User create(User user) {
         if (userRepository.findByEmail(user.getName()).isPresent())
             throw new IllegalStateException("User already exists");
+
         if (!user.getPassword().equals(user.getPasswordConfirmation()))
             throw new IllegalStateException("Password and password confirmation do not equals");
+
         userRepository.create(user);
         Set<Role> roles = Set.of(Role.ROLE_USER);
+
         userRepository.insertUserRole(user.getId(), Role.ROLE_USER);
         user.setRoles(roles);
+
         return user;
     }
 
@@ -64,13 +66,16 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         if (userRepository.findByEmail(user.getName()).isPresent())
             throw new IllegalStateException("User already exists");
+
         userRepository.update(user);
+
         return user;
     }
 
     @Transactional
     @Override
     public void delete(Long userId) {
+
         placeRepository.findAllOccupiedByUserId(userId)
                 .forEach(place -> placeRepository.changeStatus(place, Status.FREE));
         reservationRepository.findAllByUserId(userId)

@@ -60,10 +60,9 @@ public class CarServiceImpl implements CarService {
     @Transactional
     @Override
     public void delete(Long carId) {
-        if (carRepository.findById(carId).isEmpty())
-            throw new IllegalStateException("Car does not exists");
         if (carRepository.findReservationByCarId(carId).isPresent())
             throw new IllegalStateException("Can not delete car, because car have reservations");
+
         carRepository.delete(carId);
     }
 }

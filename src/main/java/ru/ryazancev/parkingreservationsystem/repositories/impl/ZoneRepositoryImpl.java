@@ -94,12 +94,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
             WHERE id = ?;
             """;
 
-    private final String DELETE_ASSOCIATED_PLACES = """
-            DELETE
-            FROM places
-            WHERE id IN (SELECT place_id FROM zones_places WHERE zone_id = ?);
-            """;
-
 
     @Override
     public List<Zone> findAll() {
@@ -209,18 +203,10 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public void delete(Long zoneId) {
-        try (Connection connection = dataSource.getConnection()) {
-
-            connection.setAutoCommit(false);
-            try (PreparedStatement firstPreparedStatement = connection.prepareStatement(DELETE_ASSOCIATED_PLACES)) {
-                firstPreparedStatement.setLong(1, zoneId);
-                firstPreparedStatement.executeUpdate();
-            }
-            try (PreparedStatement secondPreparedStatement = connection.prepareStatement(DELETE_ZONE);) {
-                secondPreparedStatement.setLong(1, zoneId);
-                secondPreparedStatement.executeUpdate();
-            }
-            connection.commit();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_ZONE)) {
+            statement.setLong(1, zoneId);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting zone");
         }

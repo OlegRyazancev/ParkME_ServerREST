@@ -1,6 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
@@ -25,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final ReservationRepository reservationRepository;
     private final CarRepository carRepository;
     private final PlaceRepository placeRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getAll() {
@@ -52,6 +55,8 @@ public class UserServiceImpl implements UserService {
         if (!user.getPassword().equals(user.getPasswordConfirmation()))
             throw new IllegalStateException("Password and password confirmation do not equals");
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
         userRepository.create(user);
         Set<Role> roles = Set.of(Role.ROLE_USER);
 
@@ -64,9 +69,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User update(User user) {
-        if (userRepository.findByEmail(user.getName()).isPresent())
-            throw new IllegalStateException("User already exists");
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.update(user);
 
         return user;

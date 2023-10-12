@@ -9,3 +9,10 @@ spring:
   liquibase:
     change-log: classpath:liquibase/db.changelog.yaml
     enabled: true
+
+security:
+  jwt:
+    secret: YXNrc3VoY3Zid2V1a2J3aWt1ZXZic2RrdWh2Z3lpZWthdXNnaHZxdWdpdmtpdWFzdmt1aHN2Ym9ld2hiZHM=
+    access: 3600000
+    refresh: 2592000000
+

@@ -24,7 +24,7 @@
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <liquibase.version>4.24.0</liquibase.version>
-        <jjwt.version>0.12.2</jjwt.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
     <dependencies>

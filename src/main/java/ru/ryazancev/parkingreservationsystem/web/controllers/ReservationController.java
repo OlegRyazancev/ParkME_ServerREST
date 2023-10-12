@@ -22,21 +22,6 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
-    private final ReservationInfoMapper reservationInfoMapper;
-
-
-    @GetMapping
-    public List<ReservationDTO> getReservations() {
-        List<Reservation> reservations = reservationService.getAll();
-        return reservationMapper.toDTO(reservations);
-    }
-
-    @GetMapping("/{id}")
-    public ReservationInfoDTO getInfoById(@PathVariable("id") Long id) {
-        Reservation reservation = reservationService.getInfo(id);
-
-        return reservationInfoMapper.toDTO(reservation);
-    }
 
     @PutMapping
     public ReservationDTO changeTimeTo(@Validated(OnUpdate.class) @RequestBody ReservationDTO reservationDTO) {

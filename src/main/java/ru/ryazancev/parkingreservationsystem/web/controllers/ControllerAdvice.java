@@ -2,6 +2,7 @@ package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +40,7 @@ public class ControllerAdvice {
         return new ExceptionBody(e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AccessDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionBody handleAccessDenied() {
         return new ExceptionBody("Access denied");
@@ -68,6 +69,13 @@ public class ControllerAdvice {
                 )));
         return exceptionBody;
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ExceptionBody handleAuthentication(AuthenticationException e) {
+        e.printStackTrace();
+        return new ExceptionBody("Authentication failed");
+    }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

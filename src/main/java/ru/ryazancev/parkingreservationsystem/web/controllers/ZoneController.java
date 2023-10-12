@@ -48,33 +48,4 @@ public class ZoneController {
 
         return placeMapper.toDTO(places);
     }
-
-    @PostMapping("{zoneId}/places")
-    public PlaceDTO createPlace(@PathVariable Long zoneId, @Validated(OnCreate.class) @RequestBody PlaceDTO placeDTO) {
-        Place place = placeMapper.toEntity(placeDTO);
-        Place createdPlace = placeService.create(place, zoneId);
-
-        return placeMapper.toDTO(createdPlace);
-    }
-
-    @PostMapping
-    public ZoneDTO create(@Validated(OnCreate.class) @RequestBody ZoneDTO zoneDTO) {
-        Zone zone = zoneMapper.toEntity(zoneDTO);
-        Zone createdZone = zoneService.create(zone);
-
-        return zoneMapper.toDTO(createdZone);
-    }
-
-    @PutMapping
-    public ZoneDTO update(@Validated(OnUpdate.class) @RequestBody ZoneDTO zoneDTO) {
-        Zone zone = zoneMapper.toEntity(zoneDTO);
-        Zone updatedZone = zoneService.update(zone);
-
-        return zoneMapper.toDTO(updatedZone);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteZoneAndAssociatedPlaces(@PathVariable("id") Long id) {
-        zoneService.delete(id);
-    }
 }

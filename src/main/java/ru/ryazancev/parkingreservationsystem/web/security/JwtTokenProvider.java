@@ -18,7 +18,7 @@ import ru.ryazancev.parkingreservationsystem.services.props.JwtProperties;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.AccessDeniedException;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtResponse;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
     private final UserService userService;
-    private SecretKey key;
+    private Key key;
 
     @PostConstruct
     public void init() {
@@ -40,16 +40,16 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(Long userId, String username, Set<Role> roles) {
-        Claims claims = Jwts.claims().subject(username).build();
+        Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", userId);
         claims.put("roles", resolveRoles(roles));
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getAccess());
 
         return Jwts.builder()
-                .claims(claims)
-                .issuedAt(now)
-                .expiration(validity)
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
                 .signWith(key)
                 .compact();
     }
@@ -61,15 +61,15 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(Long userId, String username) {
-        Claims claims = Jwts.claims().subject(username).build();
+        Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", userId);
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getRefresh());
 
         return Jwts.builder()
-                .claims(claims)
-                .issuedAt(now)
-                .expiration(validity)
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
                 .signWith(key)
                 .compact();
     }
@@ -94,30 +94,31 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         Jws<Claims> claimsJws = Jwts
-                .parser()
-                .verifyWith(key)
+                .parserBuilder()
+                .setSigningKey(key)
                 .build()
-                .parseSignedClaims(token);
-        return !claimsJws.getPayload().getExpiration().before(new Date());
+                .parseClaimsJws(token);
+        return !claimsJws.getBody().getExpiration().before(new Date());
     }
 
     private String getId(String token) {
         return Jwts
-                .parser()
-                .verifyWith(key)
+                .parserBuilder()
+                .setSigningKey(key)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getId();
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id")
+                .toString();
     }
 
     private String getUsername(String token) {
         return Jwts
-                .parser()
-                .verifyWith(key)
+                .parserBuilder()
+                .setSigningKey(key)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload()
+                .parseClaimsJws(token)
+                .getBody()
                 .getSubject();
     }
 

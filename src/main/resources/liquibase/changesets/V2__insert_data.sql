@@ -1,7 +1,7 @@
 insert into parking.users (name, email, password)
-values ('John Doe', 'johndoe@gmail.com', '12345'),
-       ('Mike Smith', 'mikesmith@yahoo.com', '12345'),
-       ('Sam Nilson', 'samnilson@icloud.com', '12345');
+values ('John Doe', 'johndoe@gmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Mike Smith', 'mikesmith@yahoo.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Sam Nilson', 'samnilson@icloud.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e');
 
 insert into parking.cars (number)
 values ('G784TW777'),

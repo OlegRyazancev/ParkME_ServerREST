@@ -21,13 +21,6 @@ public class CarController {
     private final CarService carService;
     private final CarMapper carMapper;
 
-    @GetMapping
-    public List<CarDTO> getCars() {
-        List<Car> cars = carService.getAll();
-
-        return carMapper.toDTO(cars);
-    }
-
     @GetMapping("/{id}")
     public CarDTO getById(@PathVariable("id") Long id) {
         Car car = carService.getById(id);

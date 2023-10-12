@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("Password and password confirmation do not equals");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+
         userRepository.create(user);
         Set<Role> roles = Set.of(Role.ROLE_USER);
 

@@ -38,14 +38,6 @@ public class UserController {
     private final ReservationMapper reservationMapper;
     private final ReservationInfoMapper reservationInfoMapper;
 
-
-    @GetMapping
-    public List<UserDTO> getUsers() {
-        List<User> users = userService.getAll();
-
-        return userMapper.toDTO(users);
-    }
-
     @GetMapping("/{id}")
     public UserDTO getById(@PathVariable("id") Long id) {
         User user = userService.getById(id);
@@ -53,19 +45,18 @@ public class UserController {
         return userMapper.toDTO(user);
     }
 
-    @PutMapping
-    public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
-        User updatedUser = userService.update(user);
-
-        return userMapper.toDTO(updatedUser);
-    }
-
     @GetMapping("/{id}/cars")
     public List<CarDTO> getCarsByUserId(@PathVariable("id") Long id) {
         List<Car> cars = carService.getAllByUserId(id);
 
         return carMapper.toDTO(cars);
+    }
+
+    @GetMapping("/{id}/reservations")
+    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
+        List<Reservation> reservations = reservationService.getReservationsByUserId(id);
+
+        return reservationMapper.toDTO(reservations);
     }
 
     @PostMapping("/{id}/cars")
@@ -76,19 +67,20 @@ public class UserController {
         return carMapper.toDTO(createdCar);
     }
 
-    @GetMapping("/{id}/reservations")
-    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
-        List<Reservation> reservations = reservationService.getReservationsByUserId(id);
-
-        return reservationMapper.toDTO(reservations);
-    }
-
     @PostMapping("/reservations")
     public ReservationDTO makeReservation( @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
         Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
         Reservation createdReservation = reservationService.create(reservation);
 
         return reservationMapper.toDTO(createdReservation);
+    }
+
+    @PutMapping
+    public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
+        User user = userMapper.toEntity(userDTO);
+        User updatedUser = userService.update(user);
+
+        return userMapper.toDTO(updatedUser);
     }
 
     @DeleteMapping("/{id}")

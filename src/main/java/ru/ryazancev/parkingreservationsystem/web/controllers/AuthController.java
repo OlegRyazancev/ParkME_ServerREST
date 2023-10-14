@@ -1,5 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
 
     private final AuthService authService;
@@ -27,11 +30,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
+    @Operation(summary = "Login")
     public JwtResponse login(@Validated @RequestBody JwtRequest loginRequest) {
         return authService.login(loginRequest);
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register")
     public UserDTO register(@Validated(OnCreate.class) @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User createdUser = userService.create(user);
@@ -40,6 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh")
     public JwtResponse refresh(@RequestBody String refreshToken) {
         return authService.refresh(refreshToken);
     }

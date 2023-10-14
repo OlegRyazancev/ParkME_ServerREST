@@ -39,7 +39,7 @@ public class CustomSecurityExpression {
         JwtEntity user = (JwtEntity) authentication.getPrincipal();
         Long userId = user.getId();
 
-        return userService.isCarOwner(userId, carId);
+        return userService.isCarOwner(userId, carId)|| hasAnyRole(authentication, Role.ROLE_ADMIN);
     }
 
     public boolean canAccessReservation(Long reservationId) {
@@ -48,6 +48,6 @@ public class CustomSecurityExpression {
         JwtEntity user = (JwtEntity) authentication.getPrincipal();
         Long userId = user.getId();
 
-        return userService.isReservationOwner(userId, reservationId);
+        return userService.isReservationOwner(userId, reservationId) || hasAnyRole(authentication, Role.ROLE_ADMIN);
     }
 }

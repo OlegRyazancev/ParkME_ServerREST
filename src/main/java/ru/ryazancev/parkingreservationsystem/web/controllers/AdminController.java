@@ -1,5 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +33,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('admin')")
+@PreAuthorize("hasRole('ADMIN')")
+@Tag(name = "Admin Controller", description = "Admin API")
 public class AdminController {
 
     private final ZoneService zoneService;
@@ -48,6 +51,7 @@ public class AdminController {
     private final CarMapper carMapper;
 
     @GetMapping("/cars")
+    @Operation(summary = "Get all cars")
     public List<CarDTO> getCars() {
         List<Car> cars = carService.getAll();
 
@@ -55,6 +59,7 @@ public class AdminController {
     }
 
     @GetMapping("/users")
+    @Operation(summary = "Get all users")
     public List<UserDTO> getUsers() {
         List<User> users = userService.getAll();
 
@@ -62,12 +67,14 @@ public class AdminController {
     }
 
     @GetMapping("/reservations")
+    @Operation(summary = "Get all reservations")
     public List<ReservationDTO> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
         return reservationMapper.toDTO(reservations);
     }
 
     @GetMapping("/reservations/{id}")
+    @Operation(summary = "Get reservation info by id")
     public ReservationInfoDTO getReservationInfoById(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.getInfo(id);
 
@@ -75,12 +82,14 @@ public class AdminController {
     }
 
     @GetMapping("/places/{id}")
+    @Operation(summary = "Get place by id")
     public PlaceDTO getPlaceById(@PathVariable("id") Long id) {
         Place place = placeService.getById(id);
         return placeMapper.toDTO(place);
     }
 
     @PostMapping("/zones")
+    @Operation(summary = "Create zone")
     public ZoneDTO createZone(@Validated(OnCreate.class) @RequestBody ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone createdZone = zoneService.create(zone);
@@ -89,6 +98,7 @@ public class AdminController {
     }
 
     @PostMapping("/zones/{id}/places")
+    @Operation(summary = "Create place in zone by id")
     public PlaceDTO createPlaceInZoneById(@PathVariable("id") Long zoneId, @Validated(OnCreate.class) @RequestBody PlaceDTO placeDTO) {
         Place place = placeMapper.toEntity(placeDTO);
         Place createdPlace = placeService.create(place, zoneId);
@@ -97,6 +107,7 @@ public class AdminController {
     }
 
     @PutMapping("/zones")
+    @Operation(summary = "Update zone")
     public ZoneDTO updateZone(@Validated(OnUpdate.class) @RequestBody ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone updatedZone = zoneService.update(zone);
@@ -105,7 +116,8 @@ public class AdminController {
     }
 
     @PutMapping("places/{id}/status")
-    public PlaceDTO changePlaceStatusById(@PathVariable("id") Long id, @RequestParam String status) {
+    @Operation(summary = "Change place status by id")
+    public PlaceDTO changePlaceStatusById(@PathVariable("id") Long id, @RequestParam() String status) {
 
         Place disabledPlace = placeService.changeStatus(id, Status.valueOf(status));
 
@@ -113,11 +125,13 @@ public class AdminController {
     }
 
     @DeleteMapping("zones/{id}")
+    @Operation(summary = "Delete zone and associated places")
     public void deleteZoneAndAssociatedPlaces(@PathVariable("id") Long id) {
         zoneService.delete(id);
     }
 
     @DeleteMapping("places/{id}")
+    @Operation(summary = "Delete place by id")
     public void deletePlaceById(@PathVariable("id") Long id) {
         placeService.delete(id);
     }

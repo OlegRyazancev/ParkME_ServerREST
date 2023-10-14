@@ -1,6 +1,8 @@
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -11,16 +13,16 @@ import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
-import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
-import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
-import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.util.mappers.car.CarMapper;
 import ru.ryazancev.parkingreservationsystem.util.mappers.reservation.ReservationInfoMapper;
 import ru.ryazancev.parkingreservationsystem.util.mappers.reservation.ReservationMapper;
 import ru.ryazancev.parkingreservationsystem.util.mappers.user.UserMapper;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
+import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 
 import java.util.List;
 
@@ -28,6 +30,8 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
+
+@Tag(name = "User Controller", description = "User API")
 public class UserController {
 
     private final UserService userService;
@@ -40,6 +44,7 @@ public class UserController {
     private final ReservationInfoMapper reservationInfoMapper;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public UserDTO getById(@PathVariable("id") Long id) {
         User user = userService.getById(id);
@@ -48,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cars")
+    @Operation(summary = "Get cars by user id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public List<CarDTO> getCarsByUserId(@PathVariable("id") Long id) {
         List<Car> cars = carService.getAllByUserId(id);
@@ -56,6 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reservations")
+    @Operation(summary = "Get reservations by user id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
         List<Reservation> reservations = reservationService.getReservationsByUserId(id);
@@ -65,6 +72,7 @@ public class UserController {
 
 
     @PostMapping("/{id}/cars")
+    @Operation(summary = "Create car")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public CarDTO createCar(@PathVariable("id") Long id, @Validated(OnCreate.class) @RequestBody CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
@@ -74,8 +82,9 @@ public class UserController {
     }
 
     @PostMapping("/reservations")
+    @Operation(summary = "Make reservation")
     @PreAuthorize("@customSecurityExpression.canAccessCar(#reservationInfoDTO.car.id)")
-    public ReservationDTO makeReservation( @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
+    public ReservationDTO makeReservation(@Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
         Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
         Reservation createdReservation = reservationService.create(reservation);
 
@@ -84,6 +93,7 @@ public class UserController {
 
 
     @PutMapping
+    @Operation(summary = "Update user")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userDTO.id)")
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
@@ -94,6 +104,7 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public void deleteById(@PathVariable("id") Long id) {
         userService.delete(id);

@@ -149,6 +149,7 @@ public class UserRepositoryImpl implements UserRepository {
             statement.setLong(2, carId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
                 return resultSet.getBoolean(1);
             }
         } catch (SQLException e) {
@@ -164,10 +165,11 @@ public class UserRepositoryImpl implements UserRepository {
             statement.setLong(2, reservationId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
                 return resultSet.getBoolean(1);
             }
         } catch (SQLException e) {
-            throw new ResourceMappingException("Error while finding if user is car owner");
+            throw new ResourceMappingException("Error while finding if user is reservation owner");
         }
     }
 

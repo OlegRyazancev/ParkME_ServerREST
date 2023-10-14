@@ -14,6 +14,10 @@ public interface UserRepository {
 
     Optional<User> findByEmail(String name);
 
+    Boolean isCarOwner(Long userId, Long carId);
+
+    Boolean isReservationOwner(Long userId, Long reservationId);
+
     void insertUserRole(Long userId, Role role);
 
     void create(User user);
@@ -23,3 +27,4 @@ public interface UserRepository {
     void delete(Long userId);
 
 }
+

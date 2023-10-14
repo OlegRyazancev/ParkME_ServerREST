@@ -1,6 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
@@ -22,6 +23,7 @@ public class CarController {
     private final CarMapper carMapper;
 
     @GetMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#id)")
     public CarDTO getById(@PathVariable("id") Long id) {
         Car car = carService.getById(id);
 
@@ -29,6 +31,7 @@ public class CarController {
     }
 
     @PutMapping
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#carDTO.id)")
     public CarDTO update(@Validated(OnUpdate.class) @RequestBody CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
         Car updatedCar = carService.update(car);
@@ -37,6 +40,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#id)")
     public void deleteById(@PathVariable("id") Long id) {
         carService.delete(id);
     }

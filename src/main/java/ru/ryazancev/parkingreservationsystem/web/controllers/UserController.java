@@ -2,6 +2,7 @@ package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
@@ -39,6 +40,7 @@ public class UserController {
     private final ReservationInfoMapper reservationInfoMapper;
 
     @GetMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public UserDTO getById(@PathVariable("id") Long id) {
         User user = userService.getById(id);
 
@@ -46,6 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cars")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public List<CarDTO> getCarsByUserId(@PathVariable("id") Long id) {
         List<Car> cars = carService.getAllByUserId(id);
 
@@ -53,13 +56,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reservations")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") Long id) {
         List<Reservation> reservations = reservationService.getReservationsByUserId(id);
 
         return reservationMapper.toDTO(reservations);
     }
 
+
     @PostMapping("/{id}/cars")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public CarDTO createCar(@PathVariable("id") Long id, @Validated(OnCreate.class) @RequestBody CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
         Car createdCar = carService.create(car, id);
@@ -68,6 +74,7 @@ public class UserController {
     }
 
     @PostMapping("/reservations")
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#reservationInfoDTO.car.id)")
     public ReservationDTO makeReservation( @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
         Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
         Reservation createdReservation = reservationService.create(reservation);
@@ -75,7 +82,9 @@ public class UserController {
         return reservationMapper.toDTO(createdReservation);
     }
 
+
     @PutMapping
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userDTO.id)")
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User updatedUser = userService.update(user);
@@ -83,7 +92,9 @@ public class UserController {
         return userMapper.toDTO(updatedUser);
     }
 
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public void deleteById(@PathVariable("id") Long id) {
         userService.delete(id);
     }

@@ -66,6 +66,16 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public boolean isCarOwner(Long userId, Long carId) {
+        return userRepository.isCarOwner(userId, carId);
+    }
+
+    @Override
+    public boolean isReservationOwner(Long userId, Long reservationId) {
+        return userRepository.isReservationOwner(userId, reservationId);
+    }
+
     @Transactional
     @Override
     public User update(User user) {

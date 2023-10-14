@@ -1,7 +1,6 @@
 package ru.ryazancev.parkingreservationsystem.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -24,9 +23,9 @@ import ru.ryazancev.parkingreservationsystem.web.security.JwtTokenProvider;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor(onConstructor = @__(@Lazy))
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationConfig {
 
-    private final ApplicationContext applicationContext;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean

@@ -83,6 +83,22 @@ public class UserRepositoryImpl implements UserRepository {
             WHERE id = ?
             """;
 
+    private final String IS_CAR_OWNER = """
+            SELECT EXISTS(SELECT 1
+                          FROM users_cars
+                          WHERE user_id = ?
+                            AND car_id = ?)
+            """;
+
+    private final String IS_RESERVATION_OWNER = """
+            SELECT EXISTS(SELECT 1
+                          FROM users_cars uc
+                                   LEFT JOIN cars_places cp ON uc.car_id = cp.car_id
+                                   LEFT JOIN reservations_places rp on cp.place_id = rp.place_id
+                          WHERE uc.user_id = ?
+                            AND rp.reservation_id = ?)
+            """;
+
     @Override
     public List<User> findAll() {
         try (Connection connection = dataSource.getConnection();
@@ -122,6 +138,36 @@ public class UserRepositoryImpl implements UserRepository {
             }
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while finding user by email");
+        }
+    }
+
+    @Override
+    public Boolean isCarOwner(Long userId, Long carId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(IS_CAR_OWNER)) {
+            statement.setLong(1, userId);
+            statement.setLong(2, carId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding if user is car owner");
+        }
+    }
+
+    @Override
+    public Boolean isReservationOwner(Long userId, Long reservationId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(IS_RESERVATION_OWNER)) {
+            statement.setLong(1, userId);
+            statement.setLong(2, reservationId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.getBoolean(1);
+            }
+        } catch (SQLException e) {
+            throw new ResourceMappingException("Error while finding if user is car owner");
         }
     }
 

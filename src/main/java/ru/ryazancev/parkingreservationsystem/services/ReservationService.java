@@ -12,7 +12,7 @@ public interface ReservationService {
 
     List<Reservation> getReservationsByUserId(Long userId);
 
-    Reservation create(Reservation reservation);
+    Reservation create(Reservation reservation, Long userId);
 
     Reservation changeTimeTo(Reservation reservation);
 

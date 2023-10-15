@@ -6,6 +6,7 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.models.user.User;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -22,6 +23,7 @@ public class ReservationRowMapper {
         if (resultSet.next()) {
             Reservation reservation = new Reservation();
             map(resultSet, reservation);
+            System.out.println(reservation.getUser().getName());
             if (reservation.getTimeFrom() != null)
                 return reservation;
         }
@@ -62,6 +64,14 @@ public class ReservationRowMapper {
             reservation.setTimeFrom(timeFrom.toLocalDateTime());
         else
             reservation.setTimeFrom(null);
+
+        if (hasColumn(resultSet, "user_id")) {
+            User user = new User();
+            user.setId(resultSet.getLong("user_id"));
+            user.setName(resultSet.getString("user_name"));
+            user.setEmail(resultSet.getString("user_email"));
+            reservation.setUser(user);
+        }
 
         if (hasColumn(resultSet, "zone_id")) {
             Zone zone = new Zone();

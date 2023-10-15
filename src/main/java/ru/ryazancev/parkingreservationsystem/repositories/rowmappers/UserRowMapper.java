@@ -2,6 +2,7 @@ package ru.ryazancev.parkingreservationsystem.repositories.rowmappers;
 
 import lombok.SneakyThrows;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
+import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 
@@ -21,6 +22,8 @@ public class UserRowMapper {
         resultSet.beforeFirst();
         List<Car> cars = CarRowMapper.mapRows(resultSet);
         resultSet.beforeFirst();
+        List<Reservation> reservations = ReservationRowMapper.mapRows(resultSet);
+        resultSet.beforeFirst();
 
         if (resultSet.next()) {
             User user = new User();
@@ -31,6 +34,7 @@ public class UserRowMapper {
             user.setPassword(resultSet.getString("user_password"));
             user.setRoles(roles);
             user.setCars(cars);
+            user.setReservations(reservations);
 
             return user;
         }

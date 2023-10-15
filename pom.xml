@@ -26,6 +26,7 @@
         <liquibase.version>4.24.0</liquibase.version>
         <jjwt.version>0.11.5</jjwt.version>
         <springdoc.version>2.2.0</springdoc.version>
+        <preliquibase.version>1.4.0</preliquibase.version>
     </properties>
 
     <dependencies>
@@ -55,6 +56,13 @@
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.lbruun.springboot</groupId>
+            <artifactId>preliquibase-spring-boot-starter</artifactId>
+            <version>${preliquibase.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.postgresql</groupId>

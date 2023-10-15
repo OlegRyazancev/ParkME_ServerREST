@@ -8,6 +8,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceInfoDTO;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
+import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneInfoDTO;
 
 import java.time.LocalDateTime;
@@ -35,4 +36,6 @@ public class ReservationInfoDTO {
 
     @NotNull(message = "Car must not be null", groups = OnCreate.class)
     private CarDTO car;
+
+    private UserDTO user;
 }

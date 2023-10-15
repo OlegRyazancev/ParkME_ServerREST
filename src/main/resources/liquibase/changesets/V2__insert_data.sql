@@ -1,23 +1,19 @@
-insert into parking.users (name, email, password)
+insert into users (name, email, password)
 values ('John Doe', 'johndoe@gmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
        ('Mike Smith', 'mikesmith@yahoo.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
        ('Sam Nilson', 'samnilson@icloud.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e');
 
-insert into parking.cars (number)
+insert into cars (number)
 values ('G784TW777'),
        ('Q568WF33'),
        ('K156JH31');
-
-insert into parking.reservations (time_from, time_to)
-values ('2023-01-29 12:00:00', '2023-01-23 14:00:00'),
-       ('2023-01-29 10:54:44', '2023-01-30 12:00:00');
 
 insert into zones(number)
 values (1),
        (2),
        (3);
 
-insert into parking.places (number, status)
+insert into places (number, status)
 VALUES (1, 'FREE'),
        (2, 'FREE'),
        (3, 'OCCUPIED'),
@@ -26,18 +22,18 @@ VALUES (1, 'FREE'),
        (1, 'FREE'),
        (2, 'FREE');
 
-insert into parking.users_cars(user_id, car_id)
+insert into users_cars(user_id, car_id)
 values (1, 1),
        (1, 2),
        (2, 3);
 
-insert into parking.users_roles (user_id, role)
+insert into users_roles (user_id, role)
 values (1, 'ROLE_ADMIN'),
        (1, 'ROLE_USER'),
        (2, 'ROLE_USER'),
        (3, 'ROLE_USER');
 
-insert into parking.zones_places (zone_id, place_id)
+insert into zones_places (zone_id, place_id)
 values (1, 1),
        (1, 2),
        (1, 3),
@@ -46,10 +42,7 @@ values (1, 1),
        (3, 6),
        (3, 7);
 
-insert into parking.reservations_places (reservation_id, place_id)
-values (1, 3),
-       (2, 5);
-
-insert into parking.cars_places(car_id, place_id)
-values (2, 5),
-       (3, 3);
+INSERT INTO reservations (time_from, time_to, user_id, car_id, zone_id, place_id)
+VALUES
+    ('2023-01-29 12:00:00', '2023-01-23 14:00:00', 1, 2, 1, 3),
+    ('2023-01-29 10:54:44', '2023-01-30 12:00:00', 2, 3, 2, 5);

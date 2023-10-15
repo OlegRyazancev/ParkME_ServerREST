@@ -25,23 +25,25 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             FROM reservations r
             """;
     private final String FIND_BY_ID = """
-            SELECT r.id        as reservation_id,
-                   r.time_from as time_from,
-                   r.time_to   as time_to,
-                   z.id        as zone_id,
-                   z.number    as zone_number,
-                   p.id        as place_id,
-                   p.number    as place_number,
-                   p.status    as place_status,
-                   c.id        as car_id,
-                   c.number    as car_number
+            SELECT r.id       as reservation_id,
+                   r.time_to  as time_to,
+                   r.time_to as time_from,
+                   r.user_id  as user_id,
+                   u.name     as user_name,
+                   u.email    as user_email,
+                   u.password as user_password,
+                   r.zone_id  as zone_id,
+                   z.number   as zone_number,
+                   r.place_id as place_id,
+                   p.number   as place_number,
+                   p.status as place_status,
+                   r.car_id   as car_id,
+                   c.number   as car_number
             FROM reservations r
-                     LEFT JOIN reservations_places rp ON r.id = rp.reservation_id
-                     LEFT JOIN places p ON rp.place_id = p.id
-                     LEFT JOIN zones_places zp ON p.id = zp.place_id
-                     LEFT JOIN zones z ON zp.zone_id = z.id
-                     LEFT JOIN cars_places cp on p.id = cp.place_id
-                     LEFT JOIN cars c ON cp.car_id = c.id
+                     LEFT JOIN users u ON r.user_id = u.id
+                     LEFT JOIN zones z ON r.zone_id = z.id
+                     LEFT JOIN cars c ON r.car_id = c.id
+                     LEFT JOIN places p ON r.place_id = p.id
             WHERE r.id = ?;
             """;
 
@@ -50,30 +52,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                    r.time_from as time_from,
                    r.time_to   as time_to
             FROM reservations r
-                     LEFT JOIN reservations_places rp ON r.id = rp.reservation_id
-                     LEFT JOIN places p ON rp.place_id = p.id
-                     LEFT JOIN zones_places zp ON p.id = zp.place_id
-                     LEFT JOIN zones z ON zp.zone_id = z.id
-                     LEFT JOIN cars_places cp on p.id = cp.place_id
-                     LEFT JOIN cars c ON cp.car_id = c.id
-                     LEFT JOIN users_cars uc on c.id = uc.car_id
-                     LEFT JOIN users u ON uc.user_id = u.id
-            WHERE u.id = ?
-            """;
-
-    private final String ASSIGN_RESERVATION_TO_PLACE = """
-            INSERT INTO reservations_places (reservation_id, place_id)
-            VALUES (?, ?);
-            """;
-
-    private final String ASSIGN_PLACE_TO_CAR = """
-            INSERT INTO cars_places(car_id, place_id)
-            VALUES (?, ?);
+            WHERE r.user_id = ?
             """;
 
     private final String CREATE = """
-            INSERT INTO reservations(time_from, time_to)
-            VALUES (?, ?)
+            INSERT INTO reservations(time_from, time_to, user_id, car_id, zone_id, place_id)
+            VALUES (?, ?, ?, ?, ?, ?)
             """;
 
     private final String UPDATE_TIME_TO = """
@@ -86,17 +70,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             DELETE
             FROM reservations r
             WHERE r.id =?;
-            """;
-
-    private final String DELETE_RELATIONSHIPS = """
-            DELETE FROM cars_places cp
-            WHERE EXISTS (
-                SELECT 1
-                FROM reservations_places rp
-                WHERE rp.reservation_id = ?
-                AND rp.place_id = cp.place_id
-            );
-                        
             """;
 
     @Override
@@ -143,28 +116,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         }
     }
 
-    @Override
-    public void assignToUser(Reservation reservation) {
-        try {
-            Connection connection = dataSource.getConnection();
-            connection.setAutoCommit(false);
-
-            try (PreparedStatement first = connection.prepareStatement(ASSIGN_PLACE_TO_CAR)) {
-                first.setLong(1, reservation.getCar().getId());
-                first.setLong(2, reservation.getPlace().getId());
-                first.executeUpdate();
-            }
-
-            try (PreparedStatement second = connection.prepareStatement(ASSIGN_RESERVATION_TO_PLACE)) {
-                second.setLong(1, reservation.getId());
-                second.setLong(2, reservation.getPlace().getId());
-                second.executeUpdate();
-            }
-            connection.commit();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Error while assign reservation to user by car");
-        }
-    }
 
     @Override
     public void create(Reservation reservation) {
@@ -174,6 +125,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
             preparedStatement.setTimestamp(1, Timestamp.valueOf(reservation.getTimeFrom()));
             preparedStatement.setTimestamp(2, Timestamp.valueOf(reservation.getTimeTo()));
+            preparedStatement.setLong(3, reservation.getUser().getId());
+            preparedStatement.setLong(4, reservation.getCar().getId());
+            preparedStatement.setLong(5, reservation.getZone().getId());
+            preparedStatement.setLong(6, reservation.getPlace().getId());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 resultSet.next();
@@ -202,18 +157,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void delete(Long reservationId) {
 
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RELATIONSHIPS)) {
-                preparedStatement.setLong(1, reservationId);
-                preparedStatement.executeUpdate();
-            }
-            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE)) {
-                preparedStatement.setLong(1, reservationId);
-                preparedStatement.executeUpdate();
-            }
-            connection.commit();
+            preparedStatement.setLong(1, reservationId);
+            preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             throw new ResourceMappingException("Error while deleting reservation");
         }

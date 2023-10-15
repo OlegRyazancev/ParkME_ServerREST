@@ -12,26 +12,6 @@ create table if not exists cars
     number varchar(255) not null unique
 );
 
-create table if not exists places
-(
-    id     bigserial primary key,
-    number bigint       not null,
-    status varchar(255) not null
-);
-
-create table if not exists zones
-(
-    id     bigserial primary key,
-    number bigint not null unique
-);
-
-create table if not exists reservations
-(
-    id        bigserial primary key,
-    time_from timestamp not null,
-    time_to   timestamp not null
-);
-
 create table if not exists users_roles
 (
     user_id bigint       not null,
@@ -49,13 +29,17 @@ create table if not exists users_cars
     constraint fk_users_cars_cars foreign key (car_id) references cars (id) on delete cascade on update no action
 );
 
-create table if not exists cars_places
+create table if not exists zones
 (
-    car_id   bigint not null,
-    place_id bigint not null,
-    primary key (car_id, place_id),
-    constraint fk_cars_places_cars foreign key (car_id) references cars (id) on delete cascade on update no action,
-    constraint fk_cars_places_places foreign key (place_id) references places (id) on delete cascade on update no action
+    id     bigserial primary key,
+    number bigint not null unique
+);
+
+create table if not exists places
+(
+    id     bigserial primary key,
+    number bigint       not null,
+    status varchar(255) not null
 );
 
 create table if not exists zones_places
@@ -67,12 +51,30 @@ create table if not exists zones_places
     constraint fk_zones_places_places foreign key (place_id) references places (id) on delete cascade on update no action
 );
 
-create table if not exists reservations_places
+
+create table if not exists reservations
 (
-    reservation_id bigint not null,
-    place_id       bigint not null,
-    primary key (reservation_id, place_id),
-    constraint fk_reservations_places_reservations foreign key (reservation_id) references reservations (id) on delete cascade on update no action,
-    constraint fk_reservations_places_places foreign key (place_id) references places (id) on delete cascade on update no action
+    id        bigserial primary key,
+    time_from timestamp not null,
+    time_to   timestamp not null,
+    user_id   bigint    not null,
+    car_id    bigint    not null,
+    zone_id   bigint    not null,
+    place_id  bigint    not null,
+
+    constraint fk_reservations_users foreign key (user_id) references users (id) on delete cascade on update no action,
+    constraint fk_reservations_cars foreign key (car_id) references cars (id) on delete cascade on update no action,
+    constraint fk_reservations_zones foreign key (zone_id) references zones (id) on delete cascade on update no action,
+    constraint fk_reservations_places foreign key (place_id) references places (id) on delete cascade on update no action
 );
+
+
+
+
+
+
+
+
+
+
 

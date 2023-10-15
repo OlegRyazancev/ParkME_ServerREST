@@ -44,13 +44,10 @@ public class PlaceRepositoryImpl implements PlaceRepository {
                    p.number as place_number,
                    p.status as place_status
             FROM places p
-                     JOIN cars_places cp ON p.id = cp.place_id
-                     JOIN users_cars uc ON cp.car_id = uc.car_id
-            WHERE uc.user_id = ?
-              AND p.status = 'OCCUPIED'
+                     JOIN reservations r ON p.id = r.place_id
+            WHERE user_id = ?
             """;
-
-    private final String ASSIGN = """
+    private final String ASSIGN_PLACE_TO_ZONE = """
             INSERT INTO zones_places (zone_id, place_id)
             VALUES (?, ?)
             """;
@@ -118,7 +115,7 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     @Override
     public void assignToZoneById(Long placeId, Long zoneId) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN_PLACE_TO_ZONE)) {
 
             preparedStatement.setLong(1, zoneId);
             preparedStatement.setLong(2, placeId);

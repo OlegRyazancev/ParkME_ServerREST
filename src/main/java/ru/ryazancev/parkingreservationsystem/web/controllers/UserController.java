@@ -81,12 +81,12 @@ public class UserController {
         return carMapper.toDTO(createdCar);
     }
 
-    @PostMapping("/reservations")
+    @PostMapping("/{id}/reservations")
     @Operation(summary = "Make reservation")
-    @PreAuthorize("@customSecurityExpression.canAccessCar(#reservationInfoDTO.car.id)")
-    public ReservationDTO makeReservation(@Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+    public ReservationDTO makeReservation(@PathVariable("id") Long id, @Validated(OnCreate.class) @RequestBody ReservationInfoDTO reservationInfoDTO) {
         Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
-        Reservation createdReservation = reservationService.create(reservation);
+        Reservation createdReservation = reservationService.create(reservation, id);
 
         return reservationMapper.toDTO(createdReservation);
     }

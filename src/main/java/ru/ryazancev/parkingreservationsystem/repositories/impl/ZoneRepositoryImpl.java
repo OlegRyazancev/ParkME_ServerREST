@@ -23,7 +23,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     private final DataSource dataSource;
 
-    String FIND_ALL = """
+    private final String FIND_ALL = """
             SELECT z.id                                                      as zone_id,
                    z.number                                                  as zone_number,
                    COALESCE(COUNT(p.id) FILTER (WHERE p.status = 'FREE'), 0) as zone_free_places

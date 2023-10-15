@@ -14,11 +14,13 @@ public interface ReservationInfoMapper {
     @Mapping(target = "zone", source = "zone")
     @Mapping(target = "place", source = "place")
     @Mapping(target = "car", source = "car")
+    @Mapping(target = "user", source = "user")
     ReservationInfoDTO toDTO(Reservation reservation);
 
     @Mapping(target = "zone", source = "zone")
     @Mapping(target = "place", source = "place")
     @Mapping(target = "car", source = "car")
+    @Mapping(target = "user", source = "user")
     List<ReservationInfoDTO> toDTO(List<Reservation> reservations);
 
     @IterableMapping(qualifiedByName = "toDTO")

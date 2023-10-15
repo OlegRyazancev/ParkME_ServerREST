@@ -56,25 +56,19 @@ public class CarRepositoryImpl implements CarRepository {
             SELECT r.id        as reservation_id,
                    r.time_from as time_from,
                    r.time_to   as time_to
-            FROM cars c
-                     LEFT JOIN cars_places cp on c.id = cp.car_id
-                     LEFT JOIN places p ON cp.place_id = p.id
-                     LEFT JOIN reservations_places rp ON p.id = rp.place_id
-                     LEFT JOIN reservations r ON rp.reservation_id = r.id
-            WHERE c.id = ?;
+            FROM reservations r
+                     LEFT JOIN cars c ON r.car_id = c.id
+            WHERE c.id = ?
             """;
 
     private final String EXISTS_RESERVATION_BY_CAR_NUMBER = """
             SELECT EXISTS (SELECT 1
                            FROM reservations r
-                                    JOIN reservations_places rp ON r.id = rp.reservation_id
-                                    JOIN places p ON rp.place_id = p.id
-                                    JOIN cars_places cp ON p.id = cp.place_id
-                                    JOIN cars c ON cp.car_id = c.id
-                           WHERE c.number = ?) AS exists_reservation;            
-            """;
+                                    JOIN cars c ON r.car_id = c.id
+                           WHERE c.number = ?) AS exists_reservation
+                        """;
 
-    private final String ASSIGN = """
+    private final String ASSIGN_CAR_TO_USER = """
             INSERT INTO users_cars (user_id, car_id)
             VALUES (?, ?)
             """;
@@ -187,7 +181,7 @@ public class CarRepositoryImpl implements CarRepository {
     @Override
     public void assignToUserById(Long carId, Long userId) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN_CAR_TO_USER)) {
 
 
             preparedStatement.setLong(1, userId);

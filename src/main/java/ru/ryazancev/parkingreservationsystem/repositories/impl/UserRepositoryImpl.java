@@ -36,27 +36,33 @@ public class UserRepositoryImpl implements UserRepository {
                    u.email    AS user_email,
                    u.password AS user_password,
                    ur.role    AS user_role,
-                   c.id       as car_id,
-                   c.number   as car_number
+                   c.id AS car_id,
+                   c.number AS car_number,
+                   r.time_to as reservation_time_to,
+                   r.time_from as reservation_time_from
             FROM users u
                      LEFT JOIN users_roles ur ON u.id = ur.user_id
                      LEFT JOIN users_cars uc ON u.id = uc.user_id
                      LEFT JOIN cars c ON uc.car_id = c.id
+                      LEFT JOIN reservations r ON u.id = r.user_id
             WHERE u.id = ?
-                        """;
+            """;
 
     private final String FIND_BY_EMAIL = """
             SELECT u.id       AS user_id,
                    u.name     AS user_name,
                    u.email    AS user_email,
                    u.password AS user_password,
-                   ur.role    AS user_role,
-                   c.id       as car_id,
-                   c.number   as car_number
+                   ur.role AS user_role,
+                   c.id AS car_id,
+                   c.number AS car_number,
+                   r.time_to as reservation_time_to,
+                   r.time_from as reservation_time_from
             FROM users u
                      LEFT JOIN users_roles ur ON u.id = ur.user_id
                      LEFT JOIN users_cars uc ON u.id = uc.user_id
                      LEFT JOIN cars c ON uc.car_id = c.id
+                     LEFT JOIN reservations r ON u.id = r.user_id
             WHERE u.email = ?
                         """;
 
@@ -92,11 +98,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final String IS_RESERVATION_OWNER = """
             SELECT EXISTS(SELECT 1
-                          FROM users_cars uc
-                                   LEFT JOIN cars_places cp ON uc.car_id = cp.car_id
-                                   LEFT JOIN reservations_places rp on cp.place_id = rp.place_id
-                          WHERE uc.user_id = ?
-                            AND rp.reservation_id = ?)
+                          FROM users u
+                                   LEFT JOIN reservations r ON u.id = r.user_id
+                          WHERE u.id = ?
+                            AND r.id = ?)
             """;
 
     @Override

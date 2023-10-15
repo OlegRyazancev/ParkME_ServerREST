@@ -8,10 +8,8 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
-import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
+import ru.ryazancev.parkingreservationsystem.models.user.User;
+import ru.ryazancev.parkingreservationsystem.repositories.*;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
@@ -26,6 +24,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final CarRepository carRepository;
     private final PlaceRepository placeRepository;
     private final ZoneRepository zoneRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<Reservation> getAll() {
@@ -48,15 +47,18 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public Reservation create(Reservation reservation) {
-        Zone zone = reservation.getZone();
-        Place place = reservation.getPlace();
+    public Reservation create(Reservation reservation, Long user_id) {
+        Zone foundZone = zoneRepository.findByNumber(reservation.getZone().getNumber())
+                .orElseThrow(() -> new IllegalStateException("No zone with the specified number"));
 
-        Place foundPlace = zoneRepository.findPlaceByZoneNumberAndPlaceNumber(zone.getNumber(), place.getNumber())
+        Place foundPlace = zoneRepository.findPlaceByZoneNumberAndPlaceNumber(foundZone.getNumber(), reservation.getPlace().getNumber())
                 .orElseThrow(() -> new IllegalStateException("No place with the specified number in the selected zone"));
 
         Car foundCar = carRepository.findByNumber(reservation.getCar().getNumber())
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
+
+        User foundUser = userRepository.findById(user_id)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
 
         if (foundPlace.getStatus() != Status.FREE)
             throw new IllegalStateException("Place is already occupied or disabled");
@@ -64,15 +66,14 @@ public class ReservationServiceImpl implements ReservationService {
         if (carRepository.existsReservationByCarNumber(foundCar.getNumber()))
             throw new IllegalStateException("Car already has a reservation");
 
-        foundPlace.setStatus(Status.OCCUPIED);
-        placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
+        placeRepository.changeStatus(foundPlace, Status.OCCUPIED);
 
+        reservation.setZone(foundZone);
         reservation.setCar(foundCar);
         reservation.setPlace(foundPlace);
+        reservation.setUser(foundUser);
 
         reservationRepository.create(reservation);
-
-        reservationRepository.assignToUser(reservation);
 
         return reservation;
     }

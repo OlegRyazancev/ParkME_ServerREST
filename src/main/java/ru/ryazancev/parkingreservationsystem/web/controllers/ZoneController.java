@@ -55,4 +55,12 @@ public class ZoneController {
 
         return placeMapper.toDTO(places);
     }
+
+    @GetMapping("/{id}/places/free")
+    @Operation(summary = "Get free places by zone id")
+    public List<PlaceDTO> getFreePlaces(@PathVariable("id") Long id) {
+        List<Place> places = placeService.getFreePlacesByZoneId(id);
+
+        return placeMapper.toDTO(places);
+    }
 }

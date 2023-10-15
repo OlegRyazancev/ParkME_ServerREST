@@ -11,6 +11,8 @@ public interface PlaceService {
 
     List<Place> getAllByZoneId(Long zoneId);
 
+    List<Place> getFreePlacesByZoneId(Long zoneId);
+
     Place create(Place place, Long zoneId);
 
     Place changeStatus(Long placeId, Status status);

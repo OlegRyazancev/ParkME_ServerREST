@@ -56,12 +56,9 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("Password and password confirmation do not equals");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        userRepository.create(user);
         Set<Role> roles = Set.of(Role.ROLE_USER);
-
-        userRepository.insertUserRole(user.getId(), Role.ROLE_USER);
         user.setRoles(roles);
+        userRepository.save(user);
 
         return user;
     }
@@ -80,7 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.update(user);
+        userRepository.save(user);
 
         return user;
     }
@@ -90,11 +87,14 @@ public class UserServiceImpl implements UserService {
     public void delete(Long userId) {
 
         placeRepository.findAllOccupiedByUserId(userId)
-                .forEach(place -> placeRepository.changeStatus(place, Status.FREE));
+                .forEach(place -> {
+                    place.setStatus(Status.FREE);
+                    placeRepository.save(place);
+                });
         reservationRepository.findAllByUserId(userId)
-                .forEach(reservation -> reservationRepository.delete(reservation.getId()));
+                .forEach(reservation -> reservationRepository.deleteById(reservation.getId()));
         carRepository.findAllByUserId(userId)
-                .forEach(car -> carRepository.delete(car.getId()));
-        userRepository.delete(userId);
+                .forEach(car -> carRepository.deleteById(car.getId()));
+        userRepository.deleteById(userId);
     }
 }

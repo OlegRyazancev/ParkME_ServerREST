@@ -1,30 +1,34 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
-import ru.ryazancev.parkingreservationsystem.models.user.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository {
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    List<User> findAll();
+    Optional<User> findByEmail(String email);
 
-    Optional<User> findById(Long id);
+    @Query(value = """
+            SELECT EXISTS(SELECT 1
+                          FROM users_cars
+                          WHERE user_id = :userId
+                            AND car_id = :carId)
+            """, nativeQuery = true)
+    Boolean isCarOwner(@Param("userId") Long userId, @Param("carId") Long carId);
 
-    Optional<User> findByEmail(String name);
-
-    Boolean isCarOwner(Long userId, Long carId);
-
-    Boolean isReservationOwner(Long userId, Long reservationId);
-
-    void insertUserRole(Long userId, Role role);
-
-    void create(User user);
-
-    void update(User user);
-
-    void delete(Long userId);
+    @Query(value = """
+            SELECT EXISTS(SELECT 1
+                          FROM users u
+                                   LEFT JOIN reservations r ON u.id = r.user_id
+                          WHERE u.id = :userId
+                            AND r.id = :reservationId)
+            """, nativeQuery = true)
+    Boolean isReservationOwner(@Param("userId") Long userId, @Param("reservationId") Long reservationId);
 
 }
 

@@ -1,25 +1,51 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PlaceRepository {
+@Repository
+public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    Optional<Place> findById(Long placeId);
+    @Query(value = """
+            SELECT *
+            FROM places p
+                      JOIN zones_places zp on p.id = zp.place_id
+            WHERE zp.zone_id = :zoneId
+            """, nativeQuery = true)
+    List<Place> findAllByZoneId(@Param("zoneId") Long zoneId);
 
-    List<Place> findAllByZoneId(Long zoneId);
+    @Query(value = """
+            SELECT p.*
+            FROM places p
+                     LEFT JOIN zones_places zp ON p.id = zp.place_id
+            WHERE zp.zone_id = :zoneId
+              AND p.status = 'FREE'
+            """, nativeQuery = true)
+    List<Place> findFreePlacesByZoneId(@Param("zoneId") Long zoneId);
 
-    List<Place> findAllOccupiedByUserId(Long userId);
+    @Query(value = """
+            SELECT p.*
+            FROM places p
+                     JOIN reservations r ON p.id = r.place_id
+            WHERE r.user_id = :userId
+            """, nativeQuery = true)
+    List<Place> findAllOccupiedByUserId(@Param("userId") Long userId);
 
-    void assignToZoneById(Long placeId, Long zoneId);
 
-    void create(Place place);
+    @Modifying
+    @Query(value = """
+            INSERT INTO zones_places(zone_id, place_id)
+            VALUES (:zoneId, :placeId)
+            """, nativeQuery = true)
+    void assignToZone(@Param("placeId") Long placeId, @Param("zoneId") Long zoneId);
 
-    void changeStatus(Place place, Status status);
-
-    void delete(Long placeId);
 
 }

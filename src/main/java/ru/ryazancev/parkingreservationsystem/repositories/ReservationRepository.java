@@ -1,22 +1,20 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface ReservationRepository {
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    List<Reservation> findAll();
-
-    Optional<Reservation> findById(Long reservationId);
-
-    List<Reservation> findAllByUserId(Long userId);
-
-    void create(Reservation reservation);
-
-    void update(Reservation reservation);
-
-    void delete(Long reservationId);
+    @Query(value = """
+            SELECT * FROM reservations
+            WHERE user_id = :userId
+            """, nativeQuery = true)
+    List<Reservation> findAllByUserId(@Param("userId") Long userId);
 
 }

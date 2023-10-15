@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
@@ -39,11 +38,11 @@ public class CarServiceImpl implements CarService {
 
     @Transactional
     @Override
-    public Car create(Car car, Long userId) {
+    public Car create(final Car car, Long userId) {
         if (carRepository.findByNumber(car.getNumber()).isPresent())
             throw new IllegalStateException("Car already exists");
-        carRepository.create(car);
-        carRepository.assignToUserById(car.getId(), userId);
+        carRepository.save(car);
+        carRepository.assignToUser(userId, car.getId());
         return car;
     }
 
@@ -54,7 +53,7 @@ public class CarServiceImpl implements CarService {
             throw new IllegalStateException("Car already exists");
         if (carRepository.findById(car.getId()).isEmpty())
             throw new IllegalStateException("Car does not exists");
-        carRepository.update(car);
+        carRepository.save(car);
         return car;
     }
 
@@ -64,6 +63,6 @@ public class CarServiceImpl implements CarService {
         if (carRepository.findReservationByCarId(carId).isPresent())
             throw new IllegalStateException("Can not delete car, because car have reservations");
 
-        carRepository.delete(carId);
+        carRepository.deleteById(carId);
     }
 }

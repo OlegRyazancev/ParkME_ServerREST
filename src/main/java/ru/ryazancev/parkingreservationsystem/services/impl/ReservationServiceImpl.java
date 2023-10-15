@@ -48,32 +48,37 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     @Override
     public Reservation create(Reservation reservation, Long user_id) {
+
         Zone foundZone = zoneRepository.findByNumber(reservation.getZone().getNumber())
-                .orElseThrow(() -> new IllegalStateException("No zone with the specified number"));
+                .orElseThrow(() -> new ResourceNotFoundException("No zone with the specified number"));
 
-        Place foundPlace = zoneRepository.findPlaceByZoneNumberAndPlaceNumber(foundZone.getNumber(), reservation.getPlace().getNumber())
-                .orElseThrow(() -> new IllegalStateException("No place with the specified number in the selected zone"));
-
-        Car foundCar = carRepository.findByNumber(reservation.getCar().getNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
-
-        User foundUser = userRepository.findById(user_id)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+        Place foundPlace = foundZone.getPlaces().stream()
+                .filter(place -> place.getNumber().equals(reservation.getPlace().getNumber()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("No place with the specified number in the selected zone"));
 
         if (foundPlace.getStatus() != Status.FREE)
             throw new IllegalStateException("Place is already occupied or disabled");
 
-        if (carRepository.existsReservationByCarNumber(foundCar.getNumber()))
+        Car foundCar = carRepository.findByNumber(reservation.getCar().getNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
+
+        if (carRepository.findReservationByCarId(foundCar.getId()).isPresent())
             throw new IllegalStateException("Car already has a reservation");
 
-        placeRepository.changeStatus(foundPlace, Status.OCCUPIED);
+        User foundUser = userRepository.findById(user_id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        foundPlace.setStatus(Status.OCCUPIED);
+        placeRepository.save(foundPlace);
 
         reservation.setZone(foundZone);
         reservation.setCar(foundCar);
         reservation.setPlace(foundPlace);
         reservation.setUser(foundUser);
 
-        reservationRepository.create(reservation);
+        reservationRepository.save(reservation);
 
         return reservation;
     }
@@ -89,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new IllegalStateException("Can not extend reservation, because time from is before time to");
 
         foundReservation.setTimeTo(reservation.getTimeTo());
-        reservationRepository.update(foundReservation);
+        reservationRepository.save(foundReservation);
 
         return foundReservation;
     }
@@ -101,8 +106,8 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation foundReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalStateException("Reservation not found"));
 
-        placeRepository.changeStatus(foundReservation.getPlace(), Status.FREE);
-
-        reservationRepository.delete(foundReservation.getId());
+        foundReservation.getPlace().setStatus(Status.FREE);
+        placeRepository.save(foundReservation.getPlace());
+        reservationRepository.deleteById(foundReservation.getId());
     }
 }

@@ -29,6 +29,11 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepository.findAllByZoneId(zoneId);
     }
 
+    @Override
+    public List<Place> getFreePlacesByZoneId(Long zoneId) {
+        return placeRepository.findFreePlacesByZoneId(zoneId);
+    }
+
     @Transactional
     @Override
     public Place create(Place place, Long zoneId) {
@@ -38,8 +43,8 @@ public class PlaceServiceImpl implements PlaceService {
             throw new IllegalStateException("Place is already exists in this zone");
         }
         place.setStatus(Status.FREE);
-        placeRepository.create(place);
-        placeRepository.assignToZoneById(place.getId(), zoneId);
+        placeRepository.save(place);
+        placeRepository.assignToZone(place.getId(), zoneId);
 
         return place;
     }
@@ -55,8 +60,9 @@ public class PlaceServiceImpl implements PlaceService {
             throw new IllegalStateException("Place already has this status");
         if (foundPlace.getStatus().equals(Status.OCCUPIED))
             throw new IllegalStateException("Can not change status, because place is occupied");
+
         foundPlace.setStatus(status);
-        placeRepository.changeStatus(foundPlace, foundPlace.getStatus());
+        placeRepository.save(foundPlace);
         return foundPlace;
     }
 
@@ -67,6 +73,7 @@ public class PlaceServiceImpl implements PlaceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
         if (foundPlace.getStatus().equals(Status.OCCUPIED))
             throw new IllegalStateException("Can not delete occupied place");
-        placeRepository.delete(placeId);
+
+        placeRepository.deleteById(placeId);
     }
 }

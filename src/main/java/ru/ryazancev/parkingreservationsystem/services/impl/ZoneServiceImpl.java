@@ -1,8 +1,10 @@
 package ru.ryazancev.parkingreservationsystem.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
@@ -10,7 +12,6 @@ import ru.ryazancev.parkingreservationsystem.services.ZoneService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,8 +38,7 @@ public class ZoneServiceImpl implements ZoneService {
         if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
             throw new IllegalStateException("Zone is already exists");
 
-        zoneRepository.create(zone);
-
+        zoneRepository.save(zone);
         return zone;
     }
 
@@ -48,8 +48,7 @@ public class ZoneServiceImpl implements ZoneService {
         if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
             throw new IllegalStateException("Zone is already exists");
 
-        zoneRepository.update(zone);
-        zone.setFreePlaces(Objects.requireNonNull(zoneRepository.findById(zone.getId()).orElse(null)).getFreePlaces());
+        zoneRepository.save(zone);
 
         return zone;
     }
@@ -57,11 +56,20 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public void delete(Long zoneId) {
-        if (!zoneRepository.findOccupiedPlacesByZoneId(zoneId).isEmpty())
+        Zone foundZone = zoneRepository
+                .findById(zoneId).orElseThrow(() -> new ResourceNotFoundException("Zone don't found"));
+
+        Hibernate.initialize(foundZone.getPlaces());
+
+        if (foundZone.getPlaces()
+                .stream()
+                .anyMatch(place -> place.getStatus().equals(Status.OCCUPIED)))
             throw new IllegalStateException("Zone have occupied places");
 
-        placeRepository.findAllByZoneId(zoneId)
-                .forEach(place -> placeRepository.delete(place.getId()));
-        zoneRepository.delete(zoneId);
+
+        foundZone.getPlaces()
+                .forEach(place -> placeRepository.deleteById(place.getId()));
+
+        zoneRepository.deleteById(foundZone.getId());
     }
 }

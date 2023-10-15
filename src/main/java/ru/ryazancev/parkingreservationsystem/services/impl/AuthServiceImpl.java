@@ -9,7 +9,7 @@ import ru.ryazancev.parkingreservationsystem.services.AuthService;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtRequest;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtResponse;
-import ru.ryazancev.parkingreservationsystem.web.security.JwtTokenProvider;
+import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenProvider;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,6 @@
-package ru.ryazancev.parkingreservationsystem.web.security;
+package ru.ryazancev.parkingreservationsystem.web.security.filter.jwt;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-import java.io.IOException;
-
 @AllArgsConstructor
 public class JwtTokenFilter extends GenericFilterBean {
 
@@ -20,7 +17,7 @@ public class JwtTokenFilter extends GenericFilterBean {
 
     @SneakyThrows
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
         String bearerToken = ((HttpServletRequest) request).getHeader("Authorization");
 
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

@@ -1,8 +1,10 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5432/parking_db?currentSchema=parking
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://${HOST}:5432/${POSTGRES_DATABASE}?currentSchema=${POSTGRES_SCHEMA}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
@@ -14,9 +16,9 @@ spring:
 
 security:
   jwt:
-    secret: YXNrc3VoY3Zid2V1a2J3aWt1ZXZic2RrdWh2Z3lpZWthdXNnaHZxdWdpdmtpdWFzdmt1aHN2Ym9ld2hiZHM=
-    access: 3600000
-    refresh: 2592000000
+    secret: ${JWT_SECRET}
+    access: 1
+    refresh: 30
 
 springdoc:
   override-with-generic-response: false

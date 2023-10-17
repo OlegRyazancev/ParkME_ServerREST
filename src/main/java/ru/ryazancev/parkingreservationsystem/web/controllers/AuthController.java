@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.services.AuthService;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
-import ru.ryazancev.parkingreservationsystem.util.mappers.user.UserMapper;
+import ru.ryazancev.parkingreservationsystem.util.mappers.UserMapper;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtRequest;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtResponse;
@@ -31,13 +31,15 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public JwtResponse login(@Validated @RequestBody JwtRequest loginRequest) {
+    public JwtResponse login(@Validated
+                             @RequestBody JwtRequest loginRequest) {
         return authService.login(loginRequest);
     }
 
     @PostMapping("/register")
     @Operation(summary = "Register")
-    public UserDTO register(@Validated(OnCreate.class) @RequestBody UserDTO userDTO) {
+    public UserDTO register(@Validated(OnCreate.class)
+                            @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User createdUser = userService.create(user);
 

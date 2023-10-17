@@ -3,6 +3,9 @@ package ru.ryazancev.parkingreservationsystem.web.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +16,7 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.services.*;
-import ru.ryazancev.parkingreservationsystem.util.mappers.car.CarMapper;
-import ru.ryazancev.parkingreservationsystem.util.mappers.place.PlaceMapper;
-import ru.ryazancev.parkingreservationsystem.util.mappers.reservation.ReservationInfoMapper;
-import ru.ryazancev.parkingreservationsystem.util.mappers.reservation.ReservationMapper;
-import ru.ryazancev.parkingreservationsystem.util.mappers.user.UserMapper;
-import ru.ryazancev.parkingreservationsystem.util.mappers.zone.ZoneMapper;
+import ru.ryazancev.parkingreservationsystem.util.mappers.*;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
@@ -51,6 +49,7 @@ public class AdminController {
     private final CarMapper carMapper;
 
     @GetMapping("/cars")
+    @QueryMapping("cars")
     @Operation(summary = "Get all cars")
     public List<CarDTO> getCars() {
         List<Car> cars = carService.getAll();
@@ -59,6 +58,7 @@ public class AdminController {
     }
 
     @GetMapping("/users")
+    @QueryMapping("users")
     @Operation(summary = "Get all users")
     public List<UserDTO> getUsers() {
         List<User> users = userService.getAll();
@@ -67,6 +67,7 @@ public class AdminController {
     }
 
     @GetMapping("/reservations")
+    @QueryMapping("reservations")
     @Operation(summary = "Get all reservations")
     public List<ReservationDTO> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
@@ -74,23 +75,30 @@ public class AdminController {
     }
 
     @GetMapping("/reservations/{id}")
+    @QueryMapping("reservationInfoById")
     @Operation(summary = "Get reservation info by id")
-    public ReservationInfoDTO getReservationInfoById(@PathVariable("id") Long id) {
+    public ReservationInfoDTO getReservationInfoById(@PathVariable("id")
+                                                     @Argument Long id) {
         Reservation reservation = reservationService.getInfo(id);
 
         return reservationInfoMapper.toDTO(reservation);
     }
 
     @GetMapping("/places/{id}")
+    @QueryMapping("placeById")
     @Operation(summary = "Get place by id")
-    public PlaceDTO getPlaceById(@PathVariable("id") Long id) {
+    public PlaceDTO getPlaceById(@PathVariable("id")
+                                 @Argument Long id) {
         Place place = placeService.getById(id);
         return placeMapper.toDTO(place);
     }
 
     @PostMapping("/zones")
+    @MutationMapping("createZone")
     @Operation(summary = "Create zone")
-    public ZoneDTO createZone(@Validated(OnCreate.class) @RequestBody ZoneDTO zoneDTO) {
+    public ZoneDTO createZone(@Validated(OnCreate.class)
+                              @RequestBody
+                              @Argument ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone createdZone = zoneService.create(zone);
 
@@ -98,8 +106,13 @@ public class AdminController {
     }
 
     @PostMapping("/zones/{id}/places")
+    @MutationMapping("createPlaceInZoneById")
     @Operation(summary = "Create place in zone by id")
-    public PlaceDTO createPlaceInZoneById(@PathVariable("id") Long zoneId, @Validated(OnCreate.class) @RequestBody PlaceDTO placeDTO) {
+    public PlaceDTO createPlaceInZoneById(@PathVariable("id")
+                                          @Argument Long zoneId,
+                                          @Validated(OnCreate.class)
+                                          @RequestBody
+                                          @Argument PlaceDTO placeDTO) {
         Place place = placeMapper.toEntity(placeDTO);
         Place createdPlace = placeService.create(place, zoneId);
 
@@ -107,8 +120,11 @@ public class AdminController {
     }
 
     @PutMapping("/zones")
+    @MutationMapping("updateZone")
     @Operation(summary = "Update zone")
-    public ZoneDTO updateZone(@Validated(OnUpdate.class) @RequestBody ZoneDTO zoneDTO) {
+    public ZoneDTO updateZone(@Validated(OnUpdate.class)
+                              @RequestBody
+                              @Argument ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone updatedZone = zoneService.update(zone);
 
@@ -116,8 +132,12 @@ public class AdminController {
     }
 
     @PutMapping("places/{id}/status")
+    @MutationMapping("changePlaceStatusById")
     @Operation(summary = "Change place status by id")
-    public PlaceDTO changePlaceStatusById(@PathVariable("id") Long id, @RequestParam() String status) {
+    public PlaceDTO changePlaceStatusById(@PathVariable("id")
+                                          @Argument Long id,
+                                          @RequestParam
+                                          @Argument String status) {
 
         Place disabledPlace = placeService.changeStatus(id, Status.valueOf(status));
 
@@ -125,14 +145,18 @@ public class AdminController {
     }
 
     @DeleteMapping("zones/{id}")
+    @MutationMapping("deleteZoneAndAssociatedPlaces")
     @Operation(summary = "Delete zone and associated places")
-    public void deleteZoneAndAssociatedPlaces(@PathVariable("id") Long id) {
+    public void deleteZoneAndAssociatedPlaces(@PathVariable("id")
+                                              @Argument Long id) {
         zoneService.delete(id);
     }
 
     @DeleteMapping("places/{id}")
+    @MutationMapping("deletePlaceById")
     @Operation(summary = "Delete place by id")
-    public void deletePlaceById(@PathVariable("id") Long id) {
+    public void deletePlaceById(@PathVariable("id")
+                                @Argument Long id) {
         placeService.delete(id);
     }
 

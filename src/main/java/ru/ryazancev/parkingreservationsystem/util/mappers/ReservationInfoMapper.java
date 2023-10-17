@@ -1,15 +1,16 @@
-package ru.ryazancev.parkingreservationsystem.util.mappers.reservation;
+package ru.ryazancev.parkingreservationsystem.util.mappers;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.util.mappers.Mappable;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface ReservationInfoMapper {
+public interface ReservationInfoMapper extends Mappable<Reservation, ReservationInfoDTO> {
 
     @Mapping(target = "zone", source = "zone")
     @Mapping(target = "place", source = "place")

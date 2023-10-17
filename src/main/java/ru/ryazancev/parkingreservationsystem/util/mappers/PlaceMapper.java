@@ -1,17 +1,13 @@
-package ru.ryazancev.parkingreservationsystem.util.mappers.place;
+package ru.ryazancev.parkingreservationsystem.util.mappers;
 
 import org.mapstruct.Mapper;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
+import ru.ryazancev.parkingreservationsystem.util.mappers.Mappable;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface PlaceMapper {
+public interface PlaceMapper extends Mappable<Place, PlaceDTO> {
 
-    PlaceDTO toDTO(Place place);
-
-    List<PlaceDTO> toDTO(List<Place> places);
-
-    Place toEntity(PlaceDTO placeDTO);
 }

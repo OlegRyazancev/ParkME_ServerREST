@@ -1,13 +1,11 @@
 package ru.ryazancev.parkingreservationsystem.web.dto.zone;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class ZoneDTO {
 

@@ -24,9 +24,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanUpFilterProvider;
+import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanupFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenProvider;
-import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanupFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -73,10 +73,10 @@ public class ApplicationConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
+                .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.getWriter().write("Unauthorized");
@@ -90,10 +90,11 @@ public class ApplicationConfig {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ROLE_ADMIN.name())
+                        .requestMatchers("/graphiql").permitAll()
                         .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new ReservationCleanupFilter(reservationCleanUpFilterProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+              //  .addFilterAfter(new ReservationCleanupFilter(reservationCleanUpFilterProvider), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

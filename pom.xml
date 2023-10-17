@@ -27,6 +27,9 @@
         <jjwt.version>0.11.5</jjwt.version>
         <springdoc.version>2.2.0</springdoc.version>
         <preliquibase.version>1.4.0</preliquibase.version>
+        <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
+        <graphql-java-extended-scalars.version>21.0</graphql-java-extended-scalars.version>
+        <annotations.version>24.0.1</annotations.version>
     </properties>
 
     <dependencies>
@@ -45,6 +48,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-graphql</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -128,7 +137,23 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.graphql-java-kickstart</groupId>
+            <artifactId>graphql-java-servlet</artifactId>
+            <version>${graphql-java-kickstart.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java-extended-scalars</artifactId>
+            <version>${graphql-java-extended-scalars.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${annotations.version}</version>
+        </dependency>
 
     </dependencies>
 

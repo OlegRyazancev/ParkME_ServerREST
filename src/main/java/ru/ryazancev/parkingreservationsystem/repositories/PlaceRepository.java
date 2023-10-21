@@ -6,10 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
@@ -21,15 +19,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             WHERE zp.zone_id = :zoneId
             """, nativeQuery = true)
     List<Place> findAllByZoneId(@Param("zoneId") Long zoneId);
-
-    @Query(value = """
-            SELECT p.*
-            FROM places p
-                     LEFT JOIN zones_places zp ON p.id = zp.place_id
-            WHERE zp.zone_id = :zoneId
-              AND p.status = 'FREE'
-            """, nativeQuery = true)
-    List<Place> findFreePlacesByZoneId(@Param("zoneId") Long zoneId);
 
     @Query(value = """
             SELECT p.*

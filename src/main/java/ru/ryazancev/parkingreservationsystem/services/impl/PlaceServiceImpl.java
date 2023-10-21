@@ -10,6 +10,7 @@ import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +32,11 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public List<Place> getFreePlacesByZoneId(Long zoneId) {
-        return placeRepository.findFreePlacesByZoneId(zoneId);
+        List<Place> foundPlaces = placeRepository.findAllByZoneId(zoneId);
+
+        return foundPlaces.stream()
+                .filter(place -> place.getStatus().equals(Status.FREE))
+                .collect(Collectors.toList());
     }
 
     @Transactional

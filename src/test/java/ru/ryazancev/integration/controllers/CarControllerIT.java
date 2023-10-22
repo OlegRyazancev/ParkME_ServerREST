@@ -37,7 +37,7 @@ public class CarControllerIT extends BaseIT {
     private Car testCar;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         testCar = findObjectForTests(carRepository, CAR_ID_FOR_TESTS);
     }
 

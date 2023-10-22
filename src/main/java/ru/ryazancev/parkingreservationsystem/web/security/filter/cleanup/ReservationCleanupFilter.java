@@ -21,7 +21,8 @@ public class ReservationCleanupFilter extends GenericFilterBean {
             if (httpRequest.getMethod().equals("GET")) {
                 cleanUpFilterProvider.clean();
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         chain.doFilter(request, response);
     }
 }

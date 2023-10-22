@@ -17,4 +17,4 @@ public interface ReservationService {
     Reservation changeTimeTo(Reservation reservation);
 
     void delete(Long reservationId);
-    }
+}

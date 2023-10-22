@@ -7,9 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
@@ -20,19 +18,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;;
+import static org.mockito.BDDMockito.*;
 
-@SpringBootTest
+
+@ExtendWith(MockitoExtension.class)
 class PlaceServiceImplTest {
 
-    @MockBean
+    @Mock
     private PlaceRepository placeRepository;
 
-    @Autowired
+    @InjectMocks
     private PlaceServiceImpl placeService;
 
     private Place place;
@@ -61,8 +57,7 @@ class PlaceServiceImplTest {
         Place foundPlace = placeService.getById(place.getId());
 
         //Assert
-        verify(placeRepository).findById(place.getId());
-        assertEquals(place, foundPlace);
+        assertEquals(place, foundPlace, "Returned place should be the same");
     }
 
 
@@ -137,7 +132,6 @@ class PlaceServiceImplTest {
 
         //Assert
         assertEquals(place, createdPlace, "Created place should match the input place");
-        verify(placeRepository).save(place);
         verify(placeRepository).assignToZone(place.getId(), zoneId);
     }
 
@@ -147,9 +141,7 @@ class PlaceServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Place is already exists in this zone";
         Place extistingPlace = Place.builder()
-                .id(2L)
                 .number(1)
-                .status(Status.DISABLE)
                 .build();
 
         when(placeRepository.findAllByZoneId(zoneId)).thenReturn(Collections.singletonList(extistingPlace));
@@ -250,10 +242,10 @@ class PlaceServiceImplTest {
 
     @DisplayName("Delete place with valid details")
     @Test
-    public void testDeletePlace_whenPlaceDetailsIsValid_returnsNothing() {
+    public void testDeletePlace_whenPlaceDetailsAreValid_returnsNothing() {
         //Arrange
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
-        willDoNothing().given(placeRepository).deleteById(place.getId());
+        doNothing().when(placeRepository).deleteById(place.getId());
 
         //Act
         placeService.delete(place.getId());

@@ -35,6 +35,4 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             VALUES (:zoneId, :placeId)
             """, nativeQuery = true)
     void assignToZone(@Param("placeId") Long placeId, @Param("zoneId") Long zoneId);
-
-
 }

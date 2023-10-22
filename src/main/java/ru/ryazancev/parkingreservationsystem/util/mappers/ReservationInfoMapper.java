@@ -10,6 +10,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfo
 import java.util.List;
 
 @Mapper(componentModel = "spring")
+@SuppressWarnings("unmappedTargetProperties")
 public interface ReservationInfoMapper extends Mappable<Reservation, ReservationInfoDTO> {
 
     @Mapping(target = "zone", source = "zone")

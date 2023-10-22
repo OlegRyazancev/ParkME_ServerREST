@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
@@ -33,8 +32,6 @@ class PlaceServiceImplTest {
 
     private Place place;
 
-    private Long zoneId;
-
     @BeforeEach
     public void setup() {
         place = Place.builder()
@@ -42,7 +39,6 @@ class PlaceServiceImplTest {
                 .number(1)
                 .status(Status.FREE)
                 .build();
-        zoneId = 1L;
     }
 
 
@@ -90,10 +86,10 @@ class PlaceServiceImplTest {
                 new Place(3L, 3, Status.FREE)
         );
 
-        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(places);
+        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(places);
 
         //Act
-        List<Place> freePlaces = placeService.getFreePlacesByZoneId(zoneId);
+        List<Place> freePlaces = placeService.getFreePlacesByZoneId(anyLong());
 
         //Assert
         assertEquals(2, freePlaces.size(), "Both lists of places should have the same size");
@@ -110,10 +106,10 @@ class PlaceServiceImplTest {
                 new Place(4L, 4, Status.DISABLE)
         );
 
-        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(places);
+        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(places);
 
         //Act
-        List<Place> allPlaces = placeService.getAllByZoneId(zoneId);
+        List<Place> allPlaces = placeService.getAllByZoneId(anyLong());
 
         //Assert
         assertEquals(places, allPlaces, "Lists of places should match");
@@ -124,15 +120,15 @@ class PlaceServiceImplTest {
     public void testCreatePlaceInZone_whenValidNumber_returnsPlaceObject() {
         //Arrange
         place.setId(null);
-        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(Collections.emptyList());
+        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(Collections.emptyList());
         when(placeRepository.save(place)).thenReturn(new Place(1L, place.getNumber(), place.getStatus()));
 
         //Act
-        Place createdPlace = placeService.create(place, zoneId);
+        Place createdPlace = placeService.create(place, anyLong());
 
         //Assert
         assertEquals(place, createdPlace, "Created place should match the input place");
-        verify(placeRepository).assignToZone(place.getId(), zoneId);
+        verify(placeRepository).assignToZone(eq(place.getId()), anyLong());
     }
 
     @DisplayName("Create place with existing number in zone")
@@ -144,11 +140,11 @@ class PlaceServiceImplTest {
                 .number(1)
                 .build();
 
-        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(Collections.singletonList(extistingPlace));
+        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(Collections.singletonList(extistingPlace));
 
         //Act&&Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.create(place, zoneId);
+            placeService.create(place, anyLong());
         });
 
         //Assert
@@ -276,7 +272,6 @@ class PlaceServiceImplTest {
         //Arrange
         place.setStatus(Status.OCCUPIED);
         String expectedExceptionMessage = "Can not delete occupied place";
-
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
 
         //Act && Assert

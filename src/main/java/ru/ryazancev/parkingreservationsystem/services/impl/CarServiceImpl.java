@@ -32,7 +32,7 @@ public class CarServiceImpl implements CarService {
     public List<Car> getAllByUserId(Long userId) {
         List<Car> cars = carRepository.findAllByUserId(userId);
         if (cars.isEmpty())
-            throw new IllegalStateException("User don't register any car");
+            throw new IllegalStateException("User hasn't registered any car");
         return cars;
     }
 
@@ -50,9 +50,9 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car update(Car car) {
         if (carRepository.findByNumber(car.getNumber()).isPresent())
-            throw new IllegalStateException("Car already exists");
+            throw new IllegalStateException("Car has the same number");
         if (carRepository.findById(car.getId()).isEmpty())
-            throw new IllegalStateException("Car does not exists");
+            throw new ResourceNotFoundException("Car does not exists");
         carRepository.save(car);
         return car;
     }

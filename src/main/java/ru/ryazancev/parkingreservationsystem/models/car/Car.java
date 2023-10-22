@@ -1,13 +1,18 @@
 package ru.ryazancev.parkingreservationsystem.models.car;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 @Entity
 @Table(name = "cars")
-@Data
 public class Car implements Serializable {
 
     @Id

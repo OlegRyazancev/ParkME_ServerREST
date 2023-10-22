@@ -10,7 +10,6 @@ import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-@SuppressWarnings("unmappedTargetProperties")
 public interface UserMapper extends Mappable<User, UserDTO> {
 
 

@@ -8,7 +8,6 @@ import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-@SuppressWarnings("unmappedTargetProperties")
 public interface ZoneMapper extends Mappable<Zone, ZoneDTO> {
 
 }

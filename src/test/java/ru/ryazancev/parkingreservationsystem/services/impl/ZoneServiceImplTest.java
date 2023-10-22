@@ -54,14 +54,12 @@ class ZoneServiceImplTest {
     @Test
     public void testGetAllZones_returnsListOfZones() {
         //Arrange
-
         Zone zone2 = Zone.builder()
                 .id(2L)
                 .number(2)
                 .places(List.of(new Place()))
                 .build();
         List<Zone> sampleZones = List.of(zone, zone2);
-
         when(zoneRepository.findAll()).thenReturn(sampleZones);
 
         //Act
@@ -88,7 +86,6 @@ class ZoneServiceImplTest {
     @DisplayName("Get zone by not existing id")
     @Test
     public void testGetZoneById_whenNotValidId_throwsResourceNotFoundException() {
-
         //Arrange
         String expectedExceptionMessage = "Zone not found";
         Long nonExistingId = 12L;
@@ -124,7 +121,6 @@ class ZoneServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Zone is already exists";
         Zone creatingZone = Zone.builder()
-                .id(1L)
                 .number(1)
                 .build();
 
@@ -143,17 +139,20 @@ class ZoneServiceImplTest {
     @Test
     public void testUpdateZone_whenZoneDetailsAreValid_returnsUpdatedZoneObject() {
         //Arrange (Given)
-        given(zoneRepository.findByNumber(zone.getNumber())).willReturn(Optional.empty());
-        given(zoneRepository.save(zone)).willReturn(zone);
+        Zone updatedZone = zone;
+        updatedZone.setNumber(213);
+
+        when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
+        when(zoneRepository.save(updatedZone)).thenReturn(updatedZone);
 
         //Act (When)
-        Zone updatedZone = zoneService.update(zone);
+        Zone result = zoneService.update(updatedZone);
 
         //Assert (Then)
-        then(zoneRepository).should(times(1)).findByNumber(zone.getNumber());
-        then(zoneRepository).should(times(1)).save(zone);
+        verify(zoneRepository).findByNumber(updatedZone.getNumber());
+        verify(zoneRepository).save(updatedZone);
 
-        assertEquals(zone, updatedZone, "UpdatedZone should be equals inputZone ");
+        assertEquals(updatedZone, result, "UpdatedZone should be equals inputZone ");
     }
 
     @DisplayName("Update zone number to the same number")
@@ -185,7 +184,6 @@ class ZoneServiceImplTest {
 
         //Assert
         verify(zoneRepository).findById(zone.getId());
-
         associatedPlaces.forEach(place -> {
             verify(placeRepository).deleteById(place.getId());
         });
@@ -211,13 +209,13 @@ class ZoneServiceImplTest {
 
     @DisplayName("Delete non existing zone")
     @Test
-    public void testDeleteZone_whenZoneNotExists_throwsResourceNotFoundException(){
+    public void testDeleteZone_whenZoneNotExists_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Zone not found";
         when(zoneRepository.findById(zone.getId())).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, ()->{
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
             zoneService.delete(zone.getId());
         });
 

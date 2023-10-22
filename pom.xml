@@ -30,6 +30,7 @@
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
         <graphql-java-extended-scalars.version>21.0</graphql-java-extended-scalars.version>
         <annotations.version>24.0.1</annotations.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     </properties>
 
     <dependencies>
@@ -174,15 +175,6 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-Amapstruct.suppressUnmapped=true</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

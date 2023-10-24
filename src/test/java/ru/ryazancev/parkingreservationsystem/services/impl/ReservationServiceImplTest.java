@@ -22,11 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.when;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceImplTest {
@@ -348,7 +345,6 @@ public class ReservationServiceImplTest {
         //Arrange
         reservation.getPlace().setStatus(Status.DISABLE);
         when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
-        doNothing().when(reservationRepository).deleteById(reservation.getId());
 
         //Act
         reservationService.delete(reservation.getId());

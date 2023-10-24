@@ -139,11 +139,11 @@ public class ZoneServiceImplTest {
     @Test
     public void testUpdateZone_whenZoneDetailsAreValid_returnsUpdatedZoneObject() {
         //Arrange (Given)
-        Zone updatedZone = zone;
+        Zone updatedZone = new Zone();
+        updatedZone.setId(zone.getId());
         updatedZone.setNumber(213);
 
         when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
-        when(zoneRepository.save(updatedZone)).thenReturn(updatedZone);
 
         //Act (When)
         Zone result = zoneService.update(updatedZone);
@@ -176,8 +176,6 @@ public class ZoneServiceImplTest {
     public void testDeleteZone_whenZoneDetailsAreValid_returnsNothing() {
         //Arrange
         when(zoneRepository.findById(zone.getId())).thenReturn(Optional.of(zone));
-        doNothing().when(placeRepository).deleteById(anyLong());
-        doNothing().when(zoneRepository).deleteById(zone.getId());
 
         //Act
         zoneService.delete(zone.getId());

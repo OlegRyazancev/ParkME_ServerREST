@@ -19,7 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-;
 
 @ExtendWith(MockitoExtension.class)
 public class CarServiceImplTest {
@@ -162,7 +161,8 @@ public class CarServiceImplTest {
     @Test
     public void testUpdateCar_whenCarDetailsAreValid_returnsUpdatedCarObject() {
         //Arrange
-        Car updatedCar = car;
+        Car updatedCar = new Car();
+        updatedCar.setId(car.getId());
         updatedCar.setNumber("UU000U00");
 
         when(carRepository.findByNumber(updatedCar.getNumber())).thenReturn(Optional.empty());
@@ -217,7 +217,6 @@ public class CarServiceImplTest {
     public void testDeleteCar_whenCarDetailsAreValid_returnsNothing() {
         //Arrange
         when(carRepository.findReservationByCarId(car.getId())).thenReturn(Optional.empty());
-        doNothing().when(carRepository).deleteById(car.getId());
 
         //Act
         carService.delete(car.getId());

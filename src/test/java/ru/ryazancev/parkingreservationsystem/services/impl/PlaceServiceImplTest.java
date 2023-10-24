@@ -241,7 +241,6 @@ class PlaceServiceImplTest {
     public void testDeletePlace_whenPlaceDetailsAreValid_returnsNothing() {
         //Arrange
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
-        doNothing().when(placeRepository).deleteById(place.getId());
 
         //Act
         placeService.delete(place.getId());

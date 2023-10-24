@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User create(User user) {
-        if (userRepository.findByEmail(user.getName()).isPresent())
+        if (userRepository.findByEmail(user.getEmail()).isPresent())
             throw new IllegalStateException("User already exists");
 
         if (!user.getPassword().equals(user.getPasswordConfirmation()))

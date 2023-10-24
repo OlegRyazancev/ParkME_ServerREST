@@ -104,7 +104,7 @@ public class ReservationServiceImpl implements ReservationService {
     public void delete(Long reservationId) {
 
         Reservation foundReservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalStateException("Reservation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
         foundReservation.getPlace().setStatus(Status.FREE);
         placeRepository.save(foundReservation.getPlace());

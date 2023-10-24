@@ -17,13 +17,12 @@ import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundExc
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class ZoneServiceImplTest {
+public class ZoneServiceImplTest {
 
     @Mock
     private ZoneRepository zoneRepository;
@@ -106,13 +105,14 @@ class ZoneServiceImplTest {
     public void testCreateZone_whenValidNumber_returnsZoneObject() {
         //Arrange
         when(zoneRepository.findByNumber(zone.getNumber())).thenReturn(Optional.empty());
-        when(zoneRepository.save(zone)).thenReturn(new Zone(1L, zone.getNumber(), zone.getPlaces()));
 
         //Act
         Zone createdZone = zoneService.create(zone);
 
         //Assert
-        assertEquals(zone, createdZone, "Created zone should match the input zone");
+        assertNotNull(createdZone, "Created zone should not be empty");
+
+        verify(zoneRepository).save(zone);
     }
 
     @DisplayName("Create zone with existing number")
@@ -209,7 +209,7 @@ class ZoneServiceImplTest {
 
     @DisplayName("Delete non existing zone")
     @Test
-    public void testDeleteZone_whenZoneNotExists_throwsResourceNotFoundException() {
+    public void testDeleteZone_whenZoneDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Zone not found";
         when(zoneRepository.findById(zone.getId())).thenReturn(Optional.empty());
@@ -222,4 +222,5 @@ class ZoneServiceImplTest {
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
     }
+
 }

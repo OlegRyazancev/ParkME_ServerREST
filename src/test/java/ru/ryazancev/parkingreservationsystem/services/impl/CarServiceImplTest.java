@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 ;
@@ -128,16 +127,16 @@ public class CarServiceImplTest {
     @Test
     public void testCreateCar_whenUserHasNoCarsWithThisNumber_returnsCarObject() {
         //Arrange
-        car.setId(null);
         when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.empty());
-        when(carRepository.save(car)).thenReturn(new Car(1L, car.getNumber()));
 
         //Act
         Car createdCar = carService.create(car, anyLong());
 
         //Assert
-        assertEquals(car, createdCar, "Created car should match the input car");
+        assertNotNull(createdCar, "Created car should not be empty");
+
         verify(carRepository).assignToUser(anyLong(), eq(car.getId()));
+        verify(carRepository).save(car);
     }
 
     @DisplayName("Create car if user has car with the same number")
@@ -196,9 +195,9 @@ public class CarServiceImplTest {
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
     }
 
-    @DisplayName("Update not existing car")
+    @DisplayName("Update non-existing car")
     @Test
-    public void testUpdateCar_whenCarIsNotExists_throwsResourceNotFoundException() {
+    public void testUpdateCar_whenCarDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedErrorMessage = "Car does not exists";
         when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.empty());

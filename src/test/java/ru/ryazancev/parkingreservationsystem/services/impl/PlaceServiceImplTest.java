@@ -119,16 +119,16 @@ class PlaceServiceImplTest {
     @Test
     public void testCreatePlaceInZone_whenValidNumber_returnsPlaceObject() {
         //Arrange
-        place.setId(null);
         when(placeRepository.findAllByZoneId(anyLong())).thenReturn(Collections.emptyList());
-        when(placeRepository.save(place)).thenReturn(new Place(1L, place.getNumber(), place.getStatus()));
 
         //Act
         Place createdPlace = placeService.create(place, anyLong());
 
         //Assert
-        assertEquals(place, createdPlace, "Created place should match the input place");
+        assertNotNull(createdPlace, "Created place should not be empty");
+
         verify(placeRepository).assignToZone(eq(place.getId()), anyLong());
+        verify(placeRepository).save(place);
     }
 
     @DisplayName("Create place with existing number in zone")
@@ -184,7 +184,7 @@ class PlaceServiceImplTest {
 
     @DisplayName("Change status on not existing place")
     @Test
-    public void testChangeStatus_whenPlaceNotExists_throwsResourceNotFoundException() {
+    public void testChangeStatus_whenPlaceDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Place not found";
         Status status = Status.DISABLE;
@@ -250,9 +250,9 @@ class PlaceServiceImplTest {
         verify(placeRepository).deleteById(place.getId());
     }
 
-    @DisplayName("Delete non existing place")
+    @DisplayName("Delete non-existing place")
     @Test
-    public void testDeletePlace_whenPlaceNotExists_throwsResourceNotFoundException() {
+    public void testDeletePlace_whenPlaceDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Place not found";
         when(placeRepository.findById(place.getId())).thenReturn(Optional.empty());

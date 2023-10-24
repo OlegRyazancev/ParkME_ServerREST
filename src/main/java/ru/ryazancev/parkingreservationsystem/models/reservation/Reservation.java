@@ -1,7 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.models.reservation;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
@@ -10,9 +10,14 @@ import ru.ryazancev.parkingreservationsystem.models.user.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 @Entity
 @Table(name = "reservations")
-@Data
 public class Reservation implements Serializable {
 
     @Id

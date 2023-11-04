@@ -93,8 +93,8 @@ public class ApplicationConfig {
                         .requestMatchers("/graphiql").permitAll()
                         .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new ReservationCleanupFilter(reservationCleanUpFilterProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                //.addFilterAfter(new ReservationCleanupFilter(reservationCleanUpFilterProvider), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

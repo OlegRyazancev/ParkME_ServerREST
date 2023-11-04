@@ -12,7 +12,6 @@ spring:
     graphiql:
       enabled: true
 
-
   liquibase:
     change-log: classpath:liquibase/db.changelog.yaml
     enabled: true

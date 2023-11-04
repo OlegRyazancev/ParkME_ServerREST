@@ -20,7 +20,7 @@ class CarRepositoryTest extends IntegrationTestBase {
 
     @DisplayName("Find all cars by user id")
     @Test
-    public void testFindAllCarsByUserId_whenUserIdIsValid_returnsListOfCars() {
+    public void testFindAllCarsByUserId_returnsListOfCars() {
         //Arrange
         Long userId = 1L;
 
@@ -34,23 +34,22 @@ class CarRepositoryTest extends IntegrationTestBase {
 
     @DisplayName("Assign car to user")
     @Test
-    public void test() {
+    public void testAssignCarToUser_returnsNothing() {
         //Arrange
         Long userId = 1L;
         Car car = Car.builder()
                 .number("C000CC00")
                 .build();
 
-        carRepository.save(car);
+        Car savedCar = carRepository.save(car);
 
         //Act
-        carRepository.assignToUser(userId, car.getId());
+        carRepository.assignToUser(userId, savedCar.getId());
 
         //Assert
         List<Car> userCars = carRepository.findAllByUserId(userId);
-        boolean carIsAssigned = userCars
-                .stream()
-                .anyMatch(c -> c.getNumber().equals(car.getNumber()));
+        boolean carIsAssigned = userCars.stream()
+                .anyMatch(c -> c.getNumber().equals(savedCar.getNumber()));
 
         assertTrue(carIsAssigned);
     }

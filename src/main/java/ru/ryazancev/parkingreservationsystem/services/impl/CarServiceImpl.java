@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
+import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.services.CarService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class CarServiceImpl implements CarService {
 
     private final CarRepository carRepository;
+    private final ReservationRepository reservationRepository;
 
     @Override
     public List<Car> getAll() {
@@ -60,7 +62,7 @@ public class CarServiceImpl implements CarService {
     @Transactional
     @Override
     public void delete(Long carId) {
-        if (carRepository.findReservationByCarId(carId).isPresent())
+        if (reservationRepository.findAllByCarId(carId).isPresent())
             throw new IllegalStateException("Can not delete car, because car have reservations");
 
         carRepository.deleteById(carId);

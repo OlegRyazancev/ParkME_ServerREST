@@ -32,6 +32,7 @@
         <annotations.version>24.0.1</annotations.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <postgresql-container.version>1.18.3</postgresql-container.version>
+        <junit-platfrom-suite-engine.version>1.10.0</junit-platfrom-suite-engine.version>
     </properties>
 
     <dependencies>
@@ -169,6 +170,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${junit-platfrom-suite-engine.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

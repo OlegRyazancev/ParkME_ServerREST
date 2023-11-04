@@ -42,7 +42,7 @@ values (1, 1),
        (3, 6),
        (3, 7);
 
-INSERT INTO reservations (time_from, time_to, user_id, car_id, zone_id, place_id)
-VALUES
-    ('2023-01-29 12:00:00', '2023-01-23 14:00:00', 1, 2, 1, 3),
-    ('2023-01-29 10:54:44', '2023-01-30 12:00:00', 2, 3, 2, 5);
+insert into reservations (time_from, time_to, user_id, car_id, zone_id, place_id)
+values
+('2024-01-29 12:00:00', '2024-01-23 14:00:00', 1, 2, 1, 3),
+('2024-01-29 10:54:44', '2024-01-30 12:00:00', 2, 3, 2, 5);

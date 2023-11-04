@@ -24,7 +24,10 @@ public class Reservation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "time_from")
     private LocalDateTime timeFrom;
+
+    @Column(name = "time_to")
     private LocalDateTime timeTo;
 
     @ManyToOne
@@ -42,4 +45,10 @@ public class Reservation implements Serializable {
     @ManyToOne
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private Car car;
+
+    public Reservation(Long id, LocalDateTime timeFrom, LocalDateTime timeTo) {
+        this.id = id;
+        this.timeFrom = timeFrom;
+        this.timeTo = timeTo;
+    }
 }

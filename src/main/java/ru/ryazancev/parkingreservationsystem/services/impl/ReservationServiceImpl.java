@@ -63,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
         Car foundCar = carRepository.findByNumber(reservation.getCar().getNumber())
                 .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
 
-        if (carRepository.findReservationByCarId(foundCar.getId()).isPresent())
+        if (reservationRepository.findAllByCarId(foundCar.getId()).isPresent())
             throw new IllegalStateException("Car already has a reservation");
 
         User foundUser = userRepository.findById(user_id)

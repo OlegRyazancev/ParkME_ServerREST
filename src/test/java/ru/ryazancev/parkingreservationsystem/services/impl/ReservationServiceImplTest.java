@@ -163,7 +163,7 @@ public class ReservationServiceImplTest {
         when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
         when(placeRepository.save(any())).thenReturn(place);
         when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
-        when(carRepository.findReservationByCarId(anyLong())).thenReturn(Optional.empty());
+        when(reservationRepository.findAllByCarId(anyLong())).thenReturn(Optional.empty());
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         //Act
@@ -277,7 +277,7 @@ public class ReservationServiceImplTest {
 
         when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
         when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
-        when(carRepository.findReservationByCarId(anyLong())).thenReturn(Optional.of(new Reservation()));
+        when(reservationRepository.findAllByCarId(anyLong())).thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {

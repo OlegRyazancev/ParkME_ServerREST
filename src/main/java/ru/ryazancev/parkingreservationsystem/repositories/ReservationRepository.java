@@ -9,6 +9,7 @@ import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
@@ -26,5 +27,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             WHERE r.time_to < :currentTime
             """, nativeQuery = true)
     void deleteExpiredReservations(@Param("currentTime") LocalDateTime currentTime);
+
+    @Query(value = """
+            SELECT r.id, r.time_from, r.time_to
+            FROM reservations r
+                     LEFT JOIN cars c ON r.car_id = c.id
+            WHERE c.id = :carId
+            """, nativeQuery = true)
+    Optional<Reservation> findAllByCarId(@Param("carId") Long carId);
 
 }

@@ -15,12 +15,12 @@ public class ReservationDTO {
     @NotNull(message = "Id must be not null", groups = OnUpdate.class)
     private Long id;
 
-    @NotNull(message = "Id must be not null", groups = {OnCreate.class})
+    @NotNull(message = "Time from must be not null", groups = {OnCreate.class})
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timeFrom;
 
-    @NotNull(message = "Id must be not null", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "Time to must be not null", groups = {OnCreate.class, OnUpdate.class})
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timeTo;

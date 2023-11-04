@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
+import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.Collections;
@@ -25,6 +26,9 @@ public class CarServiceImplTest {
 
     @Mock
     private CarRepository carRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private CarServiceImpl carService;
@@ -216,7 +220,7 @@ public class CarServiceImplTest {
     @Test
     public void testDeleteCar_whenCarDetailsAreValid_returnsNothing() {
         //Arrange
-        when(carRepository.findReservationByCarId(car.getId())).thenReturn(Optional.empty());
+        when(reservationRepository.findAllByCarId(car.getId())).thenReturn(Optional.empty());
 
         //Act
         carService.delete(car.getId());
@@ -230,7 +234,7 @@ public class CarServiceImplTest {
     public void testDeleteCar_whenCarHasReservations_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Can not delete car, because car have reservations";
-        when(carRepository.findReservationByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
+        when(reservationRepository.findAllByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {

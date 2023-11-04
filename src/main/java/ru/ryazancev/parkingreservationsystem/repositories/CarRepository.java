@@ -23,14 +23,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
             """, nativeQuery = true)
     List<Car> findAllByUserId(@Param("userId") Long userId);
 
-    @Query(value = """
-            SELECT *
-            FROM reservations r
-                     LEFT JOIN cars c ON r.car_id = c.id
-            WHERE c.id = :carId
-            """, nativeQuery = true)
-    Optional<Reservation> findReservationByCarId(@Param("carId") Long carId);
-
     @Modifying
     @Query(value = """
             INSERT INTO users_cars (user_id, car_id)

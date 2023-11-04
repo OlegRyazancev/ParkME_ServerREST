@@ -1,4 +1,4 @@
-package ru.ryazancev.initializer;
+package ru.ryazancev.config.initializer;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.boot.test.util.TestPropertyValues;

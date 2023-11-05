@@ -29,6 +29,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
                             AND r.id = :reservationId)
             """, nativeQuery = true)
     Boolean isReservationOwner(@Param("userId") Long userId, @Param("reservationId") Long reservationId);
-
 }
 

@@ -220,7 +220,7 @@ public class CarServiceImplTest {
     @Test
     public void testDeleteCar_whenCarDetailsAreValid_returnsNothing() {
         //Arrange
-        when(reservationRepository.findAllByCarId(car.getId())).thenReturn(Optional.empty());
+        when(reservationRepository.findByCarId(car.getId())).thenReturn(Optional.empty());
 
         //Act
         carService.delete(car.getId());
@@ -233,8 +233,8 @@ public class CarServiceImplTest {
     @Test
     public void testDeleteCar_whenCarHasReservations_throwsIllegalStateException() {
         //Arrange
-        String expectedExceptionMessage = "Can not delete car, because car have reservations";
-        when(reservationRepository.findAllByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
+        String expectedExceptionMessage = "Can not delete car, because car has reservations";
+        when(reservationRepository.findByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {

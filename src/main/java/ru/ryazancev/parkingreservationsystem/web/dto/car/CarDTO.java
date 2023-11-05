@@ -2,11 +2,16 @@ package ru.ryazancev.parkingreservationsystem.web.dto.car;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
+import lombok.*;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 public class CarDTO {
 
     @NotNull(message = "Id must not be null", groups = OnUpdate.class)

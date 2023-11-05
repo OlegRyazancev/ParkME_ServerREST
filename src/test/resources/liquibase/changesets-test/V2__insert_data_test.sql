@@ -1,13 +1,20 @@
 insert into users (name, email, password)
-values ('John Doe', 'johndoe@gmail.com', 'password');
+values ('Test1', 'test1@gmail.com', 'password'),
+       ('Test2', 'test2@gmail.com', 'password');
+
+insert into users_roles (user_id, role)
+values (1, 'ROLE_ADMIN'),
+       (1, 'ROLE_USER');
 
 insert into cars (number)
 values ('A000AA00'),
-       ('B000BB00');
+       ('B000BB00'),
+       ('C000CC00');
 
 insert into users_cars (user_id, car_id)
 values (1, 1),
-       (1, 2);
+       (1, 2),
+       (1, 3);
 
 insert into zones(number)
 values (1),

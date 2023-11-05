@@ -29,7 +29,7 @@ class CarRepositoryTest extends IntegrationTestBase {
 
         //Assert
         assertNotNull(cars);
-        assertEquals(2, cars.size());
+        assertEquals(3, cars.size());
     }
 
     @DisplayName("Assign car to user")
@@ -38,7 +38,7 @@ class CarRepositoryTest extends IntegrationTestBase {
         //Arrange
         Long userId = 1L;
         Car car = Car.builder()
-                .number("C000CC00")
+                .number("D000DD00")
                 .build();
 
         Car savedCar = carRepository.save(car);

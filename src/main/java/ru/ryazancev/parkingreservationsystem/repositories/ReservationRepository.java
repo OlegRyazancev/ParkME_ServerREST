@@ -14,11 +14,9 @@ import java.util.Optional;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query(value = """
-            SELECT * FROM reservations
-            WHERE user_id = :userId
-            """, nativeQuery = true)
     List<Reservation> findAllByUserId(@Param("userId") Long userId);
+
+    Optional<Reservation> findByCarId(Long carId);
 
     @Modifying
     @Query(value = """
@@ -28,11 +26,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             """, nativeQuery = true)
     void deleteExpiredReservations(@Param("currentTime") LocalDateTime currentTime);
 
-    @Query(value = """
-            SELECT r.id, r.time_from, r.time_to
-            FROM parking.reservations r
-            WHERE r.car_id = :carId
-            """, nativeQuery = true)
-    Optional<Reservation> findAllByCarId(@Param("carId") Long carId);
 
 }

@@ -1,11 +1,9 @@
 package ru.ryazancev.parkingreservationsystem.repositories;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ryazancev.config.IntegrationTestBase;
-import ru.ryazancev.parkingreservationsystem.models.car.Car;
 
 import static org.junit.jupiter.api.Assertions.*;
 

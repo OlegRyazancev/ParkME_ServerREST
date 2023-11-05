@@ -1,4 +1,4 @@
 databaseChangeLog:
   - includeAll:
-      path: /changesets-test
+      path: /changesets
       relativeToChangelogFile: true

@@ -30,9 +30,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query(value = """
             SELECT r.id, r.time_from, r.time_to
-            FROM reservations r
-                     LEFT JOIN cars c ON r.car_id = c.id
-            WHERE c.id = :carId
+            FROM parking.reservations r
+            WHERE r.car_id = :carId
             """, nativeQuery = true)
     Optional<Reservation> findAllByCarId(@Param("carId") Long carId);
 

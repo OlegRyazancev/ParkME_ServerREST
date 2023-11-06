@@ -57,7 +57,7 @@ public class ZoneController {
     @QueryMapping("placesByZoneId")
     @Operation(summary = "Get places by zone id")
     public List<PlaceDTO> getPlacesByZoneId(@PathVariable("id")
-                                                @Argument Long id) {
+                                            @Argument Long id) {
         List<Place> places = placeService.getAllByZoneId(id);
 
         return placeMapper.toDTO(places);

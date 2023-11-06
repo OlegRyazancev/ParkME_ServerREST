@@ -1,3 +1,4 @@
+//TODO refactoring car controller
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,8 @@ import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,7 +28,12 @@ class CarControllerTest extends IntegrationTestBase {
 
     @Autowired
     private CarRepository carRepository;
-    private final Car car = Car.builder()
+
+    private final String CAR_CONTROLLER_PATH = "/api/v1/cars";
+
+    private final String CAR_BY_ID_PATH = CAR_CONTROLLER_PATH + "/{id}";
+
+    private final Car CAR = Car.builder()
             .id(3L)
             .number("C000CC00")
             .build();
@@ -36,10 +44,10 @@ class CarControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testGetCarById_returnsStatusOkAndCarJSON() throws Exception {
         //Act && Assert
-        mockMvc.perform(get("/api/v1/cars/{id}", car.getId()))
+        mockMvc.perform(get(CAR_BY_ID_PATH, CAR.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(car.getId()))
-                .andExpect(jsonPath("$.number").value(car.getNumber()));
+                .andExpect(jsonPath("$.id").value(CAR.getId()))
+                .andExpect(jsonPath("$.number").value(CAR.getNumber()));
     }
 
     @DisplayName("Delete car by id when car has no reservations")
@@ -47,7 +55,7 @@ class CarControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteCarById_returnsNothing() throws Exception {
         //Act && Assert
-        mockMvc.perform(delete("/api/v1/cars/{id}", car.getId()))
+        mockMvc.perform(delete(CAR_BY_ID_PATH, CAR.getId()))
                 .andExpect(status().isOk());
     }
 
@@ -62,7 +70,7 @@ class CarControllerTest extends IntegrationTestBase {
                 .build();
         String json = new ObjectMapper().writeValueAsString(updatingCarDTO);
         //Act
-        mockMvc.perform(put("/api/v1/cars")
+        mockMvc.perform(put(CAR_CONTROLLER_PATH)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -70,9 +78,10 @@ class CarControllerTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.number").value(updatingCarDTO.getNumber()));
 
         //Assert
-        Car updatedCar = carRepository.findById(updatingCarDTO.getId()).orElse(null);
-        assertNotNull(updatedCar);
-        assertEquals(updatingCarDTO.getId(), updatedCar.getId());
-        assertEquals(updatingCarDTO.getNumber(), updatedCar.getNumber());
+        Optional<Car> updatedCar = carRepository.findById(updatingCarDTO.getId());
+        assertTrue(updatedCar.isPresent());
+        assertEquals(updatingCarDTO.getId(), updatedCar.get().getId());
+        assertEquals(updatingCarDTO.getNumber(), updatedCar.get().getNumber());
     }
+
 }

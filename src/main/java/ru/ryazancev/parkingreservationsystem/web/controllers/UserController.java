@@ -33,7 +33,6 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
-
 @Tag(name = "User Controller", description = "User API")
 public class UserController {
 

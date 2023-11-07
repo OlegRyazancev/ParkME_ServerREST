@@ -288,6 +288,27 @@ public class ReservationServiceImplTest {
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
     }
 
+    @DisplayName("Create reservation if user not exists")
+    @Test
+    public void testCreateReservation_whenUserNotFound_throwsResourceNotFoundException() {
+        //Arrange
+        String expectedExceptionMessage = "User not found";
+        zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
+
+        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
+        when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
+        when(reservationRepository.findByCarId(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //Act && Assert
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            reservationService.create(reservation, anyLong());
+        });
+
+        //Assert
+        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+    }
+
     @DisplayName("Change reservation's time to")
     @Test
     public void testChangeReservationTimeTo_whenReservationDetailsAreValid_returnsReservationObject() {

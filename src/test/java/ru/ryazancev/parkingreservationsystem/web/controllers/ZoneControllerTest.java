@@ -1,3 +1,4 @@
+
 package ru.ryazancev.parkingreservationsystem.web.controllers;
 
 import org.junit.jupiter.api.DisplayName;
@@ -22,10 +23,10 @@ class ZoneControllerTest extends IntegrationTestBase {
     @Autowired
     private MockMvc mockMvc;
 
-    private final String ZONES_CONTROLLER_URL = "/api/v1/zones";
-    private final String ZONE_ID = "/{id}";
-    private final String PLACES = "/places";
-    private final String FREE = "/free";
+    private final String ZONES_CONTROLLER_PATH = "/api/v1/zones";
+    private final String ZONE_BY_ID_PATH = ZONES_CONTROLLER_PATH + "/{id}";
+    private final String ZONES_PLACES_PATH = ZONE_BY_ID_PATH + "/places";
+    private final String ZONES_FREE_PLACES_PATH = ZONES_PLACES_PATH + "/free";
 
     private final Zone ZONE = Zone.builder()
             .id(1L)
@@ -44,7 +45,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         );
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_CONTROLLER_URL))
+        mockMvc.perform(get(ZONES_CONTROLLER_PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$", hasItems(zones.toArray())));
@@ -55,7 +56,7 @@ class ZoneControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testGetZoneById_returnsStatusIsOkAndZoneJSON() throws Exception {
         //Act && Assert
-        mockMvc.perform(get(ZONES_CONTROLLER_URL + ZONE_ID, ZONE.getId()))
+        mockMvc.perform(get(ZONE_BY_ID_PATH, ZONE.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ZONE.getId()))
                 .andExpect(jsonPath("$.number").value(ZONE.getNumber()));
@@ -73,7 +74,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         );
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_CONTROLLER_URL + ZONE_ID + PLACES, ZONE.getId()))
+        mockMvc.perform(get(ZONES_PLACES_PATH, ZONE.getId()))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$", hasItems(places.toArray())));
     }
@@ -89,7 +90,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         );
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_CONTROLLER_URL + ZONE_ID + PLACES + FREE, ZONE.getId()))
+        mockMvc.perform(get(ZONES_FREE_PLACES_PATH, ZONE.getId()))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$", hasItems(freePlaces.toArray())));
     }

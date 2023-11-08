@@ -1,0 +1,99 @@
+package ru.ryazancev.parkingreservationsystem.web.controllers;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.web.servlet.MockMvc;
+import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.parkingreservationsystem.models.parking.Place;
+import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
+import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
+import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
+import ru.ryazancev.testutils.DateUtils;
+import ru.ryazancev.testutils.JsonUtils;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@AutoConfigureMockMvc
+class ReservationControllerTest extends IntegrationTestBase {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private PlaceRepository placeRepository;
+
+    private final String RESERVATION_CONTROLLER_PATH = "/api/v1/reservations";
+    private final String RESERVATION_BY_ID_PATH = RESERVATION_CONTROLLER_PATH + "/{id}";
+    private final Long RESERVATION_FOR_TESTS_ID = 1L;
+
+    private Reservation testReservation;
+
+    @BeforeEach
+    public void setUp() {
+        testReservation = findObjectForTests(reservationRepository, RESERVATION_FOR_TESTS_ID);
+    }
+
+    @DisplayName("Change timeTo of reservation")
+    @Test
+    @WithUserDetails("test1@gmail.com")
+    public void testChangeTimeTo_returnsStatusOkAndReservationJSON() throws Exception {
+        //Arrange
+        ReservationDTO updatingReservationDTO = ReservationDTO.builder()
+                .id(testReservation.getId())
+                .timeTo(LocalDateTime.of(2024, 2, 23, 14, 0, 0))
+                .build();
+
+        String reservationJson = JsonUtils.createJsonNodeForObject(updatingReservationDTO, List.of("id", "timeTo")).toString();
+
+        //Act && Assert
+        mockMvc.perform(put(RESERVATION_CONTROLLER_PATH)
+                        .content(reservationJson)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testReservation.getId()))
+                .andExpect(jsonPath("$.timeFrom").value(testReservation.getTimeFrom().format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.timeTo").value(updatingReservationDTO.getTimeTo().format(DateUtils.customFormatter)));
+
+        //Assert
+        Optional<Reservation> updatedReservation = reservationRepository.findById(testReservation.getId());
+        assertTrue(updatedReservation.isPresent());
+        assertEquals(updatingReservationDTO.getId(), updatedReservation.get().getId());
+        assertEquals(testReservation.getTimeFrom(), updatedReservation.get().getTimeFrom());
+    }
+
+    @DisplayName("Delete reservation")
+    @Test
+    @WithUserDetails("test1@gmail.com")
+    public void testDeleteReservation_shouldDeleteAllDependencies_returnsNothing() throws Exception {
+        //Act
+        mockMvc.perform(delete(RESERVATION_BY_ID_PATH, testReservation.getId()))
+                .andExpect(status().isOk());
+        //Assert
+        assertFalse(reservationRepository.existsById(testReservation.getId()));
+
+        Optional<Place> placeAfterDeleteReservation = placeRepository.findById(testReservation.getPlace().getId());
+        assertTrue(placeAfterDeleteReservation.isPresent());
+        assertEquals(Status.FREE, placeAfterDeleteReservation.get().getStatus());
+
+        List<Reservation> usersReservations = reservationRepository.findAllByUserId(testReservation.getUser().getId());
+        assertTrue(usersReservations
+                .stream()
+                .noneMatch(reservation -> reservation.getId().equals(testReservation.getId())));
+    }
+}

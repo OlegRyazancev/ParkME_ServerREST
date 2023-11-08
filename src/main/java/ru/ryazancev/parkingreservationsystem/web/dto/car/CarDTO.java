@@ -11,7 +11,6 @@ import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class CarDTO {
 
     @NotNull(message = "Id must not be null", groups = OnUpdate.class)

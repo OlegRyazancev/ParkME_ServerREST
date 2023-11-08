@@ -2,11 +2,15 @@ package ru.ryazancev.parkingreservationsystem.web.dto.place;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PlaceInfoDTO {
     @NotNull(message = "Id must be not null", groups = OnUpdate.class)
     private Long id;

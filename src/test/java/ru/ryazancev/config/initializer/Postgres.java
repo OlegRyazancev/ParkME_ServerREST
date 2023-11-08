@@ -2,7 +2,6 @@ package ru.ryazancev.config.initializer;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;

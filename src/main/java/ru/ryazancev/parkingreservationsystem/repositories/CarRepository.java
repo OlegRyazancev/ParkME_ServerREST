@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
-import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 
 import java.util.List;
 import java.util.Optional;

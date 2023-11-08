@@ -12,15 +12,16 @@ import ru.ryazancev.config.IntegrationTestBase;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.ryazancev.testutils.JsonUtils.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.ryazancev.testutils.JsonUtils.createJsonNodeForObject;
 
 @AutoConfigureMockMvc
 class CarControllerTest extends IntegrationTestBase {
@@ -31,15 +32,13 @@ class CarControllerTest extends IntegrationTestBase {
     @Autowired
     private CarRepository carRepository;
 
-    private final String CAR_CONTROLLER_PATH = "/api/v1/cars";
-    private final String CAR_BY_ID_PATH = CAR_CONTROLLER_PATH + "/{id}";
-    private final Long CAR_FOR_TESTS_ID = 3L;
+    private final Long CAR_ID_FOR_TESTS = 3L;
 
     private Car testCar;
 
     @BeforeEach
     public void setUp(){
-        testCar = findObjectForTests(carRepository, CAR_FOR_TESTS_ID);
+        testCar = findObjectForTests(carRepository, CAR_ID_FOR_TESTS);
     }
 
     @DisplayName("Get car by id with right user details")
@@ -47,7 +46,7 @@ class CarControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testGetCarById_returnsStatusOkAndCarJSON() throws Exception {
         //Act && Assert
-        mockMvc.perform(get(CAR_BY_ID_PATH, testCar.getId()))
+        mockMvc.perform(get(APIPaths.CAR_BY_ID, testCar.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testCar.getId()))
                 .andExpect(jsonPath("$.number").value(testCar.getNumber()));
@@ -65,7 +64,7 @@ class CarControllerTest extends IntegrationTestBase {
         String json = createJsonNodeForObject(updatingCarDTO, List.of("id", "number")).toString();
 
         //Act
-        mockMvc.perform(put(CAR_CONTROLLER_PATH)
+        mockMvc.perform(put(APIPaths.CARS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -84,7 +83,7 @@ class CarControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteCarById_returnsNothing() throws Exception {
         //Act && Assert
-        mockMvc.perform(delete(CAR_BY_ID_PATH, testCar.getId()))
+        mockMvc.perform(delete(APIPaths.CAR_BY_ID, testCar.getId()))
                 .andExpect(status().isOk());
 
         //Assert

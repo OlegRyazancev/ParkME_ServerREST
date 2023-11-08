@@ -24,16 +24,17 @@ import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfo
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 import ru.ryazancev.testutils.DateUtils;
 import ru.ryazancev.testutils.JsonUtils;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 class UserControllerTest extends IntegrationTestBase {
@@ -50,17 +51,13 @@ class UserControllerTest extends IntegrationTestBase {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    private final Long USER_FOR_TESTS_ID = 1L;
-    private final String USER_CONTROLLER_PATH = "/api/v1/users";
-    private final String USER_BY_ID_PATH = USER_CONTROLLER_PATH + "/{id}";
-    private final String USER_CARS_PATH = USER_BY_ID_PATH + "/cars";
-    private final String USER_RESERVATIONS_PATH = USER_BY_ID_PATH + "/reservations";
+    private final Long USER_ID_FOR_TESTS = 1L;
 
     private User testUser;
 
     @BeforeEach
     public void setUp() {
-        testUser = findObjectForTests(userRepository, USER_FOR_TESTS_ID);
+        testUser = findObjectForTests(userRepository, USER_ID_FOR_TESTS);
     }
 
     @DisplayName("Get user by id")
@@ -68,7 +65,7 @@ class UserControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     void testGetUserById_returnsUserJSON() throws Exception {
         //Act && Assert
-        mockMvc.perform(get(USER_BY_ID_PATH, testUser.getId()))
+        mockMvc.perform(get(APIPaths.USER_BY_ID, testUser.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testUser.getId()))
                 .andExpect(jsonPath("$.name").value(testUser.getName()))
@@ -85,7 +82,7 @@ class UserControllerTest extends IntegrationTestBase {
         String carsJson = JsonUtils.createJsonNodeForObjects(userCars, List.of("id", "number")).toString();
 
         //Act && Assert
-        mockMvc.perform(get(USER_CARS_PATH, testUser.getId()))
+        mockMvc.perform(get(APIPaths.USER_CARS, testUser.getId()))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(content().json(carsJson));
     }
@@ -99,7 +96,7 @@ class UserControllerTest extends IntegrationTestBase {
         String reservationsJson = JsonUtils.createJsonNodeForObjects(usersReservations, List.of("id", "timeFrom", "timeTo")).toString();
 
         //Act && Assert
-        mockMvc.perform(get(USER_RESERVATIONS_PATH, testUser.getId()))
+        mockMvc.perform(get(APIPaths.USER_RESERVATIONS, testUser.getId()))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(reservationsJson));
     }
@@ -113,7 +110,7 @@ class UserControllerTest extends IntegrationTestBase {
         String carJson = JsonUtils.createJsonNodeForObject(car, List.of("number")).toString();
 
         //Act && Assert
-        mockMvc.perform(post(USER_CARS_PATH, testUser.getId())
+        mockMvc.perform(post(APIPaths.USER_CARS, testUser.getId())
                         .content(carJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -142,7 +139,7 @@ class UserControllerTest extends IntegrationTestBase {
         String json = JsonUtils.createJsonNodeForObject(reservationInfoDTO, List.of("timeFrom", "timeTo", "zone", "place", "car")).toString();
 
         //Act && Assert
-        mockMvc.perform(post(USER_RESERVATIONS_PATH, testUser.getId())
+        mockMvc.perform(post(APIPaths.USER_RESERVATIONS, testUser.getId())
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -174,7 +171,7 @@ class UserControllerTest extends IntegrationTestBase {
                 .build();
         String json = JsonUtils.createJsonNodeForObject(updatingUser, List.of("id", "name", "email", "password")).toString();
         //Act
-        mockMvc.perform(put(USER_CONTROLLER_PATH)
+        mockMvc.perform(put(APIPaths.USERS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -195,7 +192,7 @@ class UserControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteUser_shouldDeleteAllUsersDependencies_returnsNothing() throws Exception {
         //Act && Assert
-        mockMvc.perform(delete(USER_BY_ID_PATH, testUser.getId()))
+        mockMvc.perform(delete(APIPaths.USER_BY_ID, testUser.getId()))
                 .andExpect(status().isOk());
 
         //Assert

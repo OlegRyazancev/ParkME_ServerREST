@@ -17,14 +17,17 @@ import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
 import ru.ryazancev.testutils.DateUtils;
 import ru.ryazancev.testutils.JsonUtils;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 class ReservationControllerTest extends IntegrationTestBase {
@@ -38,15 +41,13 @@ class ReservationControllerTest extends IntegrationTestBase {
     @Autowired
     private PlaceRepository placeRepository;
 
-    private final String RESERVATION_CONTROLLER_PATH = "/api/v1/reservations";
-    private final String RESERVATION_BY_ID_PATH = RESERVATION_CONTROLLER_PATH + "/{id}";
-    private final Long RESERVATION_FOR_TESTS_ID = 1L;
+    private final Long RESERVATION_ID_FOR_TESTS = 1L;
 
     private Reservation testReservation;
 
     @BeforeEach
     public void setUp() {
-        testReservation = findObjectForTests(reservationRepository, RESERVATION_FOR_TESTS_ID);
+        testReservation = findObjectForTests(reservationRepository, RESERVATION_ID_FOR_TESTS);
     }
 
     @DisplayName("Change timeTo of reservation")
@@ -62,7 +63,7 @@ class ReservationControllerTest extends IntegrationTestBase {
         String reservationJson = JsonUtils.createJsonNodeForObject(updatingReservationDTO, List.of("id", "timeTo")).toString();
 
         //Act && Assert
-        mockMvc.perform(put(RESERVATION_CONTROLLER_PATH)
+        mockMvc.perform(put(APIPaths.RESERVATIONS)
                         .content(reservationJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -82,7 +83,7 @@ class ReservationControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteReservation_shouldDeleteAllDependencies_returnsNothing() throws Exception {
         //Act
-        mockMvc.perform(delete(RESERVATION_BY_ID_PATH, testReservation.getId()))
+        mockMvc.perform(delete(APIPaths.RESERVATION_BY_ID, testReservation.getId()))
                 .andExpect(status().isOk());
         //Assert
         assertFalse(reservationRepository.existsById(testReservation.getId()));

@@ -64,7 +64,7 @@ public class JsonUtils {
             return jsonNodeFactory.numberNode((Double) value);
         else if (value instanceof LocalDateTime)
             return jsonNodeFactory.textNode(DateUtils.customFormatter.format((LocalDateTime) value));
-        else
+         else
             return jsonNodeFactory.textNode(String.valueOf(value));
     }
 

@@ -4,7 +4,6 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
-import ru.ryazancev.parkingreservationsystem.util.mappers.Mappable;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 
 import java.util.List;

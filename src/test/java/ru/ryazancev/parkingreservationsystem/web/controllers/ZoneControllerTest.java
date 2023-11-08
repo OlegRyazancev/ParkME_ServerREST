@@ -13,11 +13,12 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
 import ru.ryazancev.testutils.JsonUtils;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
@@ -29,17 +30,12 @@ class ZoneControllerTest extends IntegrationTestBase {
     @Autowired
     private ZoneRepository zoneRepository;
 
-    private final String ZONES_CONTROLLER_PATH = "/api/v1/zones";
-    private final String ZONE_BY_ID_PATH = ZONES_CONTROLLER_PATH + "/{id}";
-    private final String ZONES_PLACES_PATH = ZONE_BY_ID_PATH + "/places";
-    private final String ZONES_FREE_PLACES_PATH = ZONES_PLACES_PATH + "/free";
-
-    private final Long ZONE_FOR_TESTS_ID = 1L;
+    private final Long ZONE_ID_FOR_TESTS = 1L;
     private Zone testZone;
 
     @BeforeEach
     public void setUp() {
-        testZone = findObjectForTests(zoneRepository, ZONE_FOR_TESTS_ID);
+        testZone = findObjectForTests(zoneRepository, ZONE_ID_FOR_TESTS);
     }
 
     @DisplayName("Get zones")
@@ -51,7 +47,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         String zonesJson = JsonUtils.createJsonNodeForObjects(zones, List.of("id", "number")).toString();
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_CONTROLLER_PATH))
+        mockMvc.perform(get(APIPaths.ZONES))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(content().json(zonesJson));
@@ -62,7 +58,7 @@ class ZoneControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     public void testGetZoneById_returnsStatusIsOkAndZoneJSON() throws Exception {
         //Act && Assert
-        mockMvc.perform(get(ZONE_BY_ID_PATH, testZone.getId()))
+        mockMvc.perform(get(APIPaths.ZONE_BY_ID, testZone.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testZone.getId()))
                 .andExpect(jsonPath("$.number").value(testZone.getNumber()));
@@ -77,7 +73,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         String placesJson = JsonUtils.createJsonNodeForObjects(zonesPlaces, List.of("id", "number", "status")).toString();
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_PLACES_PATH, testZone.getId()))
+        mockMvc.perform(get(APIPaths.ZONE_PLACES, testZone.getId()))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(content().json(placesJson));
     }
@@ -94,7 +90,7 @@ class ZoneControllerTest extends IntegrationTestBase {
         String freePlacesJson = JsonUtils.createJsonNodeForObjects(freePlaces, List.of("id", "number", "status")).toString();
 
         //Act && Assert
-        mockMvc.perform(get(ZONES_FREE_PLACES_PATH, testZone.getId()))
+        mockMvc.perform(get(APIPaths.ZONE_FREE_PLACES, testZone.getId()))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(freePlacesJson));
     }

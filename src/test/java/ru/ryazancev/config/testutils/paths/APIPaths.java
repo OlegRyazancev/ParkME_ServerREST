@@ -126,4 +126,24 @@ public class APIPaths {
             .withPath(PathParts.PLACES)
             .withPath(PathParts.FREE)
             .build();
+
+    public static final String LOGIN = APIPathBuilder.builder()
+            .withBase(APIBase.V1)
+            .withPath(PathParts.AUTH)
+            .withPath(PathParts.LOGIN)
+            .build();
+
+    public static final String REGISTER = APIPathBuilder.builder()
+            .withBase(APIBase.V1)
+            .withPath(PathParts.AUTH)
+            .withPath(PathParts.REGISTER)
+            .build();
+
+    public static final String REFRESH = APIPathBuilder.builder()
+            .withBase(APIBase.V1)
+            .withPath(PathParts.AUTH)
+            .withPath(PathParts.REFRESH)
+            .build();
+
+
 }

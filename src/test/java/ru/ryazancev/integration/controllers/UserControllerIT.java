@@ -175,7 +175,7 @@ public class UserControllerIT extends BaseIT {
                 .id(testUser.getId())
                 .name("New name")
                 .email(testUser.getEmail())
-                .password(testUser.getPassword())
+                .password("password")
                 .build();
         String json = JsonUtils.createJsonNodeForObject(updatingUser, List.of("id", "name", "email", "password")).toString();
         //Act
@@ -189,8 +189,8 @@ public class UserControllerIT extends BaseIT {
 
         //Assert
         Optional<User> updatedUser = userRepository.findById(updatingUser.getId());
-
         assertTrue(updatedUser.isPresent());
+        System.out.println(updatedUser.get().getPassword());
         assertEquals(updatingUser.getId(), updatedUser.get().getId());
         assertEquals(updatingUser.getName(), updatedUser.get().getName());
     }
@@ -232,13 +232,6 @@ public class UserControllerIT extends BaseIT {
                         .getPlace()
                         .getId()
                         .equals(placeId))
-                .findFirst();
-    }
-
-    private Optional<Car> findCreatedCarByUserCars(Long userId, String carNumber) {
-        return carRepository.findAllByUserId(userId)
-                .stream()
-                .filter(c -> c.getNumber().equals(carNumber))
                 .findFirst();
     }
 }

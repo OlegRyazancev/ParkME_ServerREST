@@ -1,8 +1,12 @@
 package ru.ryazancev.parkingreservationsystem.web.dto.auth;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class JwtResponse {
 
     private Long id;

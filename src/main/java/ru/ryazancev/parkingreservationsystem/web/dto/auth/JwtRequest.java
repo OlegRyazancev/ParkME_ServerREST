@@ -1,9 +1,13 @@
 package ru.ryazancev.parkingreservationsystem.web.dto.auth;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class JwtRequest {
 
     @NotNull(message = "Username must be not null")

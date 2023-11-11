@@ -1,6 +1,6 @@
 insert into users (name, email, password)
-values ('Test1', 'test1@gmail.com', 'password'),
-       ('Test2', 'test2@gmail.com', 'password');
+values ('Test1', 'test1@gmail.com', '$2a$10$1tkzMXIgpvoxImncG9MX9ObP79SR/jM9zBliIrHo6a66tvsgt/YW.'),
+       ('Test2', 'test2@gmail.com', '$2a$10$1tkzMXIgpvoxImncG9MX9ObP79SR/jM9zBliIrHo6a66tvsgt/YW.');
 
 insert into users_roles (user_id, role)
 values (1, 'ROLE_ADMIN'),

@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.controllers;
+package ru.ryazancev.integration.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,11 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.config.testutils.paths.APIPaths;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.ryazancev.testutils.JsonUtils.createJsonNodeForObject;
+import static ru.ryazancev.config.testutils.JsonUtils.createJsonNodeForObject;
 
 @AutoConfigureMockMvc
-class CarControllerTest extends IntegrationTestBase {
+public class CarControllerIT extends BaseIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,10 +55,10 @@ class CarControllerTest extends IntegrationTestBase {
     @DisplayName("Update car")
     @Test
     @WithUserDetails("test1@gmail.com")
-    public void testUpdateCar_returnsStatusOkAndUpdatedCarJSON() throws Exception {
+    public void testUpdateCar_returnsUpdatedCarJSON() throws Exception {
         //Arrange
         CarDTO updatingCarDTO = CarDTO.builder()
-                .id(1L)
+                .id(testCar.getId())
                 .number("X000XX00")
                 .build();
         String json = createJsonNodeForObject(updatingCarDTO, List.of("id", "number")).toString();

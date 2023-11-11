@@ -1,13 +1,14 @@
-package ru.ryazancev.parkingreservationsystem.repositories;
+package ru.ryazancev.integration.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.integration.BaseIT;
+import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UserRepositoryTest extends IntegrationTestBase {
+public class UserRepositoryIT extends BaseIT {
 
     @Autowired
     private UserRepository userRepository;

@@ -1,17 +1,18 @@
-package ru.ryazancev.parkingreservationsystem.repositories;
+package ru.ryazancev.integration.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PlaceRepositoryTest extends IntegrationTestBase {
+public class PlaceRepositoryIT extends BaseIT {
 
     @Autowired
     private PlaceRepository placeRepository;

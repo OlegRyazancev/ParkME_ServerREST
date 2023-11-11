@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.controllers;
+package ru.ryazancev.integration.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,16 +8,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.config.testutils.DateUtils;
+import ru.ryazancev.config.testutils.JsonUtils;
+import ru.ryazancev.config.testutils.paths.APIPaths;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
-import ru.ryazancev.testutils.DateUtils;
-import ru.ryazancev.testutils.JsonUtils;
-import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-class ReservationControllerTest extends IntegrationTestBase {
+public class ReservationControllerIT extends BaseIT {
 
     @Autowired
     private MockMvc mockMvc;

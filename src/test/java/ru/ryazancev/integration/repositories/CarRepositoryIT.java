@@ -1,16 +1,17 @@
-package ru.ryazancev.parkingreservationsystem.repositories;
+package ru.ryazancev.integration.repositories;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
+import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CarRepositoryTest extends IntegrationTestBase {
+public class CarRepositoryIT extends BaseIT {
 
     @Autowired
     private CarRepository carRepository;

@@ -1,4 +1,4 @@
-package ru.ryazancev.testutils.paths;
+package ru.ryazancev.config.testutils.paths;
 
 public class APIPaths {
 
@@ -57,7 +57,7 @@ public class APIPaths {
             .withAdmin()
             .withPath(PathParts.PLACES)
             .withId()
-            .withPath(PathParts.FREE)
+            .withPath(PathParts.STATUS)
             .build();
 
     public static final String CARS = APIPathBuilder.builder()

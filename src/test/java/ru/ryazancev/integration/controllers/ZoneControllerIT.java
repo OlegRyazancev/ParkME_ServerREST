@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.controllers;
+package ru.ryazancev.integration.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.config.testutils.JsonUtils;
+import ru.ryazancev.config.testutils.paths.APIPaths;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
-import ru.ryazancev.testutils.JsonUtils;
-import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
-class ZoneControllerTest extends IntegrationTestBase {
+public class ZoneControllerIT extends BaseIT {
 
     @Autowired
     private MockMvc mockMvc;

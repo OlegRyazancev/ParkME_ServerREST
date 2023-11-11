@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.services.impl;
+package ru.ryazancev.unit.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,7 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.*;
+import ru.ryazancev.parkingreservationsystem.services.impl.ReservationServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDateTime;

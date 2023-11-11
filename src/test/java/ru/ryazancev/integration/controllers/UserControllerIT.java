@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.controllers;
+package ru.ryazancev.integration.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,7 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.config.IntegrationTestBase;
+import ru.ryazancev.config.testutils.DateUtils;
+import ru.ryazancev.config.testutils.JsonUtils;
+import ru.ryazancev.config.testutils.paths.APIPaths;
+import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
@@ -22,22 +25,18 @@ import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
-import ru.ryazancev.testutils.DateUtils;
-import ru.ryazancev.testutils.JsonUtils;
-import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
-class UserControllerTest extends IntegrationTestBase {
+public class UserControllerIT extends BaseIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -106,8 +105,10 @@ class UserControllerTest extends IntegrationTestBase {
     @WithUserDetails("test1@gmail.com")
     void testCreateCar_returnsNewCarJSONWithId() throws Exception {
         //Arrange
-        CarDTO car = CarDTO.builder().number("X000XX00").build();
-        String carJson = JsonUtils.createJsonNodeForObject(car, List.of("number")).toString();
+        int countUserCars = testUser.getCars().size();
+
+        CarDTO creatingCar = CarDTO.builder().number("X000XX00").build();
+        String carJson = JsonUtils.createJsonNodeForObject(creatingCar, List.of("number")).toString();
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.USER_CARS, testUser.getId())
@@ -115,12 +116,19 @@ class UserControllerTest extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.number").value(car.getNumber()));
+                .andExpect(jsonPath("$.number").value(creatingCar.getNumber()));
 
         //Assert
-        Optional<Car> createdCar = getCreatedCar(testUser.getId(), car.getNumber());
+        List<Car> userCars = carRepository.findAllByUserId(testUser.getId());
+        assertEquals(++countUserCars, userCars.size());
+
+        Optional<Car> createdCar = userCars
+                .stream()
+                .filter(car ->
+                        car.getNumber().equals(creatingCar.getNumber()))
+                .findFirst();
         assertTrue(createdCar.isPresent());
-        assertEquals(car.getNumber(), createdCar.get().getNumber());
+        assertEquals(creatingCar.getNumber(), createdCar.get().getNumber());
     }
 
     @DisplayName("Make reservation")
@@ -152,7 +160,7 @@ class UserControllerTest extends IntegrationTestBase {
         assertTrue(occupiedPlace.isPresent());
         assertEquals(Status.OCCUPIED, occupiedPlace.get().getStatus());
 
-        Optional<Reservation> createdReservation = getCreatedReservation(testUser.getId(), occupiedPlace.get().getId());
+        Optional<Reservation> createdReservation = findCreatedReservation(testUser.getId(), occupiedPlace.get().getId());
         assertTrue(createdReservation.isPresent());
         assertEquals(reservationInfoDTO.getTimeFrom(), createdReservation.get().getTimeFrom());
         assertEquals(reservationInfoDTO.getTimeTo(), createdReservation.get().getTimeTo());
@@ -217,7 +225,7 @@ class UserControllerTest extends IntegrationTestBase {
                 .findFirst();
     }
 
-    private Optional<Reservation> getCreatedReservation(Long userId, Long placeId) {
+    private Optional<Reservation> findCreatedReservation(Long userId, Long placeId) {
         return reservationRepository.findAllByUserId(userId)
                 .stream()
                 .filter(reservation -> reservation
@@ -227,7 +235,7 @@ class UserControllerTest extends IntegrationTestBase {
                 .findFirst();
     }
 
-    private Optional<Car> getCreatedCar(Long userId, String carNumber) {
+    private Optional<Car> findCreatedCarByUserCars(Long userId, String carNumber) {
         return carRepository.findAllByUserId(userId)
                 .stream()
                 .filter(c -> c.getNumber().equals(carNumber))

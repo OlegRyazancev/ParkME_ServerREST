@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.services.impl;
+package ru.ryazancev.unit.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
+import ru.ryazancev.parkingreservationsystem.services.impl.AuthServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtRequest;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtResponse;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceImplTest {
+public class AuthServiceImplTest {
 
     @Mock
     private AuthenticationManager authenticationManager;

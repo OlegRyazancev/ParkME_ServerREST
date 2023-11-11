@@ -1,4 +1,4 @@
-package ru.ryazancev.testutils.paths;
+package ru.ryazancev.config.testutils.paths;
 
 public class APIPathBuilder {
     private final StringBuilder pathBuilder = new StringBuilder();

@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.services.impl;
+package ru.ryazancev.unit.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
+import ru.ryazancev.parkingreservationsystem.services.impl.PlaceServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PlaceServiceImplTest {
+public class PlaceServiceImplTest {
 
     @Mock
     private PlaceRepository placeRepository;

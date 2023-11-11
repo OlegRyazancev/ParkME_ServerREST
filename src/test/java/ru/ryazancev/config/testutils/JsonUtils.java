@@ -1,6 +1,7 @@
-package ru.ryazancev.testutils;
+package ru.ryazancev.config.testutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -33,7 +34,7 @@ public class JsonUtils {
                 Field field = obj.getClass().getDeclaredField(prop);
                 field.setAccessible(true);
                 Object value = field.get(obj);
-                if (prop.equals("zone") || prop.equals("place") || prop.equals("car")) {
+                if (prop.equals("zone") || prop.equals("place") || prop.equals("car") || prop.equals("user")) {
                     ObjectNode nestedNode = jsonNodeFactory.objectNode();
                     List<String> nestedProperties = getNestedProperties(value);
 
@@ -64,7 +65,7 @@ public class JsonUtils {
             return jsonNodeFactory.numberNode((Double) value);
         else if (value instanceof LocalDateTime)
             return jsonNodeFactory.textNode(DateUtils.customFormatter.format((LocalDateTime) value));
-         else
+        else
             return jsonNodeFactory.textNode(String.valueOf(value));
     }
 
@@ -82,5 +83,25 @@ public class JsonUtils {
             if (fieldValue != null) nestedProperties.add(field.getName());
         }
         return nestedProperties;
+    }
+
+    public static String extractJson(String fullJson) throws JsonProcessingException {
+        JsonNode jsonNode = objectMapper.readTree(fullJson);
+
+        return String.format("{\"id\":%d," +
+                        "\"timeFrom\":\"%s\"," +
+                        "\"timeTo\":\"%s\"," +
+                        "\"zone\":{\"id\":%d,\"number\":%d}," +
+                        "\"place\":{\"id\":%d,\"number\":%d}," +
+                        "\"car\":{\"id\":%d,\"number\":\"%s\"}," +
+                        "\"user\":{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\"}}",
+                jsonNode.get("id").asLong(),
+                jsonNode.get("timeFrom").asText(),
+                jsonNode.get("timeTo").asText(),
+                jsonNode.get("zone").get("id").asLong(), jsonNode.get("zone").get("number").asInt(),
+                jsonNode.get("place").get("id").asLong(), jsonNode.get("place").get("number").asInt(),
+                jsonNode.get("car").get("id").asLong(), jsonNode.get("car").get("number").asText(),
+                jsonNode.get("user").get("id").asLong(), jsonNode.get("user").get("name").asText(),
+                jsonNode.get("user").get("email").asText());
     }
 }

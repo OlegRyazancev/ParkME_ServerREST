@@ -34,5 +34,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             INSERT INTO zones_places(zone_id, place_id)
             VALUES (:zoneId, :placeId)
             """, nativeQuery = true)
-    void assignToZone(@Param("placeId") Long placeId, @Param("zoneId") Long zoneId);
+    void assignToZone(@Param("placeId") Long placeId,
+                      @Param("zoneId") Long zoneId);
 }

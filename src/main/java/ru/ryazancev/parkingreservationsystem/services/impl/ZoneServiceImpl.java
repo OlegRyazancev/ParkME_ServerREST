@@ -27,16 +27,18 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public Zone getById(Long zoneId) {
+    public Zone getById(final Long zoneId) {
         return zoneRepository.findById(zoneId)
-                .orElseThrow(() -> new ResourceNotFoundException("Zone not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Zone not found"));
     }
 
     @Override
     @Transactional
-    public Zone create(Zone zone) {
-        if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
+    public Zone create(final Zone zone) {
+        if (zoneRepository.findByNumber(zone.getNumber()).isPresent()) {
             throw new IllegalStateException("Zone is already exists");
+        }
 
         zoneRepository.save(zone);
         return zone;
@@ -44,9 +46,10 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     @Transactional
-    public Zone update(Zone zone) {
-        if (zoneRepository.findByNumber(zone.getNumber()).isPresent())
+    public Zone update(final Zone zone) {
+        if (zoneRepository.findByNumber(zone.getNumber()).isPresent()) {
             throw new IllegalStateException("Zone is already exists");
+        }
 
         zoneRepository.save(zone);
 
@@ -55,20 +58,23 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     @Transactional
-    public void delete(Long zoneId) {
+    public void delete(final Long zoneId) {
         Zone foundZone = zoneRepository
-                .findById(zoneId).orElseThrow(() -> new ResourceNotFoundException("Zone not found"));
+                .findById(zoneId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Zone not found"));
 
         Hibernate.initialize(foundZone.getPlaces());
 
         if (foundZone.getPlaces()
                 .stream()
-                .anyMatch(place -> place.getStatus().equals(Status.OCCUPIED)))
+                .anyMatch(place -> place.getStatus().equals(Status.OCCUPIED))) {
             throw new IllegalStateException("Zone have occupied places");
-
+        }
 
         foundZone.getPlaces()
-                .forEach(place -> placeRepository.deleteById(place.getId()));
+                .forEach(place ->
+                        placeRepository.deleteById(place.getId()));
 
         zoneRepository.deleteById(foundZone.getId());
     }

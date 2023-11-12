@@ -13,10 +13,14 @@ import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 @Builder
 public class CarDTO {
 
-    @NotNull(message = "Id must not be null", groups = OnUpdate.class)
+    @NotNull(message = "Id must not be null",
+            groups = OnUpdate.class)
     private Long id;
 
-    @NotNull(message = "Number must not be null", groups = {OnCreate.class, OnUpdate.class})
-    @Pattern(regexp = "^[A-Z]\\d{3}[A-Z]{2}\\d{2,3}$", message = "Car number should be in this format: A000AA00", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "Number must not be null",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Pattern(regexp = "^[A-Z]\\d{3}[A-Z]{2}\\d{2,3}$",
+            message = "Car number should be in this format: A000AA00",
+            groups = {OnCreate.class, OnUpdate.class})
     private String number;
 }

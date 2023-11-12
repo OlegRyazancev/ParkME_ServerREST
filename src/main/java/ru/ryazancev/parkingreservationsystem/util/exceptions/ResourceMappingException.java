@@ -2,7 +2,7 @@ package ru.ryazancev.parkingreservationsystem.util.exceptions;
 
 public class ResourceMappingException extends RuntimeException {
 
-    public ResourceMappingException(String message) {
+    public ResourceMappingException(final String message) {
         super(message);
     }
 }

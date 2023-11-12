@@ -13,11 +13,15 @@ import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 @Builder
 public class ZoneDTO {
 
-    @NotNull(message = "Id must not be null", groups = OnUpdate.class)
+    @NotNull(message = "Id must not be null",
+            groups = OnUpdate.class)
     private Long id;
 
-    @NotNull(message = "Number must not be null", groups = {OnCreate.class, OnUpdate.class})
-    @Min(value = 1, message = "Number should be greater than 1", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "Number must not be null",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Min(value = 1,
+            message = "Number should be greater than 1",
+            groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
 }

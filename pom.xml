@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -29,17 +28,16 @@
         <springdoc.version>2.2.0</springdoc.version>
         <preliquibase.version>1.4.0</preliquibase.version>
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
-        <graphql-java-extended-scalars.version>21.0</graphql-java-extended-scalars.version>
+        <graphql-java-extended-scalars.version>20.2</graphql-java-extended-scalars.version>
         <annotations.version>24.0.1</annotations.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <postgresql-container.version>1.18.3</postgresql-container.version>
-        <junit-platfrom-suite-engine.version>1.10.0</junit-platfrom-suite-engine.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <spring-security-test.version>6.1.5</spring-security-test.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
         <xml-format.version>3.2.2</xml-format.version>
         <checkstyle.version>3.2.2</checkstyle.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -88,13 +86,11 @@
             <version>${shakeyaml.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>net.lbruun.springboot</groupId>
@@ -186,8 +182,15 @@
 
         <dependency>
             <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql-container.version}</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 

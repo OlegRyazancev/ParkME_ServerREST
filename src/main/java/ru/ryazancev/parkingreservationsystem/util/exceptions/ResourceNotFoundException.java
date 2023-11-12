@@ -2,7 +2,7 @@ package ru.ryazancev.parkingreservationsystem.util.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 
-    public ResourceNotFoundException(String message) {
+    public ResourceNotFoundException(final String message) {
         super(message);
     }
 }

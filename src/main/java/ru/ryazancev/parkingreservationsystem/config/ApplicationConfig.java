@@ -35,7 +35,8 @@ import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenPro
 public class ApplicationConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final ReservationCleanUpFilterProvider reservationCleanUpFilterProvider;
+
+    private final ReservationCleanUpFilterProvider cleanUpFilterProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,7 +44,9 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(final AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            final AuthenticationConfiguration configuration)
+            throws Exception {
         return configuration.getAuthenticationManager();
     }
 
@@ -51,7 +54,8 @@ public class ApplicationConfig {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .addSecurityItem(
+                        new SecurityRequirement().addList("bearerAuth"))
                 .components(
                         new Components()
                                 .addSecuritySchemes("bearerAuth",
@@ -67,34 +71,46 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
+    public SecurityFilterChain filterChain(
+            final HttpSecurity httpSecurity)
+            throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                        .sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS))
                 .exceptionHandling(configurer -> configurer
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.getWriter().write("Unauthorized");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpStatus.FORBIDDEN.value());
-                            response.getWriter().write("Access denied");
-                        }))
+                        .authenticationEntryPoint(
+                                (request, response, authException) -> {
+                                    response.setStatus(
+                                            HttpStatus.UNAUTHORIZED.value());
+                                    response.getWriter()
+                                            .write("Unauthorized");
+                                })
+                        .accessDeniedHandler(
+                                (request, response, accessDeniedException) -> {
+                                    response.setStatus(
+                                            HttpStatus.FORBIDDEN.value());
+                                    response.getWriter()
+                                            .write("Access denied");
+                                }))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ROLE_ADMIN.name())
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(
+                                Role.ROLE_ADMIN.name())
                         .requestMatchers("/graphiql").permitAll()
                         .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new ReservationCleanupFilter(reservationCleanUpFilterProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        new JwtTokenFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(
+                        new ReservationCleanupFilter(cleanUpFilterProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

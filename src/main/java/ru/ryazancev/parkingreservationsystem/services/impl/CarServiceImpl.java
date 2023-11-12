@@ -25,24 +25,27 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Car getById(Long carId) {
+    public Car getById(final Long carId) {
         return carRepository.findById(carId)
-                .orElseThrow(() -> new ResourceNotFoundException("Car not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Car not found"));
     }
 
     @Override
-    public List<Car> getAllByUserId(Long userId) {
+    public List<Car> getAllByUserId(final Long userId) {
         List<Car> cars = carRepository.findAllByUserId(userId);
-        if (cars.isEmpty())
+        if (cars.isEmpty()) {
             throw new IllegalStateException("User hasn't registered any car");
+        }
         return cars;
     }
 
     @Transactional
     @Override
-    public Car create(final Car car, Long userId) {
-        if (carRepository.findByNumber(car.getNumber()).isPresent())
+    public Car create(final Car car, final Long userId) {
+        if (carRepository.findByNumber(car.getNumber()).isPresent()) {
             throw new IllegalStateException("Car already exists");
+        }
         carRepository.save(car);
         carRepository.assignToUser(userId, car.getId());
         return car;
@@ -50,20 +53,23 @@ public class CarServiceImpl implements CarService {
 
     @Transactional
     @Override
-    public Car update(Car car) {
-        if (carRepository.findByNumber(car.getNumber()).isPresent())
+    public Car update(final Car car) {
+        if (carRepository.findByNumber(car.getNumber()).isPresent()) {
             throw new IllegalStateException("Car has the same number");
-        if (carRepository.findById(car.getId()).isEmpty())
+        }
+        if (carRepository.findById(car.getId()).isEmpty()) {
             throw new ResourceNotFoundException("Car does not exists");
+        }
         carRepository.save(car);
         return car;
     }
 
     @Transactional
     @Override
-    public void delete(Long carId) {
-        if (reservationRepository.findByCarId(carId).isPresent())
-            throw new IllegalStateException("Can not delete car, because car has reservations");
+    public void delete(final Long carId) {
+        if (reservationRepository.findByCarId(carId).isPresent()) {
+            throw new IllegalStateException("Car has reservations");
+        }
 
         carRepository.deleteById(carId);
     }

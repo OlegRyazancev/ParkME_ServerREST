@@ -15,13 +15,16 @@ public class ReservationCleanupFilter extends GenericFilterBean {
 
     @SneakyThrows
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+    public void doFilter(final ServletRequest request,
+                         final ServletResponse response,
+                         final FilterChain chain) {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         try {
             if (httpRequest.getMethod().equals("GET")) {
                 cleanUpFilterProvider.clean();
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         chain.doFilter(request, response);
     }
 }

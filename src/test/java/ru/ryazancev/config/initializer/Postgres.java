@@ -1,6 +1,7 @@
 package ru.ryazancev.config.initializer;
 
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,7 +15,7 @@ public class Postgres {
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
-        public void initialize(ConfigurableApplicationContext applicationContext) {
+        public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
             TestPropertyValues.of(
                     "spring.datasource.url=" + container.getJdbcUrl(),
                     "spring.datasource.username=" + container.getUsername(),

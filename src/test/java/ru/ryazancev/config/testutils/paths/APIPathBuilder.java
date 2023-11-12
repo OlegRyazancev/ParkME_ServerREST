@@ -10,7 +10,7 @@ public class APIPathBuilder {
         return new APIPathBuilder();
     }
 
-    public APIPathBuilder withAdmin(){
+    public APIPathBuilder withAdmin() {
         pathBuilder.append("/admin");
         return this;
     }

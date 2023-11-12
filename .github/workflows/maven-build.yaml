@@ -1,0 +1,38 @@
+name: maven-build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  maven-build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml')}}
+          restore-keys: |
+            maven-
+
+      - name: Set up Testcontainers
+        uses: atomicjar/testcontainers-cloud-setup-action@v1
+        with:
+          token: ${{ secrets.TC_CLOUD_TOKEN }}
+      - name: Wait for PostgreSQL container to be ready
+        run: sleep 30
+      - name: Build and test with Maven
+        run: mvn clean install

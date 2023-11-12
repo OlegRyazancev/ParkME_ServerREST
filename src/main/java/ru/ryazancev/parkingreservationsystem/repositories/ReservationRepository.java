@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository
+        extends JpaRepository<Reservation, Long> {
 
-    List<Reservation> findAllByUserId(@Param("userId") Long userId);
+    List<Reservation> findAllByUserId(
+            @Param("userId") Long userId);
 
     Optional<Reservation> findByCarId(Long carId);
 
@@ -24,7 +26,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             FROM reservations r
             WHERE r.time_to < :currentTime
             """, nativeQuery = true)
-    void deleteExpiredReservations(@Param("currentTime") LocalDateTime currentTime);
+    void deleteExpiredReservations(
+            @Param("currentTime") LocalDateTime currentTime);
 
 
 }

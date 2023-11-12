@@ -78,7 +78,7 @@ public class AdminController {
     @QueryMapping("reservationInfoById")
     @Operation(summary = "Get reservation info by id")
     public ReservationInfoDTO getReservationInfoById(@PathVariable("id")
-                                                     @Argument Long id) {
+                                                     @Argument final Long id) {
         Reservation reservation = reservationService.getInfo(id);
 
         return reservationInfoMapper.toDTO(reservation);
@@ -88,7 +88,7 @@ public class AdminController {
     @QueryMapping("placeById")
     @Operation(summary = "Get place by id")
     public PlaceDTO getPlaceById(@PathVariable("id")
-                                 @Argument Long id) {
+                                 @Argument final Long id) {
         Place place = placeService.getById(id);
         return placeMapper.toDTO(place);
     }
@@ -98,7 +98,7 @@ public class AdminController {
     @Operation(summary = "Create zone")
     public ZoneDTO createZone(@Validated(OnCreate.class)
                               @RequestBody
-                              @Argument ZoneDTO zoneDTO) {
+                              @Argument final ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone createdZone = zoneService.create(zone);
 
@@ -109,10 +109,10 @@ public class AdminController {
     @MutationMapping("createPlaceInZoneById")
     @Operation(summary = "Create place in zone by id")
     public PlaceDTO createPlaceInZoneById(@PathVariable("id")
-                                          @Argument Long zoneId,
+                                          @Argument final Long zoneId,
                                           @Validated(OnCreate.class)
                                           @RequestBody
-                                          @Argument PlaceDTO placeDTO) {
+                                          @Argument final PlaceDTO placeDTO) {
         Place place = placeMapper.toEntity(placeDTO);
         Place createdPlace = placeService.create(place, zoneId);
 
@@ -124,7 +124,7 @@ public class AdminController {
     @Operation(summary = "Update zone")
     public ZoneDTO updateZone(@Validated(OnUpdate.class)
                               @RequestBody
-                              @Argument ZoneDTO zoneDTO) {
+                              @Argument final ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone updatedZone = zoneService.update(zone);
 
@@ -135,11 +135,12 @@ public class AdminController {
     @MutationMapping("changePlaceStatusById")
     @Operation(summary = "Change place status by id")
     public PlaceDTO changePlaceStatusById(@PathVariable("id")
-                                          @Argument Long id,
+                                          @Argument final Long id,
                                           @RequestParam
-                                          @Argument String status) {
+                                          @Argument final String status) {
 
-        Place disabledPlace = placeService.changeStatus(id, Status.valueOf(status));
+        Place disabledPlace = placeService
+                .changeStatus(id, Status.valueOf(status));
 
         return placeMapper.toDTO(disabledPlace);
     }
@@ -148,7 +149,7 @@ public class AdminController {
     @MutationMapping("deleteZoneAndAssociatedPlaces")
     @Operation(summary = "Delete zone and associated places")
     public void deleteZoneAndAssociatedPlaces(@PathVariable("id")
-                                              @Argument Long id) {
+                                              @Argument final Long id) {
         zoneService.delete(id);
     }
 
@@ -156,7 +157,7 @@ public class AdminController {
     @MutationMapping("deletePlaceById")
     @Operation(summary = "Delete place by id")
     public void deletePlaceById(@PathVariable("id")
-                                @Argument Long id) {
+                                @Argument final Long id) {
         placeService.delete(id);
     }
 

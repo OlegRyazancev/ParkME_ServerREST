@@ -84,9 +84,8 @@ public class CarServiceImplTest {
         when(carRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            carService.getById(nonExistingId);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                carService.getById(nonExistingId));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -119,9 +118,8 @@ public class CarServiceImplTest {
         when(carRepository.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
 
         //Act
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            carService.getAllByUserId(anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                carService.getAllByUserId(anyLong()));
 
         //Assert
         assertEquals(expectedErrorMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -154,9 +152,8 @@ public class CarServiceImplTest {
         when(carRepository.findByNumber(creatingCar.getNumber())).thenReturn(Optional.of(car));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            carService.create(creatingCar, anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                carService.create(creatingCar, anyLong()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception message is not correct");
@@ -192,9 +189,8 @@ public class CarServiceImplTest {
         when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.of(car));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            carService.update(car);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                carService.update(car));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -209,9 +205,8 @@ public class CarServiceImplTest {
         when(carRepository.findById(car.getId())).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            carService.update(car);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                carService.update(car));
 
         //Assert
         assertEquals(expectedErrorMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -234,13 +229,12 @@ public class CarServiceImplTest {
     @Test
     public void testDeleteCar_whenCarHasReservations_throwsIllegalStateException() {
         //Arrange
-        String expectedExceptionMessage = "Can not delete car, because car has reservations";
+        String expectedExceptionMessage = "Car has reservations";
         when(reservationRepository.findByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            carService.delete(car.getId());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                carService.delete(car.getId()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");

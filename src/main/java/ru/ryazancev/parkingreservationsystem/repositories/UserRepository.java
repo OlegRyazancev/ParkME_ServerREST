@@ -19,7 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                           WHERE user_id = :userId
                             AND car_id = :carId)
             """, nativeQuery = true)
-    Boolean isCarOwner(@Param("userId") Long userId, @Param("carId") Long carId);
+    Boolean isCarOwner(@Param("userId") Long userId,
+                       @Param("carId") Long carId);
 
     @Query(value = """
             SELECT EXISTS(SELECT 1
@@ -28,6 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                           WHERE u.id = :userId
                             AND r.id = :reservationId)
             """, nativeQuery = true)
-    Boolean isReservationOwner(@Param("userId") Long userId, @Param("reservationId") Long reservationId);
+    Boolean isReservationOwner(@Param("userId") Long userId,
+                               @Param("reservationId") Long reservationId);
 }
 

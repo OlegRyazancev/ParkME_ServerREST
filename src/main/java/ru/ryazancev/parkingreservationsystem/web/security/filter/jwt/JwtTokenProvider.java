@@ -3,6 +3,7 @@ package ru.ryazancev.parkingreservationsystem.web.security.filter.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,12 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    public String createAccessToken(Long userId, String username, Set<Role> roles) {
+    public String createAccessToken(final Long userId,
+                                    final String username,
+                                    final Set<Role> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", userId);
         claims.put("roles", resolveRoles(roles));
@@ -56,13 +59,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private List<String> resolveRoles(Set<Role> roles) {
+    private List<String> resolveRoles(final Set<Role> roles) {
         return roles.stream()
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
 
-    public String createRefreshToken(Long userId, String username) {
+    public String createRefreshToken(final Long userId,
+                                     final String username) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", userId);
         Instant validity = Instant.now()
@@ -75,7 +79,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public JwtResponse refreshUserTokens(String refreshToken) {
+    public JwtResponse refreshUserTokens(final String refreshToken) {
         JwtResponse jwtResponse = new JwtResponse();
 
         if (!validateToken(refreshToken)) {
@@ -87,13 +91,18 @@ public class JwtTokenProvider {
 
         jwtResponse.setId(userId);
         jwtResponse.setUsername(user.getEmail());
-        jwtResponse.setAccessToken(createAccessToken(userId, user.getEmail(), user.getRoles()));
-        jwtResponse.setRefreshToken(createRefreshToken(userId, user.getEmail()));
+        jwtResponse.setAccessToken(createAccessToken(
+                userId,
+                user.getEmail(),
+                user.getRoles()));
+        jwtResponse.setRefreshToken(createRefreshToken(
+                userId,
+                user.getEmail()));
 
         return jwtResponse;
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(final String token) {
         Jws<Claims> claimsJws = Jwts
                 .parserBuilder()
                 .setSigningKey(key)
@@ -102,7 +111,7 @@ public class JwtTokenProvider {
         return !claimsJws.getBody().getExpiration().before(new Date());
     }
 
-    private String getId(String token) {
+    private String getId(final String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(key)
@@ -113,7 +122,7 @@ public class JwtTokenProvider {
                 .toString();
     }
 
-    private String getUsername(String token) {
+    private String getUsername(final String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(key)
@@ -123,10 +132,12 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(final String token) {
         String username = getUsername(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(username);
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+                userDetails, "", userDetails.getAuthorities());
     }
 }

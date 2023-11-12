@@ -20,18 +20,19 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepository placeRepository;
 
     @Override
-    public Place getById(Long placeId) {
+    public Place getById(final Long placeId) {
         return placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Place not found"));
     }
 
     @Override
-    public List<Place> getAllByZoneId(Long zoneId) {
+    public List<Place> getAllByZoneId(final Long zoneId) {
         return placeRepository.findAllByZoneId(zoneId);
     }
 
     @Override
-    public List<Place> getFreePlacesByZoneId(Long zoneId) {
+    public List<Place> getFreePlacesByZoneId(final Long zoneId) {
         List<Place> foundPlaces = placeRepository.findAllByZoneId(zoneId);
 
         return foundPlaces.stream()
@@ -41,11 +42,15 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public Place create(Place place, Long zoneId) {
+    public Place create(final Place place,
+                        final Long zoneId) {
         if (placeRepository.findAllByZoneId(zoneId)
                 .stream()
-                .anyMatch(zonePlace -> zonePlace.getNumber().equals(place.getNumber()))) {
-            throw new IllegalStateException("Place is already exists in this zone");
+                .anyMatch(zonePlace -> zonePlace
+                        .getNumber()
+                        .equals(place.getNumber()))) {
+            throw new IllegalStateException(
+                    "Place is already exists in this zone");
         }
         place.setStatus(Status.FREE);
         placeRepository.save(place);
@@ -56,15 +61,24 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public Place changeStatus(Long placeId, Status status) {
-        if (status.equals(Status.OCCUPIED))
-            throw new IllegalStateException("Can not use OCCUPIED status here");
-        Place foundPlace = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-        if (foundPlace.getStatus().equals(status))
-            throw new IllegalStateException("Place already has this status");
-        if (foundPlace.getStatus().equals(Status.OCCUPIED))
-            throw new IllegalStateException("Can not change status, because place is occupied");
+    public Place changeStatus(final Long placeId,
+                              final Status status) {
+        if (status.equals(Status.OCCUPIED)) {
+            throw new IllegalStateException(
+                    "Can not use OCCUPIED status here");
+        }
+        Place foundPlace = placeRepository
+                .findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Place not found"));
+        if (foundPlace.getStatus().equals(status)) {
+            throw new IllegalStateException(
+                    "Place already has this status");
+        }
+        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
+            throw new IllegalStateException(
+                    "Can not change status, because place is occupied");
+        }
 
         foundPlace.setStatus(status);
         placeRepository.save(foundPlace);
@@ -73,11 +87,14 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public void delete(Long placeId) {
-        Place foundPlace = placeRepository.findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-        if (foundPlace.getStatus().equals(Status.OCCUPIED))
+    public void delete(final Long placeId) {
+        Place foundPlace = placeRepository
+                .findById(placeId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Place not found"));
+        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
             throw new IllegalStateException("Can not delete occupied place");
+        }
 
         placeRepository.deleteById(placeId);
     }

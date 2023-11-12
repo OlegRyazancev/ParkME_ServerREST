@@ -31,22 +31,28 @@ public class Reservation implements Serializable {
     private LocalDateTime timeTo;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id",
+            referencedColumnName = "id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "zone_id", referencedColumnName = "id")
+    @JoinColumn(name = "zone_id",
+            referencedColumnName = "id")
     private Zone zone;
 
     @ManyToOne
-    @JoinColumn(name = "place_id", referencedColumnName = "id")
+    @JoinColumn(name = "place_id",
+            referencedColumnName = "id")
     private Place place;
 
     @ManyToOne
-    @JoinColumn(name = "car_id", referencedColumnName = "id")
+    @JoinColumn(name = "car_id",
+            referencedColumnName = "id")
     private Car car;
 
-    public Reservation(Long id, LocalDateTime timeFrom, LocalDateTime timeTo) {
+    public Reservation(final Long id,
+                       final LocalDateTime timeFrom,
+                       final LocalDateTime timeTo) {
         this.id = id;
         this.timeFrom = timeFrom;
         this.timeTo = timeTo;

@@ -11,7 +11,6 @@ import ru.ryazancev.config.testutils.paths.APIPaths;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
-import ru.ryazancev.parkingreservationsystem.services.AuthService;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtRequest;
 import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 

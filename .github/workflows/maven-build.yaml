@@ -20,4 +20,7 @@ jobs:
           key: maven-${{ hashFiles('**/pom.xml')}}
           restore-keys: |
             maven-
+      - uses: atomicjar/testcontainers-cloud-setup-action@v1
+        with:
+          token: ${{ secrets.TC_CLOUD_TOKEN }}
       - run: mvn clean install

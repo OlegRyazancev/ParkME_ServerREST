@@ -28,12 +28,16 @@ public class ReservationController {
     @PutMapping
     @MutationMapping("changeTimeTo")
     @Operation(summary = "Change reservation's time to")
-    @PreAuthorize("@customSecurityExpression.canAccessReservation(#reservationDTO.id)")
+    @PreAuthorize(
+            "@customSecurityExpression"
+                    + ".canAccessReservation(#reservationDTO.id)")
     public ReservationDTO changeTimeTo(@Validated(OnUpdate.class)
                                        @RequestBody
-                                       @Argument ReservationDTO reservationDTO) {
+                                       @Argument
+                                       final ReservationDTO reservationDTO) {
         Reservation reservation = reservationMapper.toEntity(reservationDTO);
-        Reservation updatedReservation = reservationService.changeTimeTo(reservation);
+        Reservation updatedReservation =
+                reservationService.changeTimeTo(reservation);
 
         return reservationMapper.toDTO(updatedReservation);
     }
@@ -43,7 +47,7 @@ public class ReservationController {
     @Operation(summary = "Delete reservation by id")
     @PreAuthorize("@customSecurityExpression.canAccessReservation(#id)")
     public void deleteById(@PathVariable("id")
-                           @Argument Long id) {
+                           @Argument final Long id) {
         reservationService.delete(id);
     }
 }

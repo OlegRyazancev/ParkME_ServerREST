@@ -30,8 +30,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,12 +51,11 @@ public class UserControllerIT extends BaseIT {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    private final Long USER_ID_FOR_TESTS = 1L;
-
     private User testUser;
 
     @BeforeEach
     public void setUp() {
+        Long USER_ID_FOR_TESTS = 1L;
         testUser = findObjectForTests(userRepository, USER_ID_FOR_TESTS);
     }
 

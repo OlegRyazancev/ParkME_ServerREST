@@ -23,10 +23,10 @@ import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 public class AdminControllerIT extends BaseIT {

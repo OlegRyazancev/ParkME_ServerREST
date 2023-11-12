@@ -32,12 +32,11 @@ public class CarControllerIT extends BaseIT {
     @Autowired
     private CarRepository carRepository;
 
-    private final Long CAR_ID_FOR_TESTS = 3L;
-
     private Car testCar;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
+        Long CAR_ID_FOR_TESTS = 3L;
         testCar = findObjectForTests(carRepository, CAR_ID_FOR_TESTS);
     }
 

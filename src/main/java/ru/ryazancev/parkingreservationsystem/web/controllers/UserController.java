@@ -49,7 +49,8 @@ public class UserController {
     @QueryMapping("userById")
     @Operation(summary = "Get user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public UserDTO getById(@PathVariable("id") @Argument Long id) {
+    public UserDTO getById(@PathVariable("id")
+                           @Argument final Long id) {
         User user = userService.getById(id);
 
         return userMapper.toDTO(user);
@@ -59,7 +60,8 @@ public class UserController {
     @QueryMapping("carsByUserId")
     @Operation(summary = "Get cars by user id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public List<CarDTO> getCarsByUserId(@PathVariable("id") @Argument Long id) {
+    public List<CarDTO> getCarsByUserId(@PathVariable("id")
+                                        @Argument final Long id) {
         List<Car> cars = carService.getAllByUserId(id);
 
         return carMapper.toDTO(cars);
@@ -69,8 +71,11 @@ public class UserController {
     @QueryMapping("reservationsByUserId")
     @Operation(summary = "Get reservations by user id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id") @Argument Long id) {
-        List<Reservation> reservations = reservationService.getReservationsByUserId(id);
+    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id")
+                                                        @Argument final
+                                                        Long id) {
+        List<Reservation> reservations =
+                reservationService.getReservationsByUserId(id);
 
         return reservationMapper.toDTO(reservations);
     }
@@ -81,10 +86,10 @@ public class UserController {
     @Operation(summary = "Create car")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public CarDTO createCar(@PathVariable("id")
-                            @Argument Long id,
+                            @Argument final Long id,
                             @Validated(OnCreate.class)
                             @RequestBody
-                            @Argument CarDTO carDTO) {
+                            @Argument final CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
         Car createdCar = carService.create(car, id);
 
@@ -96,12 +101,14 @@ public class UserController {
     @Operation(summary = "Make reservation")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public ReservationDTO makeReservation(@PathVariable("id")
-                                          @Argument Long id,
+                                          @Argument final Long id,
                                           @Validated(OnCreate.class)
                                           @RequestBody
-                                          @Argument ReservationInfoDTO reservationInfoDTO) {
-        Reservation reservation = reservationInfoMapper.toEntity(reservationInfoDTO);
-        Reservation createdReservation = reservationService.create(reservation, id);
+                                          @Argument final
+                                          ReservationInfoDTO rInfoDTO) {
+        Reservation reservation = reservationInfoMapper.toEntity(rInfoDTO);
+        Reservation createdReservation =
+                reservationService.create(reservation, id);
 
         return reservationMapper.toDTO(createdReservation);
     }
@@ -113,7 +120,7 @@ public class UserController {
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userDTO.id)")
     public UserDTO update(@Validated(OnUpdate.class)
                           @RequestBody
-                          @Argument UserDTO userDTO) {
+                          @Argument final UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User updatedUser = userService.update(user);
 
@@ -126,7 +133,7 @@ public class UserController {
     @Operation(summary = "Delete user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public void deleteById(@PathVariable("id")
-                           @Argument Long id) {
+                           @Argument final Long id) {
         userService.delete(id);
     }
 }

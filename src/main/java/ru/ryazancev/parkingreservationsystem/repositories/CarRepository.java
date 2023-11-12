@@ -27,5 +27,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
             INSERT INTO users_cars (user_id, car_id)
             VALUES (:userId, :carId)
             """, nativeQuery = true)
-    void assignToUser(@Param("userId") Long userId, @Param("carId") Long carId);
+    void assignToUser(@Param("userId") Long userId,
+                      @Param("carId") Long carId);
 }

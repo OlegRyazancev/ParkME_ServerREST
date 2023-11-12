@@ -31,7 +31,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public JwtResponse login(@Validated
+    public JwtResponse login(final @Validated
                              @RequestBody JwtRequest loginRequest) {
         return authService.login(loginRequest);
     }
@@ -39,7 +39,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register")
     public UserDTO register(@Validated(OnCreate.class)
-                            @RequestBody UserDTO userDTO) {
+                            @RequestBody final UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User createdUser = userService.create(user);
 
@@ -48,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Refresh")
-    public JwtResponse refresh(@RequestBody String refreshToken) {
+    public JwtResponse refresh(@RequestBody final String refreshToken) {
         return authService.refresh(refreshToken);
     }
 

@@ -35,25 +35,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(Long userId) {
+    public User getById(final Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
     }
 
     @Override
-    public User getByUsername(String username) {
+    public User getByUsername(final String username) {
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
     }
 
     @Transactional
     @Override
-    public User create(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent())
+    public User create(final User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalStateException("User already exists");
+        }
 
-        if (!user.getPassword().equals(user.getPasswordConfirmation()))
-            throw new IllegalStateException("Password and password confirmation do not equals");
+        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
+            throw new IllegalStateException(
+                    "Password and password confirmation do not equals");
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<Role> roles = Set.of(Role.ROLE_USER);
@@ -64,18 +69,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isCarOwner(Long userId, Long carId) {
+    public boolean isCarOwner(final Long userId,
+                              final Long carId) {
         return userRepository.isCarOwner(userId, carId);
     }
 
     @Override
-    public boolean isReservationOwner(Long userId, Long reservationId) {
+    public boolean isReservationOwner(final Long userId,
+                                      final Long reservationId) {
         return userRepository.isReservationOwner(userId, reservationId);
     }
 
     @Transactional
     @Override
-    public User update(User user) {
+    public User update(final User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
@@ -84,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void delete(Long userId) {
+    public void delete(final Long userId) {
 
         placeRepository.findAllOccupiedByUserId(userId)
                 .forEach(place -> {
@@ -92,9 +99,11 @@ public class UserServiceImpl implements UserService {
                     placeRepository.save(place);
                 });
         reservationRepository.findAllByUserId(userId)
-                .forEach(reservation -> reservationRepository.deleteById(reservation.getId()));
+                .forEach(reservation ->
+                        reservationRepository.deleteById(reservation.getId()));
         carRepository.findAllByUserId(userId)
-                .forEach(car -> carRepository.deleteById(car.getId()));
+                .forEach(car ->
+                        carRepository.deleteById(car.getId()));
         userRepository.deleteById(userId);
     }
 }

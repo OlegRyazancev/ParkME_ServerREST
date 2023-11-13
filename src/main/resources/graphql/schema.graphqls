@@ -11,7 +11,6 @@ type Query{
     placesByZoneId(id: ID): [Place]
     freePlacesByZoneId(id: ID): [Place]
 
-
     #    carController
     carById(id: ID): Car
 
@@ -25,23 +24,23 @@ type Query{
 
 type Mutation {
     #    userController
-    createCar(id:ID dto: InputCar): Car
-    makeReservation(dto: InputReservationInfo): Reservation
-    updateUser (dto: InputUser): User
+    createCar(userId: ID, carDTO: InputCar): Car
+    makeReservation(userId:ID, rInfoDTO: InputReservationInfo): Reservation
+    updateUser (userDTO: InputUser): User
     deleteUser(id: ID): Boolean
 
     #    reservationController
-    changeTimeTo(dto: InputReservation): Reservation
+    changeTimeTo(reservationDTO: InputReservation): Reservation
     deleteReservation(id: ID): Boolean
 
     #    carController
-    updateCar(dto: InputCar): Car
+    updateCar(carDTO: InputCar): Car
     deleteCar(id: ID): Boolean
 
     #    adminController
-    createZone(dto: InputZone): Zone
-    createPlaceInZoneById(id: ID dto:InputPlace): Place
-    updateZone(dto: InputZone): Zone
+    createZone(zoneDTO: InputZone): Zone
+    createPlaceInZoneById(zoneId: ID placeDTO:InputPlace): Place
+    updateZone(zoneDTO: InputZone): Zone
     changePlaceStatusById(id: ID status: String): Place
     deleteZoneAndAssociatedPlaces(id: ID): Boolean
     deletePlaceById(id: ID): Boolean

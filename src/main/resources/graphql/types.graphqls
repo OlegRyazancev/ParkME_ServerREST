@@ -91,6 +91,5 @@ input InputReservationInfo{
     zone: InputZone
     place: InputPlaceInfo
     car: InputCar
-    user: InputUser
 }
 

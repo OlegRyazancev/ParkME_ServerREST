@@ -11,7 +11,7 @@ public interface PlaceService {
 
     List<Place> getAllByZoneId(Long zoneId);
 
-    Place create(Place place, Long zoneId);
+    List<Place> createPlacesInZone(Long zoneId, int numberOfPlaces);
 
     Place changeStatus(Long placeId, Status status);
 
@@ -20,4 +20,6 @@ public interface PlaceService {
     Integer countFreePlacesByZoneID(Long zoneId);
 
     void delete(Long placeId);
+
+
 }

@@ -105,18 +105,28 @@ public class AdminController {
         return zoneMapper.toDTO(createdZone);
     }
 
-    @PostMapping("/zones/{id}/places")
-    @MutationMapping("createPlaceInZoneById")
-    @Operation(summary = "Create place in zone by id")
-    public PlaceDTO createPlaceInZoneById(@PathVariable("id")
-                                          @Argument final Long zoneId,
-                                          @Validated(OnCreate.class)
-                                          @RequestBody
-                                          @Argument final PlaceDTO placeDTO) {
-        Place place = placeMapper.toEntity(placeDTO);
-        Place createdPlace = placeService.create(place, zoneId);
+//    @PostMapping("/zones/{id}/places")
+//    @MutationMapping("createPlaceInZoneById")
+//    @Operation(summary = "Create place in zone by id")
+//    public PlaceDTO createPlaceInZoneById(@PathVariable("id")
+//                                          @Argument final Long zoneId,
+//                                          @Validated(OnCreate.class)
+//                                          @RequestBody
+//                                          @Argument final PlaceDTO placeDTO) {
+//        Place place = placeMapper.toEntity(placeDTO);
+//        Place createdPlace = placeService.create(place, zoneId);
+//
+//        return placeMapper.toDTO(createdPlace);
+//    }
 
-        return placeMapper.toDTO(createdPlace);
+    @PostMapping("/zones/{id}/places")
+    @Operation(summary = "Create a fix number places in zone by zone id")
+    public List<PlaceDTO> createPlacesInZoneByZoneId(@PathVariable("id")
+                                                     @Argument final Long zoneId,
+                                                     @RequestParam("places") int numberOfPlaces) {
+        List<Place> createdPlaces = placeService.createPlacesInZone(zoneId, numberOfPlaces);
+
+        return placeMapper.toDTO(createdPlaces);
     }
 
     @PutMapping("/zones")

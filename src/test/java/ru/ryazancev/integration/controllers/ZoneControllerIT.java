@@ -37,8 +37,6 @@ public class ZoneControllerIT extends BaseIT {
         testZone = findObjectForTests(zoneRepository, ZONE_ID_FOR_TESTS);
     }
 
-
-    //TODO
     @DisplayName("Get zones")
     @Test
     @WithUserDetails("test1@gmail.com")
@@ -63,7 +61,9 @@ public class ZoneControllerIT extends BaseIT {
         mockMvc.perform(get(APIPaths.ZONE_BY_ID, testZone.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testZone.getId()))
-                .andExpect(jsonPath("$.number").value(testZone.getNumber()));
+                .andExpect(jsonPath("$.number").value(testZone.getNumber()))
+                .andExpect(jsonPath("$.totalPlaces").exists())
+                .andExpect(jsonPath("$.freePlaces").exists());
     }
 
     @DisplayName("Get places by zone id")

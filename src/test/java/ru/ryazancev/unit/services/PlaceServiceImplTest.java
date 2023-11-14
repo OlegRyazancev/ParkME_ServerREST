@@ -172,9 +172,8 @@ public class PlaceServiceImplTest {
         Status status = Status.OCCUPIED;
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.changeStatus(place.getId(), status);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                placeService.changeStatus(place.getId(), status));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -189,9 +188,8 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(place.getId())).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            placeService.changeStatus(place.getId(), status);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                placeService.changeStatus(place.getId(), status));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");

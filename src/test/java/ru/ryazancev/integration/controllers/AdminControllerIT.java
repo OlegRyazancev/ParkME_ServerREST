@@ -7,8 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.config.testutils.JsonUtils;
-import ru.ryazancev.config.testutils.paths.APIPaths;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
@@ -17,8 +15,9 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.*;
-import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
+import ru.ryazancev.testutils.JsonUtils;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 import java.util.Optional;
@@ -140,7 +139,9 @@ public class AdminControllerIT extends BaseIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.number").value(creatingZone.getNumber()));
+                .andExpect(jsonPath("$.number").value(creatingZone.getNumber()))
+                .andExpect(jsonPath("$.totalPlaces").exists())
+                .andExpect(jsonPath("$.freePlaces").exists());
 
         //Assert
         Optional<Zone> createdZone = zoneRepository.findByNumber(creatingZone.getNumber());
@@ -148,41 +149,27 @@ public class AdminControllerIT extends BaseIT {
         assertEquals(creatingZone.getNumber(), createdZone.get().getNumber());
     }
 
-    @DisplayName("Create place in zone")
+    @DisplayName("Create places in zone")
     @Test
     @WithUserDetails("test1@gmail.com")
-    public void testCreatePlaceInZone_returnsCreatedPlaceJSONWithIdAndStatusFree() throws Exception {
+    public void testCreatePlacesInZone_returnsListOfCreatedPlaces() throws Exception {
         //Arrange
         Zone zone = findObjectForTests(zoneRepository, 1L);
-        int countZonesPlaces = zone.getPlaces().size();
+        int oldSize = zone.getPlaces().size();
+        int initialPlacesCount = 2;
 
-        PlaceDTO creatingPlace = PlaceDTO.builder()
-                .number(4)
-                .build();
-        String placeJson = JsonUtils.createJsonNodeForObject(creatingPlace, List.of("number")).toString();
 
-        //Act && Assert
+        //Act
         mockMvc.perform(post(APIPaths.ADMIN_ZONE_PLACES, zone.getId())
-                        .content(placeJson)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("places", String.valueOf(initialPlacesCount)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.number").value(creatingPlace.getNumber()))
-                .andExpect(jsonPath("$.status").value(Status.FREE.toString()));
+                .andExpect(jsonPath("$", hasSize(initialPlacesCount)));
 
         //Assert
-        List<Place> zonePlaces = placeRepository.findAllByZoneId(zone.getId());
-        assertEquals(++countZonesPlaces, zonePlaces.size());
-
-        Optional<Place> createdPlace = zonePlaces
-                .stream()
-                .filter(place ->
-                        place.getNumber().equals(creatingPlace.getNumber()))
-                .findFirst();
-        assertTrue(createdPlace.isPresent());
-        assertEquals(creatingPlace.getNumber(), createdPlace.get().getNumber());
-        assertEquals(Status.FREE, createdPlace.get().getStatus());
+        int finalPlacesCount = placeRepository.findAllByZoneId(zone.getId()).size();
+        assertEquals(oldSize, finalPlacesCount - initialPlacesCount);
     }
+
 
     @DisplayName("Update zone")
     @Test
@@ -202,7 +189,9 @@ public class AdminControllerIT extends BaseIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatingZone.getId()))
-                .andExpect(jsonPath("$.number").value(updatingZone.getNumber()));
+                .andExpect(jsonPath("$.number").value(updatingZone.getNumber()))
+                .andExpect(jsonPath("$.totalPlaces").exists())
+                .andExpect(jsonPath("$.freePlaces").exists());
 
         //Assert
         Optional<Zone> updatedZone = zoneRepository.findById(updatingZone.getId());

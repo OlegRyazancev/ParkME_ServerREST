@@ -17,14 +17,13 @@ public class PlaceRepositoryIT extends BaseIT {
     @Autowired
     private PlaceRepository placeRepository;
 
+    private final Long ZONE_ID = 1L;
+
     @DisplayName("Test find places by zone id")
     @Test
     public void testFindAllPlacesByZoneId_returnsListOfPlaces() {
-        //Arrange
-        Long zoneId = 1L;
-
         //Act
-        List<Place> places = placeRepository.findAllByZoneId(zoneId);
+        List<Place> places = placeRepository.findAllByZoneId(ZONE_ID);
 
         //Assert
         assertNotNull(places);
@@ -45,11 +44,38 @@ public class PlaceRepositoryIT extends BaseIT {
         assertEquals(2, occupiedPlaces.size());
     }
 
+
+    @DisplayName("Count all places by zone id")
+    @Test
+    public void testCountAllPlacesByZoneId_returnsIntCount() {
+        //Arrange
+        int expected = 3;
+
+        //Act
+        int actual = placeRepository.countAllPlacesByZoneId(ZONE_ID);
+
+        //Assert
+        assertEquals(expected, actual);
+    }
+
+    @DisplayName("Count free places by zone id")
+    @Test
+    public void testCountFreePlacesByZoneId_returnsIntCount(){
+        //Arrange
+        int expected = 2;
+
+        //Act
+        int actual  = placeRepository.countFreePlacesByZoneId(ZONE_ID);
+
+        //Assert
+        assertEquals(expected, actual);
+    }
+
+
     @DisplayName("Assign place to zone")
     @Test
     public void testAssignPlaceToZone_returnsNothing() {
         //Arrange
-        Long zoneId = 1L;
         Place place = Place.builder()
                 .number(100)
                 .status(Status.FREE)
@@ -58,10 +84,10 @@ public class PlaceRepositoryIT extends BaseIT {
         Place savedPlace = placeRepository.save(place);
 
         //Act
-        placeRepository.assignToZone(place.getId(), zoneId);
+        placeRepository.assignToZone(place.getId(), ZONE_ID);
 
         //Assert
-        List<Place> zonePlaces = placeRepository.findAllByZoneId(zoneId);
+        List<Place> zonePlaces = placeRepository.findAllByZoneId(ZONE_ID);
         boolean placeIsAssigned = zonePlaces.stream()
                 .anyMatch(p -> p.getNumber().equals(savedPlace.getNumber()));
 

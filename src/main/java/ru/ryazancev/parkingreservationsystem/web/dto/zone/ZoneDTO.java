@@ -24,4 +24,7 @@ public class ZoneDTO {
             groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
+    private int totalPlaces;
+
+    private int freePlaces;
 }

@@ -93,9 +93,8 @@ public class ZoneServiceImplTest {
         when(zoneRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            zoneService.getById(nonExistingId);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                zoneService.getById(nonExistingId));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -129,9 +128,8 @@ public class ZoneServiceImplTest {
         when(zoneRepository.findByNumber(creatingZone.getNumber())).thenReturn(Optional.of(zone));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            zoneService.create(creatingZone);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                zoneService.create(creatingZone));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -140,17 +138,17 @@ public class ZoneServiceImplTest {
     @DisplayName("Update zone with valid details")
     @Test
     public void testUpdateZone_whenZoneDetailsAreValid_returnsUpdatedZoneObject() {
-        //Arrange (Given)
+        //Arrange
         Zone updatedZone = new Zone();
         updatedZone.setId(zone.getId());
         updatedZone.setNumber(213);
 
         when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
 
-        //Act (When)
+        //Act
         Zone result = zoneService.update(updatedZone);
 
-        //Assert (Then)
+        //Assert
         verify(zoneRepository).findByNumber(updatedZone.getNumber());
         verify(zoneRepository).save(updatedZone);
 
@@ -165,9 +163,8 @@ public class ZoneServiceImplTest {
         when(zoneRepository.findByNumber(zone.getNumber())).thenReturn(Optional.of(zone));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            zoneService.update(zone);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                zoneService.update(zone));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -184,9 +181,8 @@ public class ZoneServiceImplTest {
 
         //Assert
         verify(zoneRepository).findById(zone.getId());
-        associatedPlaces.forEach(place -> {
-            verify(placeRepository).deleteById(place.getId());
-        });
+        associatedPlaces.forEach(place ->
+                verify(placeRepository).deleteById(place.getId()));
         verify(zoneRepository).deleteById(zone.getId());
     }
 
@@ -199,9 +195,8 @@ public class ZoneServiceImplTest {
         when(zoneRepository.findById(zone.getId())).thenReturn(Optional.of(zone));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            zoneService.delete(zone.getId());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                zoneService.delete(zone.getId()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -215,9 +210,8 @@ public class ZoneServiceImplTest {
         when(zoneRepository.findById(zone.getId())).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            zoneService.delete(zone.getId());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                zoneService.delete(zone.getId()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");

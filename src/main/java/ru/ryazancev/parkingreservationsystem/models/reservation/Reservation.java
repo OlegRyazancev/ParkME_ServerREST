@@ -40,12 +40,12 @@ public class Reservation implements Serializable {
             referencedColumnName = "id")
     private Zone zone;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "place_id",
             referencedColumnName = "id")
     private Place place;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "car_id",
             referencedColumnName = "id")
     private Car car;

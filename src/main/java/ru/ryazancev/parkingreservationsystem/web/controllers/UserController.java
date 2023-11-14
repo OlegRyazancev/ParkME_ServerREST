@@ -48,10 +48,11 @@ public class UserController {
     @GetMapping("/{id}")
     @QueryMapping("userById")
     @Operation(summary = "Get user by id")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public UserDTO getById(@PathVariable("id")
-                           @Argument final Long id) {
-        User user = userService.getById(id);
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    public UserDTO getById(
+            @PathVariable("id")
+            @Argument final Long userId) {
+        User user = userService.getById(userId);
 
         return userMapper.toDTO(user);
     }
@@ -59,10 +60,11 @@ public class UserController {
     @GetMapping("/{id}/cars")
     @QueryMapping("carsByUserId")
     @Operation(summary = "Get cars by user id")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public List<CarDTO> getCarsByUserId(@PathVariable("id")
-                                        @Argument final Long id) {
-        List<Car> cars = carService.getAllByUserId(id);
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    public List<CarDTO> getCarsByUserId(
+            @PathVariable("id")
+            @Argument final Long userId) {
+        List<Car> cars = carService.getAllByUserId(userId);
 
         return carMapper.toDTO(cars);
     }
@@ -70,12 +72,12 @@ public class UserController {
     @GetMapping("/{id}/reservations")
     @QueryMapping("reservationsByUserId")
     @Operation(summary = "Get reservations by user id")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public List<ReservationDTO> getReservationsByUserId(@PathVariable("id")
-                                                        @Argument final
-                                                        Long id) {
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    public List<ReservationDTO> getReservationsByUserId(
+            @PathVariable("id")
+            @Argument final Long userId) {
         List<Reservation> reservations =
-                reservationService.getReservationsByUserId(id);
+                reservationService.getReservationsByUserId(userId);
 
         return reservationMapper.toDTO(reservations);
     }
@@ -85,11 +87,12 @@ public class UserController {
     @MutationMapping("createCar")
     @Operation(summary = "Create car")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
-    public CarDTO createCar(@PathVariable("id")
-                            @Argument final Long userId,
-                            @Validated(OnCreate.class)
-                            @RequestBody
-                            @Argument final CarDTO carDTO) {
+    public CarDTO createCar(
+            @PathVariable("id")
+            @Argument final Long userId,
+            @Validated(OnCreate.class)
+            @RequestBody
+            @Argument final CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
         Car createdCar = carService.create(car, userId);
 
@@ -100,12 +103,14 @@ public class UserController {
     @MutationMapping("makeReservation")
     @Operation(summary = "Make reservation")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
-    public ReservationDTO makeReservation(@PathVariable("id")
-                                          @Argument final Long userId,
-                                          @Validated(OnCreate.class)
-                                          @RequestBody
-                                          @Argument final
-                                          ReservationInfoDTO rInfoDTO) {
+    public ReservationDTO makeReservation(
+            @PathVariable("id")
+            @Argument final Long userId,
+            @Validated(OnCreate.class)
+            @RequestBody
+            @Argument final
+            ReservationInfoDTO rInfoDTO) {
+
         Reservation reservation = reservationInfoMapper.toEntity(rInfoDTO);
         Reservation createdReservation =
                 reservationService.create(reservation, userId);
@@ -118,9 +123,10 @@ public class UserController {
     @MutationMapping("updateUser")
     @Operation(summary = "Update user")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userDTO.id)")
-    public UserDTO update(@Validated(OnUpdate.class)
-                          @RequestBody
-                          @Argument final UserDTO userDTO) {
+    public UserDTO update(
+            @Validated(OnUpdate.class)
+            @RequestBody
+            @Argument final UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User updatedUser = userService.update(user);
 
@@ -131,9 +137,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     @MutationMapping("deleteUser")
     @Operation(summary = "Delete user by id")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public void deleteById(@PathVariable("id")
-                           @Argument final Long id) {
-        userService.delete(id);
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    public void deleteById(
+            @PathVariable("id")
+            @Argument final Long userId) {
+        userService.delete(userId);
     }
 }

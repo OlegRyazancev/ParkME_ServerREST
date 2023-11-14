@@ -9,8 +9,9 @@ import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,32 +32,30 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepository.findAllByZoneId(zoneId);
     }
 
-    @Override
-    public List<Place> getFreePlacesByZoneId(final Long zoneId) {
-        List<Place> foundPlaces = placeRepository.findAllByZoneId(zoneId);
-
-        return foundPlaces.stream()
-                .filter(place -> place.getStatus().equals(Status.FREE))
-                .collect(Collectors.toList());
-    }
-
     @Transactional
     @Override
-    public Place create(final Place place,
-                        final Long zoneId) {
-        if (placeRepository.findAllByZoneId(zoneId)
-                .stream()
-                .anyMatch(zonePlace -> zonePlace
-                        .getNumber()
-                        .equals(place.getNumber()))) {
-            throw new IllegalStateException(
-                    "Place is already exists in this zone");
+    public List<Place> createPlacesInZone(final Long zoneId,
+                                          final int numberOfPlaces) {
+        if (numberOfPlaces <= 0) {
+            throw new IllegalArgumentException(
+                    "Number of places must be a positive integer");
         }
-        place.setStatus(Status.FREE);
-        placeRepository.save(place);
-        placeRepository.assignToZone(place.getId(), zoneId);
+        List<Place> zonesPlaces = placeRepository.findAllByZoneId(zoneId);
 
-        return place;
+        int startNumberOfPlace = getStartNumberOfPlace(zonesPlaces);
+
+        return IntStream.range(0, numberOfPlaces)
+                .mapToObj(i ->
+                        Place.builder()
+                                .number(startNumberOfPlace + i)
+                                .status(Status.FREE)
+                                .build())
+                .peek(placeRepository::save)
+                .peek(createdPlace ->
+                        placeRepository.assignToZone(
+                                createdPlace.getId(),
+                                zoneId))
+                .toList();
     }
 
     @Transactional
@@ -85,6 +84,16 @@ public class PlaceServiceImpl implements PlaceService {
         return foundPlace;
     }
 
+    @Override
+    public Integer countAllPlacesByZoneID(final Long zoneId) {
+        return placeRepository.countAllPlacesByZoneId(zoneId);
+    }
+
+    @Override
+    public Integer countFreePlacesByZoneID(final Long zoneId) {
+        return placeRepository.countFreePlacesByZoneId(zoneId);
+    }
+
     @Transactional
     @Override
     public void delete(final Long placeId) {
@@ -97,5 +106,13 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         placeRepository.deleteById(placeId);
+    }
+
+    private int getStartNumberOfPlace(final List<Place> places) {
+        return places.isEmpty() ? 1
+                : places.stream()
+                .max(Comparator.comparingInt(Place::getNumber))
+                .map(place -> place.getNumber() + 1)
+                .orElse(1);
     }
 }

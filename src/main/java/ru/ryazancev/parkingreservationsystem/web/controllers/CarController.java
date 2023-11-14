@@ -29,10 +29,11 @@ public class CarController {
     @GetMapping("/{id}")
     @QueryMapping("carById")
     @Operation(summary = "Get car by id")
-    @PreAuthorize("@customSecurityExpression.canAccessCar(#id)")
-    public CarDTO getById(@PathVariable("id")
-                          @Argument final Long id) {
-        Car car = carService.getById(id);
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#carId)")
+    public CarDTO getById(
+            @PathVariable("id")
+            @Argument final Long carId) {
+        Car car = carService.getById(carId);
 
         return carMapper.toDTO(car);
     }
@@ -41,9 +42,10 @@ public class CarController {
     @MutationMapping("updateCar")
     @Operation(summary = "Update car")
     @PreAuthorize("@customSecurityExpression.canAccessCar(#carDTO.id)")
-    public CarDTO update(@Validated(OnUpdate.class)
-                         @RequestBody
-                         @Argument final CarDTO carDTO) {
+    public CarDTO update(
+            @Validated(OnUpdate.class)
+            @RequestBody
+            @Argument final CarDTO carDTO) {
         Car car = carMapper.toEntity(carDTO);
         Car updatedCar = carService.update(car);
 
@@ -53,9 +55,10 @@ public class CarController {
     @DeleteMapping("/{id}")
     @MutationMapping("deleteCar")
     @Operation(summary = "Delete car by id")
-    @PreAuthorize("@customSecurityExpression.canAccessCar(#id)")
-    public void deleteById(@PathVariable("id")
-                           @Argument final Long id) {
-        carService.delete(id);
+    @PreAuthorize("@customSecurityExpression.canAccessCar(#carId)")
+    public void deleteById(
+            @PathVariable("id")
+            @Argument final Long carId) {
+        carService.delete(carId);
     }
 }

@@ -110,6 +110,7 @@ public class UserController {
             @RequestBody
             @Argument final
             ReservationInfoDTO rInfoDTO) {
+
         Reservation reservation = reservationInfoMapper.toEntity(rInfoDTO);
         Reservation createdReservation =
                 reservationService.create(reservation, userId);

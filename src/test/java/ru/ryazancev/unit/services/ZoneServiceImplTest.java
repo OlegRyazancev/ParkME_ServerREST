@@ -140,17 +140,17 @@ public class ZoneServiceImplTest {
     @DisplayName("Update zone with valid details")
     @Test
     public void testUpdateZone_whenZoneDetailsAreValid_returnsUpdatedZoneObject() {
-        //Arrange (Given)
+        //Arrange
         Zone updatedZone = new Zone();
         updatedZone.setId(zone.getId());
         updatedZone.setNumber(213);
 
         when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
 
-        //Act (When)
+        //Act
         Zone result = zoneService.update(updatedZone);
 
-        //Assert (Then)
+        //Assert
         verify(zoneRepository).findByNumber(updatedZone.getNumber());
         verify(zoneRepository).save(updatedZone);
 

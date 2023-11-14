@@ -41,11 +41,8 @@ public class PlaceServiceImpl implements PlaceService {
                     "Number of places must be a positive integer");
         }
         List<Place> zonesPlaces = placeRepository.findAllByZoneId(zoneId);
-        int startNumberOfPlace = zonesPlaces.isEmpty() ? 1
-                : zonesPlaces.stream()
-                .max(Comparator.comparingInt(Place::getNumber))
-                .map(place -> place.getNumber() + 1)
-                .orElse(1);
+
+        int startNumberOfPlace = getStartNumberOfPlace(zonesPlaces);
 
         return IntStream.range(0, numberOfPlaces)
                 .mapToObj(i ->
@@ -109,5 +106,13 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         placeRepository.deleteById(placeId);
+    }
+
+    private int getStartNumberOfPlace(final List<Place> places) {
+        return places.isEmpty() ? 1
+                : places.stream()
+                .max(Comparator.comparingInt(Place::getNumber))
+                .map(place -> place.getNumber() + 1)
+                .orElse(1);
     }
 }

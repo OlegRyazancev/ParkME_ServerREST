@@ -1,4 +1,4 @@
-package ru.ryazancev.config.testutils.paths;
+package ru.ryazancev.testutils.paths;
 
 public class APIPaths {
 
@@ -117,14 +117,6 @@ public class APIPaths {
             .withPath(PathParts.ZONES)
             .withId()
             .withPath(PathParts.PLACES)
-            .build();
-
-    public static final String ZONE_FREE_PLACES = APIPathBuilder.builder()
-            .withBase(APIBase.V1)
-            .withPath(PathParts.ZONES)
-            .withId()
-            .withPath(PathParts.PLACES)
-            .withPath(PathParts.FREE)
             .build();
 
     public static final String LOGIN = APIPathBuilder.builder()

@@ -1,4 +1,4 @@
-package ru.ryazancev.config.testutils.paths;
+package ru.ryazancev.testutils.paths;
 
 import lombok.Getter;
 

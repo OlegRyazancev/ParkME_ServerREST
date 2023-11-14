@@ -1,4 +1,4 @@
-package ru.ryazancev.config.testutils;
+package ru.ryazancev.testutils;
 
 import java.time.format.DateTimeFormatter;
 

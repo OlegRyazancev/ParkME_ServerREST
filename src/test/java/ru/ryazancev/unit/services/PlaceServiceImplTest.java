@@ -14,11 +14,11 @@ import ru.ryazancev.parkingreservationsystem.services.impl.PlaceServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,9 +67,8 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            placeService.getById(nonExistingId);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                placeService.getById(nonExistingId));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -96,41 +95,59 @@ public class PlaceServiceImplTest {
         assertEquals(places, allPlaces, "Lists of places should match");
     }
 
-    @DisplayName("Create place with valid number")
+    @DisplayName("Create places in zone")
     @Test
-    public void testCreatePlaceInZone_whenValidNumber_returnsPlaceObject() {
-        //Arrange
-        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(Collections.emptyList());
+    public void testCreatePlacesInZone_whenValidNumberOfCreatingPlaces_returnsListOfCreatedPlaces() {
+        // Arrange
+        Long zoneId = 1L;
+        List<Place> places = List.of(
+                Place.builder().number(1).build(),
+                Place.builder().number(2).build()
+        );
+        Place lastExistPlace = places.get(places.size() - 1);
 
-        //Act
-        Place createdPlace = placeService.create(place, anyLong());
+        int numberOfPlaces = 5;
 
-        //Assert
-        assertNotNull(createdPlace, "Created place should not be empty");
-
-        verify(placeRepository).assignToZone(eq(place.getId()), anyLong());
-        verify(placeRepository).save(place);
-    }
-
-    @DisplayName("Create place with existing number in zone")
-    @Test
-    public void testCreatePlaceInZone_whenNumberExists_throwsIllegalStateException() {
-        //Arrange
-        String expectedExceptionMessage = "Place is already exists in this zone";
-        Place extistingPlace = Place.builder()
-                .number(1)
-                .build();
-
-        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(Collections.singletonList(extistingPlace));
-
-        //Act&&Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.create(place, anyLong());
+        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(places);
+        when(placeRepository.save(any(Place.class))).thenAnswer(invocation -> {
+            Place place = invocation.getArgument(0);
+            if (place.getId() == null)
+                place.setId(1000L);
+            return place;
         });
 
+        // Act
+        List<Place> createdPlaces = placeService.createPlacesInZone(zoneId, numberOfPlaces);
+
+        // Assert
+        assertEquals(numberOfPlaces, createdPlaces.size());
+
+        Place firstCreatedPlace = createdPlaces.get(0);
+        assertEquals(lastExistPlace.getNumber() + 1, firstCreatedPlace.getNumber());
+
+        createdPlaces
+                .forEach(p ->
+                        assertEquals(Status.FREE, p.getStatus()));
+
+        verify(placeRepository, times(numberOfPlaces)).save(any(Place.class));
+        verify(placeRepository, times(numberOfPlaces)).assignToZone(anyLong(), anyLong());
+    }
+
+    @DisplayName("Create places in zone")
+    @Test
+    public void testCreatePlacesInZone_whenNotValidNumberOfCreatingPlaces_returnsListOfCreatedPlaces() {
+        //Arrange
+        String expectedExceptionMessage = "Number of places must be a positive integer";
+        Long zoneId = 1L;
+        //Act && Assert
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
+                placeService.createPlacesInZone(zoneId, 0));
+
         //Assert
+
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
     }
+
 
     @DisplayName("Change place status with valid details")
     @Test
@@ -190,9 +207,7 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.changeStatus(place.getId(), status);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.changeStatus(place.getId(), status));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -209,9 +224,7 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.changeStatus(place.getId(), status);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.changeStatus(place.getId(), status));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -238,9 +251,8 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(place.getId())).thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            placeService.delete(place.getId());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                placeService.delete(place.getId()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
@@ -255,9 +267,7 @@ public class PlaceServiceImplTest {
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            placeService.delete(place.getId());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.delete(place.getId()));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");

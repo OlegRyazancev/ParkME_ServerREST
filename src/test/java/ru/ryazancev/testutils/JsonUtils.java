@@ -1,4 +1,4 @@
-package ru.ryazancev.config.testutils;
+package ru.ryazancev.testutils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

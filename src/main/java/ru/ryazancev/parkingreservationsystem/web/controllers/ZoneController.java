@@ -40,9 +40,9 @@ public class ZoneController {
         List<Zone> zones = zoneService.getAll();
         List<ZoneDTO> zonesDTO = zoneMapper.toDTO(zones);
         zonesDTO.forEach(zoneDTO -> {
-            zoneDTO.setCountPlaces(
+            zoneDTO.setTotalPlaces(
                     placeService.countAllPlacesByZoneID(zoneDTO.getId()));
-            zoneDTO.setCountFreePlaces(
+            zoneDTO.setFreePlaces(
                     placeService.countFreePlacesByZoneID(zoneDTO.getId()));
         });
 
@@ -58,10 +58,10 @@ public class ZoneController {
 
         ZoneDTO zoneDTO = zoneMapper.toDTO(zone);
 
-        zoneDTO.setCountPlaces(placeService
+        zoneDTO.setTotalPlaces(placeService
                 .countAllPlacesByZoneID(zoneId));
 
-        zoneDTO.setCountFreePlaces(placeService
+        zoneDTO.setFreePlaces(placeService
                 .countFreePlacesByZoneID(zoneId));
         return zoneDTO;
     }

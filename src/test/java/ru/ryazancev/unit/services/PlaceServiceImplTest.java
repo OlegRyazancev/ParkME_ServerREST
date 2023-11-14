@@ -76,25 +76,6 @@ public class PlaceServiceImplTest {
                 "Exception error message is not correct");
     }
 
-    @DisplayName("Get free places by zone Id")
-    @Test
-    public void testGetFreePlacesByZoneId_whenValidZoneId_returnsListOfFreePlaces() {
-        //Arrange
-        List<Place> places = Arrays.asList(
-                new Place(1L, 1, Status.FREE),
-                new Place(2L, 2, Status.OCCUPIED),
-                new Place(3L, 3, Status.FREE)
-        );
-
-        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(places);
-
-        //Act
-        List<Place> freePlaces = placeService.getFreePlacesByZoneId(anyLong());
-
-        //Assert
-        assertEquals(2, freePlaces.size(), "Both lists of places should have the same size");
-    }
-
     @DisplayName("Get all places by zoneId")
     @Test
     public void testGetAllPlacesByZoneId_whenValidZoneId_returnsListOfPlaces() {

@@ -11,11 +11,13 @@ public interface PlaceService {
 
     List<Place> getAllByZoneId(Long zoneId);
 
-    List<Place> getFreePlacesByZoneId(Long zoneId);
-
     Place create(Place place, Long zoneId);
 
     Place changeStatus(Long placeId, Status status);
+
+    Integer countAllPlacesByZoneID(Long zoneId);
+
+    Integer countFreePlacesByZoneID(Long zoneId);
 
     void delete(Long placeId);
 }

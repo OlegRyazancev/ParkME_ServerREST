@@ -29,6 +29,24 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     List<Place> findAllOccupiedByUserId(@Param("userId") Long userId);
 
 
+    @Query(value = """
+            SELECT count(*) as count_places
+            FROM places p
+                     JOIN zones_places zp on p.id = zp.place_id
+            WHERE zp.zone_id = :zoneId
+            """, nativeQuery = true
+    )
+    Integer countAllPlacesByZoneId(@Param("zoneId") Long zoneId);
+
+    @Query(value = """
+            SELECT count(*) as count_free_places
+            FROM places p
+                     JOIN zones_places zp on p.id = zp.place_id
+            WHERE zp.zone_id = :zoneId
+              AND p.status LIKE 'FREE'
+            """, nativeQuery = true)
+    Integer countFreePlacesByZoneId(@Param("zoneId") Long zoneId);
+
     @Modifying
     @Query(value = """
             INSERT INTO zones_places(zone_id, place_id)

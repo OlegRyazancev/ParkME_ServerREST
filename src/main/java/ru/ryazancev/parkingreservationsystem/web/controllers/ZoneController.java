@@ -38,7 +38,15 @@ public class ZoneController {
     @Operation(summary = "Get zones")
     public List<ZoneDTO> getZones() {
         List<Zone> zones = zoneService.getAll();
-        return zoneMapper.toDTO(zones);
+        List<ZoneDTO> zonesDTO = zoneMapper.toDTO(zones);
+        zonesDTO.forEach(zoneDTO -> {
+            zoneDTO.setCountPlaces(
+                    placeService.countAllPlacesByZoneID(zoneDTO.getId()));
+            zoneDTO.setCountFreePlaces(
+                    placeService.countFreePlacesByZoneID(zoneDTO.getId()));
+        });
+
+        return zonesDTO;
     }
 
     @GetMapping("/{id}")
@@ -47,7 +55,11 @@ public class ZoneController {
     public ZoneDTO getById(@PathVariable("id")
                            @Argument final Long id) {
         Zone zone = zoneService.getById(id);
-        return zoneMapper.toDTO(zone);
+
+        ZoneDTO zoneDTO = zoneMapper.toDTO(zone);
+        zoneDTO.setCountPlaces(placeService.countAllPlacesByZoneID(id));
+        zoneDTO.setCountFreePlaces(placeService.countFreePlacesByZoneID(id));
+        return zoneDTO;
     }
 
     @GetMapping("{id}/places")
@@ -56,15 +68,6 @@ public class ZoneController {
     public List<PlaceDTO> getPlacesByZoneId(@PathVariable("id")
                                             @Argument final Long id) {
         List<Place> places = placeService.getAllByZoneId(id);
-        return placeMapper.toDTO(places);
-    }
-
-    @GetMapping("/{id}/places/free")
-    @QueryMapping("freePlacesByZoneId")
-    @Operation(summary = "Get free places by zone id")
-    public List<PlaceDTO> getFreePlacesByZoneId(@PathVariable("id")
-                                                @Argument final Long id) {
-        List<Place> places = placeService.getFreePlacesByZoneId(id);
         return placeMapper.toDTO(places);
     }
 }

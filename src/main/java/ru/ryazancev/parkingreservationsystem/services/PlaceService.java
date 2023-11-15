@@ -9,8 +9,6 @@ public interface PlaceService {
 
     Place getById(Long placeId);
 
-    List<Place> getAllByZoneId(Long zoneId);
-
     List<Place> createPlacesInZone(Long zoneId, int numberOfPlaces);
 
     Place changeStatus(Long placeId, Status status);

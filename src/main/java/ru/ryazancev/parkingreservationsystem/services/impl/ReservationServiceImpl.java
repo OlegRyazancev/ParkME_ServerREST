@@ -103,21 +103,20 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     @Override
     public Reservation changeTimeTo(final Reservation reservation) {
-        Reservation foundReservation = reservationRepository
+        Reservation existingRes = reservationRepository
                 .findById(reservation.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Reservation not found"));
 
-        if (foundReservation.getTimeFrom().isAfter(reservation.getTimeTo())) {
+        if (existingRes.getTimeFrom().isAfter(reservation.getTimeTo())) {
             throw new IllegalStateException(
                     "Can not extend reservation, "
                             + "because time from is before time to");
         }
 
-        foundReservation.setTimeTo(reservation.getTimeTo());
-        reservationRepository.save(foundReservation);
+        existingRes.setTimeTo(reservation.getTimeTo());
 
-        return foundReservation;
+        return reservationRepository.save(existingRes);
     }
 
     @Transactional

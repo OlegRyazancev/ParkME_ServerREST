@@ -1,16 +1,15 @@
 package ru.ryazancev.parkingreservationsystem.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
+import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
@@ -23,9 +22,9 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ReservationRepository reservationRepository;
     private final CarRepository carRepository;
-    private final PlaceRepository placeRepository;
+
+    private final ReservationService reservationService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -83,30 +82,28 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User update(final User user) {
-        if (userRepository.findById(user.getId()).isEmpty()) {
-            throw new ResourceNotFoundException("User does not exist");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        User existingUser = getById(user.getId());
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return user;
+        return userRepository.save(existingUser);
+
     }
 
     @Transactional
     @Override
     public void delete(final Long userId) {
 
-        placeRepository.findAllOccupiedByUserId(userId)
-                .forEach(place -> {
-                    place.setStatus(Status.FREE);
-                    placeRepository.save(place);
-                });
-        reservationRepository.findAllByUserId(userId)
+        User userToDelete = getById(userId);
+        Hibernate.initialize(userToDelete.getCars());
+        Hibernate.initialize(userToDelete.getReservations());
+
+        userToDelete.getReservations()
                 .forEach(reservation ->
-                        reservationRepository.deleteById(reservation.getId()));
-        carRepository.findAllByUserId(userId)
-                .forEach(car ->
-                        carRepository.deleteById(car.getId()));
+                        reservationService.delete(reservation.getId()));
+
+        carRepository.deleteAll(userToDelete.getCars());
         userRepository.deleteById(userId);
     }
 }

@@ -58,13 +58,4 @@ public class ZoneController {
 
         return zoneReadMapper.toDTO(zone);
     }
-
-//    @GetMapping("{id}/places")
-//    @QueryMapping("placesByZoneId")
-//    @Operation(summary = "Get places by zone id")
-//    public List<PlaceDTO> getPlacesByZoneId(@PathVariable("id")
-//                                            @Argument final Long zoneId) {
-//        List<Place> places = placeService.getAllByZoneId(zoneId);
-//        return placeMapper.toDTO(places);
-//    }
 }

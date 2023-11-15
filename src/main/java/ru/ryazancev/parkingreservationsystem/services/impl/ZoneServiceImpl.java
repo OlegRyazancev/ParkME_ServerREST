@@ -59,10 +59,7 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public void delete(final Long zoneId) {
-        Zone foundZone = zoneRepository
-                .findById(zoneId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Zone not found"));
+        Zone foundZone = getById(zoneId);
 
         Hibernate.initialize(foundZone.getPlaces());
 

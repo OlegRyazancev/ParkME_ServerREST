@@ -27,11 +27,6 @@ public class PlaceServiceImpl implements PlaceService {
                         new ResourceNotFoundException("Place not found"));
     }
 
-    @Override
-    public List<Place> getAllByZoneId(final Long zoneId) {
-        return placeRepository.findAllByZoneId(zoneId);
-    }
-
     @Transactional
     @Override
     public List<Place> createPlacesInZone(final Long zoneId,
@@ -66,22 +61,20 @@ public class PlaceServiceImpl implements PlaceService {
             throw new IllegalStateException(
                     "Can not use OCCUPIED status here");
         }
-        Place foundPlace = placeRepository
-                .findById(placeId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Place not found"));
-        if (foundPlace.getStatus().equals(status)) {
+        Place existingPlace = getById(placeId);
+
+        if (existingPlace.getStatus().equals(status)) {
             throw new IllegalStateException(
                     "Place already has this status");
         }
-        if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
+        if (existingPlace.getStatus().equals(Status.OCCUPIED)) {
             throw new IllegalStateException(
                     "Can not change status, because place is occupied");
         }
 
-        foundPlace.setStatus(status);
-        placeRepository.save(foundPlace);
-        return foundPlace;
+        existingPlace.setStatus(status);
+
+        return placeRepository.save(existingPlace);
     }
 
     @Override
@@ -97,15 +90,11 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public void delete(final Long placeId) {
-        Place foundPlace = placeRepository
-                .findById(placeId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Place not found"));
+        Place foundPlace = getById(placeId);
         if (foundPlace.getStatus().equals(Status.OCCUPIED)) {
             throw new IllegalStateException("Can not delete occupied place");
         }
-
-        placeRepository.deleteById(placeId);
+        placeRepository.deleteById(foundPlace.getId());
     }
 
     private int getStartNumberOfPlace(final List<Place> places) {

@@ -13,7 +13,6 @@ import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.services.impl.PlaceServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,25 +74,6 @@ public class PlaceServiceImplTest {
                 "Exception error message is not correct");
     }
 
-    @DisplayName("Get all places by zoneId")
-    @Test
-    public void testGetAllPlacesByZoneId_whenValidZoneId_returnsListOfPlaces() {
-        //Arrange
-        List<Place> places = Arrays.asList(
-                new Place(1L, 1, Status.FREE),
-                new Place(2L, 2, Status.OCCUPIED),
-                new Place(3L, 3, Status.FREE),
-                new Place(4L, 4, Status.DISABLE)
-        );
-
-        when(placeRepository.findAllByZoneId(anyLong())).thenReturn(places);
-
-        //Act
-        List<Place> allPlaces = placeService.getAllByZoneId(anyLong());
-
-        //Assert
-        assertEquals(places, allPlaces, "Lists of places should match");
-    }
 
     @DisplayName("Create places in zone")
     @Test

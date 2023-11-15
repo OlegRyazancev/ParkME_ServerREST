@@ -131,8 +131,13 @@ public class AdminController {
             @Argument final ZoneDTO zoneDTO) {
         Zone zone = zoneMapper.toEntity(zoneDTO);
         Zone updatedZone = zoneService.update(zone);
-
-        return zoneMapper.toDTO(updatedZone);
+        ZoneDTO updatedZoneDTO = zoneMapper.toDTO(updatedZone);
+        updatedZoneDTO.setTotalPlaces(
+                placeService.countAllPlacesByZoneID(updatedZoneDTO.getId()));
+        updatedZoneDTO.setFreePlaces(
+                placeService.countFreePlacesByZoneID(updatedZoneDTO.getId())
+        );
+        return updatedZoneDTO;
     }
 
     @PutMapping("places/{id}/status")

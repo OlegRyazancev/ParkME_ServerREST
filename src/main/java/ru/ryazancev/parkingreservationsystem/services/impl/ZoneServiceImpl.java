@@ -50,10 +50,10 @@ public class ZoneServiceImpl implements ZoneService {
         if (zoneRepository.findByNumber(zone.getNumber()).isPresent()) {
             throw new IllegalStateException("Zone is already exists");
         }
+        Zone existingZone = getById(zone.getId());
+        existingZone.setNumber(zone.getNumber());
 
-        zoneRepository.save(zone);
-
-        return zone;
+        return zoneRepository.save(existingZone);
     }
 
     @Override

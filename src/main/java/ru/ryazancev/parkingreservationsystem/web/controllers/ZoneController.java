@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.services.PlaceService;
 import ru.ryazancev.parkingreservationsystem.services.ZoneService;
-import ru.ryazancev.parkingreservationsystem.util.mappers.PlaceMapper;
+import ru.ryazancev.parkingreservationsystem.util.mappers.ZoneInfoMapper;
 import ru.ryazancev.parkingreservationsystem.util.mappers.ZoneMapper;
-import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneInfoDTO;
 
 import java.util.List;
 
@@ -30,48 +29,42 @@ public class ZoneController {
 
     private final ZoneService zoneService;
     private final PlaceService placeService;
+    private final ZoneInfoMapper zoneReadMapper;
     private final ZoneMapper zoneMapper;
-    private final PlaceMapper placeMapper;
+//    private final PlaceMapper placeMapper;
 
     @GetMapping
     @QueryMapping(name = "zones")
     @Operation(summary = "Get zones")
     public List<ZoneDTO> getZones() {
         List<Zone> zones = zoneService.getAll();
-        List<ZoneDTO> zonesDTO = zoneMapper.toDTO(zones);
-        zonesDTO.forEach(zoneDTO -> {
-            zoneDTO.setTotalPlaces(
-                    placeService.countAllPlacesByZoneID(zoneDTO.getId()));
-            zoneDTO.setFreePlaces(
-                    placeService.countFreePlacesByZoneID(zoneDTO.getId()));
+        List<ZoneDTO> zonesReadDTO = zoneMapper.toDTO(zones);
+        zonesReadDTO.forEach(zone -> {
+            zone.setTotalPlaces(
+                    placeService.countAllPlacesByZoneID(zone.getId()));
+            zone.setFreePlaces(
+                    placeService.countFreePlacesByZoneID(zone.getId()));
         });
 
-        return zonesDTO;
+        return zonesReadDTO;
     }
 
     @GetMapping("/{id}")
     @QueryMapping("zoneById")
     @Operation(summary = "Get zone by id")
-    public ZoneDTO getById(@PathVariable("id")
-                           @Argument final Long zoneId) {
+    public ZoneInfoDTO getById(@PathVariable("id")
+                               @Argument final Long zoneId) {
         Zone zone = zoneService.getById(zoneId);
 
-        ZoneDTO zoneDTO = zoneMapper.toDTO(zone);
-
-        zoneDTO.setTotalPlaces(placeService
-                .countAllPlacesByZoneID(zoneId));
-
-        zoneDTO.setFreePlaces(placeService
-                .countFreePlacesByZoneID(zoneId));
-        return zoneDTO;
+        return zoneReadMapper.toDTO(zone);
     }
 
-    @GetMapping("{id}/places")
-    @QueryMapping("placesByZoneId")
-    @Operation(summary = "Get places by zone id")
-    public List<PlaceDTO> getPlacesByZoneId(@PathVariable("id")
-                                            @Argument final Long zoneId) {
-        List<Place> places = placeService.getAllByZoneId(zoneId);
-        return placeMapper.toDTO(places);
-    }
+//    @GetMapping("{id}/places")
+//    @QueryMapping("placesByZoneId")
+//    @Operation(summary = "Get places by zone id")
+//    public List<PlaceDTO> getPlacesByZoneId(@PathVariable("id")
+//                                            @Argument final Long zoneId) {
+//        List<Place> places = placeService.getAllByZoneId(zoneId);
+//        return placeMapper.toDTO(places);
+//    }
 }

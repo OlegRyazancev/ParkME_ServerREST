@@ -43,13 +43,11 @@ public class User implements Serializable {
     @Enumerated(value = EnumType.STRING)
     private Set<Role> roles;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     @JoinTable(name = "users_cars",
             inverseJoinColumns = @JoinColumn(name = "car_id"))
     private List<Car> cars;
 
-    @OneToMany
-    @JoinTable(name = "reservations",
-            inverseJoinColumns = @JoinColumn(name = "id"))
+    @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
 }

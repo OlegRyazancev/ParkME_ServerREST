@@ -31,8 +31,7 @@ public class Reservation implements Serializable {
     private LocalDateTime timeTo;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",
-            referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
@@ -41,13 +40,11 @@ public class Reservation implements Serializable {
     private Zone zone;
 
     @OneToOne
-    @JoinColumn(name = "place_id",
-            referencedColumnName = "id")
+    @JoinColumn(name = "place_id")
     private Place place;
 
     @OneToOne
-    @JoinColumn(name = "car_id",
-            referencedColumnName = "id")
+    @JoinColumn(name = "car_id")
     private Car car;
 
     public Reservation(final Long id,

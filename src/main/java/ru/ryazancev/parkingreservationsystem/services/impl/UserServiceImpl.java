@@ -83,6 +83,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User update(final User user) {
+        if (userRepository.findById(user.getId()).isEmpty()) {
+            throw new ResourceNotFoundException("User does not exist");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 

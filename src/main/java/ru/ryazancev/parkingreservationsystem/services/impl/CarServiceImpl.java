@@ -57,11 +57,9 @@ public class CarServiceImpl implements CarService {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
             throw new IllegalStateException("Car has the same number");
         }
-        if (carRepository.findById(car.getId()).isEmpty()) {
-            throw new ResourceNotFoundException("Car does not exists");
-        }
-        carRepository.save(car);
-        return car;
+        Car existingCar = getById(car.getId());
+        existingCar.setNumber(car.getNumber());
+        return carRepository.save(existingCar);
     }
 
     @Transactional

@@ -55,7 +55,11 @@ public class AdminControllerIT extends BaseIT {
     public void testGetCars_returnsListOfCars() throws Exception {
         //Arrange
         List<Car> cars = carRepository.findAll();
-        String carsJson = JsonUtils.createJsonNodeForObjects(cars, List.of("id", "number")).toString();
+        String carsJson = JsonUtils.createJsonNodeForObjects(
+                        cars,
+                        List.of("id",
+                                "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_CARS))
@@ -70,7 +74,12 @@ public class AdminControllerIT extends BaseIT {
     public void testGetUsers_returnsListOfUsers() throws Exception {
         //Arrange
         List<User> users = userRepository.findAll();
-        String usersJson = JsonUtils.createJsonNodeForObjects(users, List.of("id", "name", "email")).toString();
+        String usersJson = JsonUtils.createJsonNodeForObjects(
+                        users,
+                        List.of("id",
+                                "name",
+                                "email"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_USERS))
@@ -85,7 +94,12 @@ public class AdminControllerIT extends BaseIT {
     public void testGetReservations_returnsListOfReservations() throws Exception {
         //Arrange
         List<Reservation> reservations = reservationRepository.findAll();
-        String reservationsJson = JsonUtils.createJsonNodeForObjects(reservations, List.of("id", "timeFrom", "timeTo")).toString();
+        String reservationsJson = JsonUtils.createJsonNodeForObjects(
+                        reservations,
+                        List.of("id",
+                                "timeFrom",
+                                "timeTo"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_RESERVATIONS))
@@ -100,8 +114,18 @@ public class AdminControllerIT extends BaseIT {
     public void testGetReservationInfoById_returnsReservationInfoJson() throws Exception {
         //Arrange
         Reservation reservation = findObjectForTests(reservationRepository, 1L);
-        String fullReservationInfoJson = JsonUtils.createJsonNodeForObject(reservation, List.of("id", "timeFrom", "timeTo", "zone", "place", "car", "user")).toString();
-        String extractedReservationInfoJson = JsonUtils.extractJson(fullReservationInfoJson);
+        String fullReservationInfoJson = JsonUtils.createJsonNodeForObject(
+                        reservation,
+                        List.of("id",
+                                "timeFrom",
+                                "timeTo", "zone",
+                                "place",
+                                "car",
+                                "user"))
+                .toString();
+
+        String extractedReservationInfoJson = JsonUtils
+                .extractJson(fullReservationInfoJson);
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_RESERVATION_BY_ID, reservation.getId()))
@@ -115,7 +139,12 @@ public class AdminControllerIT extends BaseIT {
     public void testGetPlaceById_returnsPlaceJson() throws Exception {
         //Arrange
         Place place = findObjectForTests(placeRepository, 1L);
-        String placeJson = JsonUtils.createJsonNodeForObject(place, List.of("id", "number", "status")).toString();
+        String placeJson = JsonUtils.createJsonNodeForObject(
+                        place,
+                        List.of("id",
+                                "number",
+                                "status"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_PLACE_BY_ID, place.getId()))
@@ -131,20 +160,28 @@ public class AdminControllerIT extends BaseIT {
         ZoneDTO creatingZone = ZoneDTO.builder()
                 .number(4)
                 .build();
-        String zoneJson = JsonUtils.createJsonNodeForObject(creatingZone, List.of("number")).toString();
+        String zoneJson = JsonUtils.createJsonNodeForObject(
+                        creatingZone,
+                        List.of("number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.ADMIN_ZONES)
                         .content(zoneJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.number").value(creatingZone.getNumber()))
-                .andExpect(jsonPath("$.totalPlaces").exists())
-                .andExpect(jsonPath("$.freePlaces").exists());
+                .andExpect(jsonPath("$.id")
+                        .exists())
+                .andExpect(jsonPath("$.number")
+                        .value(creatingZone.getNumber()))
+                .andExpect(jsonPath("$.totalPlaces")
+                        .exists())
+                .andExpect(jsonPath("$.freePlaces")
+                        .exists());
 
         //Assert
-        Optional<Zone> createdZone = zoneRepository.findByNumber(creatingZone.getNumber());
+        Optional<Zone> createdZone =
+                zoneRepository.findByNumber(creatingZone.getNumber());
         assertTrue(createdZone.isPresent());
         assertEquals(creatingZone.getNumber(), createdZone.get().getNumber());
     }
@@ -157,7 +194,6 @@ public class AdminControllerIT extends BaseIT {
         Zone zone = findObjectForTests(zoneRepository, 1L);
         int oldSize = zone.getPlaces().size();
         int initialPlacesCount = 2;
-
 
         //Act
         mockMvc.perform(post(APIPaths.ADMIN_ZONE_PLACES, zone.getId())
@@ -181,20 +217,29 @@ public class AdminControllerIT extends BaseIT {
                 .id(zoneToUpdate.getId())
                 .number(999)
                 .build();
-        String zoneJson = JsonUtils.createJsonNodeForObject(updatingZone, List.of("id", "number")).toString();
+        String zoneJson = JsonUtils.createJsonNodeForObject(
+                        updatingZone,
+                        List.of("id",
+                                "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.ADMIN_ZONES, zoneToUpdate.getId())
                         .content(zoneJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(updatingZone.getId()))
-                .andExpect(jsonPath("$.number").value(updatingZone.getNumber()))
-                .andExpect(jsonPath("$.totalPlaces").exists())
-                .andExpect(jsonPath("$.freePlaces").exists());
+                .andExpect(jsonPath("$.id")
+                        .value(updatingZone.getId()))
+                .andExpect(jsonPath("$.number")
+                        .value(updatingZone.getNumber()))
+                .andExpect(jsonPath("$.totalPlaces")
+                        .exists())
+                .andExpect(jsonPath("$.freePlaces")
+                        .exists());
 
         //Assert
-        Optional<Zone> updatedZone = zoneRepository.findById(updatingZone.getId());
+        Optional<Zone> updatedZone =
+                zoneRepository.findById(updatingZone.getId());
         assertTrue(updatedZone.isPresent());
         assertEquals(updatingZone.getId(), updatedZone.get().getId());
         assertEquals(updatingZone.getNumber(), updatedZone.get().getNumber());
@@ -213,12 +258,16 @@ public class AdminControllerIT extends BaseIT {
                         .param("status", status)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(placeToUpdate.getId()))
-                .andExpect(jsonPath("$.number").value(placeToUpdate.getNumber()))
-                .andExpect(jsonPath("$.status").value(status));
+                .andExpect(jsonPath("$.id")
+                        .value(placeToUpdate.getId()))
+                .andExpect(jsonPath("$.number")
+                        .value(placeToUpdate.getNumber()))
+                .andExpect(jsonPath("$.status")
+                        .value(status));
 
         //Assert
-        Optional<Place> updatedPlace = placeRepository.findById(placeToUpdate.getId());
+        Optional<Place> updatedPlace =
+                placeRepository.findById(placeToUpdate.getId());
         assertTrue(updatedPlace.isPresent());
         assertEquals(placeToUpdate.getNumber(), updatedPlace.get().getNumber());
         assertEquals(Status.DISABLE, updatedPlace.get().getStatus());

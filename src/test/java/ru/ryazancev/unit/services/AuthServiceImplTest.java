@@ -63,9 +63,17 @@ public class AuthServiceImplTest {
     @Test
     public void testLogin_whenCorrectDetails_returnsJwtResponse() {
         //Arrange
-        when(userService.getByUsername(user.getEmail())).thenReturn(user);
-        when(jwtTokenProvider.createAccessToken(user.getId(), user.getEmail(), user.getRoles())).thenReturn(ACCESS_TOKEN);
-        when(jwtTokenProvider.createRefreshToken(user.getId(), user.getEmail())).thenReturn(REFRESH_TOKEN);
+        when(userService.getByUsername(user.getEmail()))
+                .thenReturn(user);
+        when(jwtTokenProvider.createAccessToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRoles()))
+                .thenReturn(ACCESS_TOKEN);
+        when(jwtTokenProvider.createRefreshToken(
+                user.getId(),
+                user.getEmail()))
+                .thenReturn(REFRESH_TOKEN);
 
         //Act
         JwtResponse response = authService.login(request);
@@ -87,12 +95,12 @@ public class AuthServiceImplTest {
     @Test
     public void testLogin_whenIncorrectUsername_throwsResourceNotFoundException() {
         //Arrange
-        when(userService.getByUsername(user.getEmail())).thenThrow(ResourceNotFoundException.class);
+        when(userService.getByUsername(user.getEmail()))
+                .thenThrow(ResourceNotFoundException.class);
 
         //Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            authService.login(request);
-        });
+        assertThrows(ResourceNotFoundException.class, () ->
+                authService.login(request));
         verifyNoInteractions(jwtTokenProvider);
     }
 
@@ -107,7 +115,8 @@ public class AuthServiceImplTest {
         response.setAccessToken(ACCESS_TOKEN);
         response.setRefreshToken(newRefreshToken);
 
-        when(jwtTokenProvider.refreshUserTokens(REFRESH_TOKEN)).thenReturn(response);
+        when(jwtTokenProvider.refreshUserTokens(REFRESH_TOKEN))
+                .thenReturn(response);
 
         //Act
         JwtResponse testResponse = authService.refresh(REFRESH_TOKEN);

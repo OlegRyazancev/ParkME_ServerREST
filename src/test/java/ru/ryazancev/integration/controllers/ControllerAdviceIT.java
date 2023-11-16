@@ -38,7 +38,8 @@ public class ControllerAdviceIT extends BaseIT {
     public void testHandleResourceNotFound() throws Exception {
         mockMvc.perform(get(APIPaths.USER_BY_ID, 999L))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("User not found"));
+                .andExpect(jsonPath("$.message")
+                        .value("User not found"));
     }
 
     @DisplayName("Handle resource mapping exception")
@@ -51,14 +52,19 @@ public class ControllerAdviceIT extends BaseIT {
                 .id(testCar.getId())
                 .number(testCar.getNumber())
                 .build();
-        String json = createJsonNodeForObject(updatingCarDTO, List.of("id", "number")).toString();
+        String json = createJsonNodeForObject(
+                updatingCarDTO,
+                List.of("id",
+                        "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.CARS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Car has the same number"));
+                .andExpect(jsonPath("$.message")
+                        .value("Car has the same number"));
     }
 
     @DisplayName("Handle access denied exception when the user try to get cars of another user")
@@ -67,7 +73,8 @@ public class ControllerAdviceIT extends BaseIT {
     public void testHandleAccessDeniedException() throws Exception {
         mockMvc.perform(get(APIPaths.USER_CARS, 1L))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message").value("Access denied"));
+                .andExpect(jsonPath("$.message")
+                        .value("Access denied"));
     }
 
     @DisplayName("Handle constraint violation exception")
@@ -81,15 +88,22 @@ public class ControllerAdviceIT extends BaseIT {
                 .number("NOT CORRECT NUMBER")
                 .build();
 
-        String json = createJsonNodeForObject(updatingCarDTO, List.of("id", "number")).toString();
+        String json = createJsonNodeForObject(
+                updatingCarDTO,
+                List.of("id",
+                        "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.CARS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.errors.number").value("Car number should be in this format: A000AA00"))
+                .andExpect(status()
+                        .isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Validation failed"))
+                .andExpect(jsonPath("$.errors.number")
+                        .value("Car number should be in this format: A000AA00"))
                 .andExpect(jsonPath("$.errors.*", Matchers.hasSize(1)));
     }
 
@@ -103,13 +117,18 @@ public class ControllerAdviceIT extends BaseIT {
                 .password("INCORRECT PASSWORD")
                 .build();
 
-        String json = createJsonNodeForObject(jwtRequest, List.of("username", "password")).toString();
+        String json = createJsonNodeForObject(
+                jwtRequest,
+                List.of("username",
+                        "password"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.LOGIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Authentication failed"));
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication failed"));
     }
 }

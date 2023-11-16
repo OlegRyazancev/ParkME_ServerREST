@@ -46,13 +46,15 @@ public class PlaceServiceImplTest {
     public void testGetPlaceById_whenValidId_returnsPlaceObject() {
 
         //Arrange
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
 
         //Act
         Place foundPlace = placeService.getById(place.getId());
 
         //Assert
-        assertEquals(place, foundPlace, "Returned place should be the same");
+        assertEquals(place, foundPlace,
+                "Returned place should be the same");
     }
 
 
@@ -63,7 +65,8 @@ public class PlaceServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Place not found";
         Long nonExistingId = 12L;
-        when(placeRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(placeRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
@@ -88,13 +91,15 @@ public class PlaceServiceImplTest {
 
         int numberOfPlaces = 5;
 
-        when(placeRepository.findAllByZoneId(zoneId)).thenReturn(places);
-        when(placeRepository.save(any(Place.class))).thenAnswer(invocation -> {
-            Place place = invocation.getArgument(0);
-            if (place.getId() == null)
-                place.setId(1000L);
-            return place;
-        });
+        when(placeRepository.findAllByZoneId(zoneId))
+                .thenReturn(places);
+        when(placeRepository.save(any(Place.class)))
+                .thenAnswer(invocation -> {
+                    Place place = invocation.getArgument(0);
+                    if (place.getId() == null)
+                        place.setId(1000L);
+                    return place;
+                });
 
         // Act
         List<Place> createdPlaces = placeService.createPlacesInZone(zoneId, numberOfPlaces);
@@ -105,9 +110,8 @@ public class PlaceServiceImplTest {
         Place firstCreatedPlace = createdPlaces.get(0);
         assertEquals(lastExistPlace.getNumber() + 1, firstCreatedPlace.getNumber());
 
-        createdPlaces
-                .forEach(p ->
-                        assertEquals(Status.FREE, p.getStatus()));
+        createdPlaces.forEach(p ->
+                assertEquals(Status.FREE, p.getStatus()));
 
         verify(placeRepository, times(numberOfPlaces)).save(any(Place.class));
         verify(placeRepository, times(numberOfPlaces)).assignToZone(anyLong(), anyLong());
@@ -125,7 +129,8 @@ public class PlaceServiceImplTest {
 
         //Assert
 
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
 
@@ -135,14 +140,17 @@ public class PlaceServiceImplTest {
         //Arrange
         Status status = Status.DISABLE;
 
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
-        when(placeRepository.save(place)).thenReturn(place);
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
+        when(placeRepository.save(place))
+                .thenReturn(place);
 
         //Act
         Place placeWithChangedStatus = placeService.changeStatus(place.getId(), status);
 
         //Assert
-        assertEquals(status, placeWithChangedStatus.getStatus(), "Place status should be changed");
+        assertEquals(status, placeWithChangedStatus.getStatus(),
+                "Place status should be changed");
         verify(placeRepository).save(place);
     }
 
@@ -158,7 +166,8 @@ public class PlaceServiceImplTest {
                 placeService.changeStatus(place.getId(), status));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Change status on not existing place")
@@ -167,14 +176,16 @@ public class PlaceServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Place not found";
         Status status = Status.DISABLE;
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.empty());
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
                 placeService.changeStatus(place.getId(), status));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Change place status to the same status")
@@ -184,13 +195,16 @@ public class PlaceServiceImplTest {
         String expectedExceptionMessage = "Place already has this status";
         Status status = Status.FREE;
 
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.changeStatus(place.getId(), status));
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                placeService.changeStatus(place.getId(), status));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Change place status on place with occupied status")
@@ -201,20 +215,24 @@ public class PlaceServiceImplTest {
         String expectedExceptionMessage = "Can not change status, because place is occupied";
         Status status = Status.FREE;
 
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.changeStatus(place.getId(), status));
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                placeService.changeStatus(place.getId(), status));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete place with valid details")
     @Test
     public void testDeletePlace_whenPlaceDetailsAreValid_returnsNothing() {
         //Arrange
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
 
         //Act
         placeService.delete(place.getId());
@@ -228,14 +246,16 @@ public class PlaceServiceImplTest {
     public void testDeletePlace_whenPlaceDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Place not found";
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.empty());
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
                 placeService.delete(place.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete place with occupied status throws IllegalStateException")
@@ -244,13 +264,16 @@ public class PlaceServiceImplTest {
         //Arrange
         place.setStatus(Status.OCCUPIED);
         String expectedExceptionMessage = "Can not delete occupied place";
-        when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.findById(place.getId()))
+                .thenReturn(Optional.of(place));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> placeService.delete(place.getId()));
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                placeService.delete(place.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
 }

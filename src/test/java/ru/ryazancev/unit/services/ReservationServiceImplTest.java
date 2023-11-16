@@ -85,26 +85,30 @@ public class ReservationServiceImplTest {
                 .timeTo(LocalDateTime.now().plusHours(2))
                 .build();
         List<Reservation> sampleReservations = List.of(reservation, reservation2);
-        when(reservationRepository.findAll()).thenReturn(sampleReservations);
+        when(reservationRepository.findAll())
+                .thenReturn(sampleReservations);
 
         //Act
         List<Reservation> reservations = reservationService.getAll();
 
         //Assert
-        assertEquals(sampleReservations, reservations, "Returned list should be the same");
+        assertEquals(sampleReservations, reservations,
+                "Returned list should be the same");
     }
 
     @DisplayName("Get reservation info by id")
     @Test
     public void testGetReservationInfoById_whenValidId_returnsReservationObject() {
         //Arrange
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(reservation.getId()))
+                .thenReturn(Optional.of(reservation));
 
         //Act
         Reservation foundReservation = reservationService.getInfo(reservation.getId());
 
         //Assert
-        assertEquals(reservation, foundReservation, "Returned reservation should be the same");
+        assertEquals(reservation, foundReservation,
+                "Returned reservation should be the same");
     }
 
     @DisplayName("Get reservation info by not existing id")
@@ -113,12 +117,12 @@ public class ReservationServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Reservation not found";
         Long nonExistingId = 12L;
-        when(reservationRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(reservationRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.getInfo(nonExistingId);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.getInfo(nonExistingId));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage());
@@ -134,13 +138,15 @@ public class ReservationServiceImplTest {
                 .timeTo(LocalDateTime.now().plusHours(2))
                 .build();
         List<Reservation> sampleReservations = List.of(reservation, reservation2);
-        when(reservationRepository.findAllByUserId(anyLong())).thenReturn(sampleReservations);
+        when(reservationRepository.findAllByUserId(anyLong()))
+                .thenReturn(sampleReservations);
 
         //Act
         List<Reservation> reservations = reservationService.getReservationsByUserId(anyLong());
 
         //Assert
-        assertEquals(sampleReservations, reservations, "Returned list should be the same");
+        assertEquals(sampleReservations, reservations,
+                "Returned list should be the same");
     }
 
     @DisplayName("Get reservations by user id when user has no reservations")
@@ -148,33 +154,41 @@ public class ReservationServiceImplTest {
     public void testGetReservationsByUserId_whenUserHasNoReservations_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "User don't make any reservation";
-        when(reservationRepository.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        when(reservationRepository.findAllByUserId(anyLong()))
+                .thenReturn(Collections.emptyList());
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            reservationService.getReservationsByUserId(anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                reservationService.getReservationsByUserId(anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation with valid details")
     @Test
     public void testCreateReservation_whenReservationDetailsAreValid_ReturnReservationObject() {
         //Arrange
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
-        when(placeRepository.save(any())).thenReturn(place);
-        when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
-        when(reservationRepository.findByCarId(anyLong())).thenReturn(Optional.empty());
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
+        when(placeRepository.save(any()))
+                .thenReturn(place);
+        when(carRepository.findByNumber(any()))
+                .thenReturn(Optional.of(car));
+        when(reservationRepository.findByCarId(anyLong()))
+                .thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
 
         //Act
         Reservation createdReservation = reservationService.create(reservation, user.getId());
 
         //Assert
-        assertNotNull(createdReservation, "Created reservation should not be null");
-        assertEquals(Status.OCCUPIED, createdReservation.getPlace().getStatus(), "Place status should be changed to OCCUPIED");
+        assertNotNull(createdReservation,
+                "Created reservation should not be null");
+        assertEquals(Status.OCCUPIED, createdReservation.getPlace().getStatus(),
+                "Place status should be changed to OCCUPIED");
 
         verify(reservationRepository).save(reservation);
         verify(placeRepository).save(place);
@@ -185,15 +199,16 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenZoneDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "No zone with the specified number";
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.empty());
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation if place does not exists")
@@ -204,15 +219,16 @@ public class ReservationServiceImplTest {
         reservation.getPlace().setNumber(2);
         zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation on OCCUPIED place")
@@ -222,15 +238,16 @@ public class ReservationServiceImplTest {
         String expectedExceptionMessage = "Place is already occupied or disabled";
         zone.setPlaces(List.of(new Place(1L, 1, Status.OCCUPIED)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation on DISABLED place")
@@ -240,15 +257,16 @@ public class ReservationServiceImplTest {
         String expectedExceptionMessage = "Place is already occupied or disabled";
         zone.setPlaces(List.of(new Place(1L, 1, Status.DISABLE)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation if car does not exists")
@@ -258,16 +276,18 @@ public class ReservationServiceImplTest {
         String expectedExceptionMessage = "Car not found";
         zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
-        when(carRepository.findByNumber(any())).thenReturn(Optional.empty());
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
+        when(carRepository.findByNumber(any()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
 
@@ -278,17 +298,20 @@ public class ReservationServiceImplTest {
         String expectedExceptionMessage = "Car already has a reservation";
         zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
-        when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
-        when(reservationRepository.findByCarId(anyLong())).thenReturn(Optional.of(new Reservation()));
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
+        when(carRepository.findByNumber(any()))
+                .thenReturn(Optional.of(car));
+        when(reservationRepository.findByCarId(anyLong()))
+                .thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create reservation if user not exists")
@@ -298,18 +321,22 @@ public class ReservationServiceImplTest {
         String expectedExceptionMessage = "User not found";
         zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
 
-        when(zoneRepository.findByNumber(any())).thenReturn(Optional.of(zone));
-        when(carRepository.findByNumber(any())).thenReturn(Optional.of(car));
-        when(reservationRepository.findByCarId(anyLong())).thenReturn(Optional.empty());
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(zoneRepository.findByNumber(any()))
+                .thenReturn(Optional.of(zone));
+        when(carRepository.findByNumber(any()))
+                .thenReturn(Optional.of(car));
+        when(reservationRepository.findByCarId(anyLong()))
+                .thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.create(reservation, anyLong());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.create(reservation, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Change reservation's time to")
@@ -321,7 +348,8 @@ public class ReservationServiceImplTest {
                 .timeTo(LocalDateTime.now().plusHours(5))
                 .build();
 
-        when(reservationRepository.findById(updatedReservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(updatedReservation.getId()))
+                .thenReturn(Optional.of(reservation));
         when(reservationRepository.save(reservation)).thenReturn(reservation);
 
         //Act
@@ -338,16 +366,17 @@ public class ReservationServiceImplTest {
     public void testChangeReservationTimeTo_whenReservationDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Reservation not found";
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.empty());
+        when(reservationRepository.findById(reservation.getId()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
 
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.changeTimeTo(reservation);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.changeTimeTo(reservation));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Change reservation's time to to before actual value")
@@ -356,15 +385,16 @@ public class ReservationServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Can not change status, because time from is before time to";
         reservation.setTimeTo(LocalDateTime.now().minusHours(2));
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(reservation.getId()))
+                .thenReturn(Optional.of(reservation));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            reservationService.changeTimeTo(reservation);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                reservationService.changeTimeTo(reservation));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete reservation with valid details")
@@ -372,7 +402,8 @@ public class ReservationServiceImplTest {
     public void testDeleteReservation_whenReservationDetailsAreValid_returnsNothing() {
         //Arrange
         reservation.getPlace().setStatus(Status.DISABLE);
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(reservation.getId()))
+                .thenReturn(Optional.of(reservation));
 
         //Act
         reservationService.delete(reservation.getId());
@@ -380,7 +411,8 @@ public class ReservationServiceImplTest {
         //Assert
         verify(placeRepository).save(reservation.getPlace());
         verify(reservationRepository).deleteById(reservation.getId());
-        assertEquals(Status.FREE, reservation.getPlace().getStatus(), "Reservation's place status should be changed to FREE");
+        assertEquals(Status.FREE, reservation.getPlace().getStatus(),
+                "Reservation's place status should be changed to FREE");
     }
 
     @DisplayName("Delete non-existing reservation")
@@ -388,14 +420,15 @@ public class ReservationServiceImplTest {
     public void testDeleteReservation_whenReservationDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Reservation not found";
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.empty());
+        when(reservationRepository.findById(reservation.getId()))
+                .thenReturn(Optional.empty());
 
         //Act
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            reservationService.delete(reservation.getId());
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                reservationService.delete(reservation.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 }

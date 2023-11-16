@@ -8,9 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.testutils.DateUtils;
-import ru.ryazancev.testutils.JsonUtils;
-import ru.ryazancev.testutils.paths.APIPaths;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.Status;
@@ -18,6 +15,9 @@ import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
+import ru.ryazancev.testutils.DateUtils;
+import ru.ryazancev.testutils.JsonUtils;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,19 +60,30 @@ public class ReservationControllerIT extends BaseIT {
                 .timeTo(LocalDateTime.of(2024, 2, 23, 14, 0, 0))
                 .build();
 
-        String reservationJson = JsonUtils.createJsonNodeForObject(updatingReservationDTO, List.of("id", "timeTo")).toString();
+        String reservationJson = JsonUtils.createJsonNodeForObject(
+                        updatingReservationDTO,
+                        List.of("id",
+                                "timeTo"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.RESERVATIONS)
                         .content(reservationJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testReservation.getId()))
-                .andExpect(jsonPath("$.timeFrom").value(testReservation.getTimeFrom().format(DateUtils.customFormatter)))
-                .andExpect(jsonPath("$.timeTo").value(updatingReservationDTO.getTimeTo().format(DateUtils.customFormatter)));
+                .andExpect(jsonPath("$.id")
+                        .value(testReservation.getId()))
+                .andExpect(jsonPath("$.timeFrom")
+                        .value(testReservation.getTimeFrom()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.timeTo")
+                        .value(
+                                updatingReservationDTO.getTimeTo()
+                                        .format(DateUtils.customFormatter)));
 
         //Assert
-        Optional<Reservation> updatedReservation = reservationRepository.findById(testReservation.getId());
+        Optional<Reservation> updatedReservation =
+                reservationRepository.findById(testReservation.getId());
         assertTrue(updatedReservation.isPresent());
         assertEquals(updatingReservationDTO.getId(), updatedReservation.get().getId());
         assertEquals(testReservation.getTimeFrom(), updatedReservation.get().getTimeFrom());
@@ -88,13 +99,16 @@ public class ReservationControllerIT extends BaseIT {
         //Assert
         assertFalse(reservationRepository.existsById(testReservation.getId()));
 
-        Optional<Place> placeAfterDeleteReservation = placeRepository.findById(testReservation.getPlace().getId());
+        Optional<Place> placeAfterDeleteReservation =
+                placeRepository.findById(testReservation.getPlace().getId());
         assertTrue(placeAfterDeleteReservation.isPresent());
         assertEquals(Status.FREE, placeAfterDeleteReservation.get().getStatus());
 
-        List<Reservation> usersReservations = reservationRepository.findAllByUserId(testReservation.getUser().getId());
+        List<Reservation> usersReservations =
+                reservationRepository.findAllByUserId(testReservation.getUser().getId());
         assertTrue(usersReservations
                 .stream()
-                .noneMatch(reservation -> reservation.getId().equals(testReservation.getId())));
+                .noneMatch(reservation ->
+                        reservation.getId().equals(testReservation.getId())));
     }
 }

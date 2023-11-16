@@ -37,7 +37,8 @@ public class PlaceRepositoryIT extends BaseIT {
         Long userId = 1L;
 
         //Act
-        List<Place> occupiedPlaces = placeRepository.findAllOccupiedByUserId(userId);
+        List<Place> occupiedPlaces =
+                placeRepository.findAllOccupiedByUserId(userId);
 
         //Assert
         assertNotNull(occupiedPlaces);
@@ -60,12 +61,12 @@ public class PlaceRepositoryIT extends BaseIT {
 
     @DisplayName("Count free places by zone id")
     @Test
-    public void testCountFreePlacesByZoneId_returnsIntCount(){
+    public void testCountFreePlacesByZoneId_returnsIntCount() {
         //Arrange
         int expected = 2;
 
         //Act
-        int actual  = placeRepository.countFreePlacesByZoneId(ZONE_ID);
+        int actual = placeRepository.countFreePlacesByZoneId(ZONE_ID);
 
         //Assert
         assertEquals(expected, actual);
@@ -88,8 +89,11 @@ public class PlaceRepositoryIT extends BaseIT {
 
         //Assert
         List<Place> zonePlaces = placeRepository.findAllByZoneId(ZONE_ID);
-        boolean placeIsAssigned = zonePlaces.stream()
-                .anyMatch(p -> p.getNumber().equals(savedPlace.getNumber()));
+        boolean placeIsAssigned =
+                zonePlaces
+                        .stream()
+                        .anyMatch(p ->
+                                p.getNumber().equals(savedPlace.getNumber()));
 
         assertTrue(placeIsAssigned);
     }

@@ -53,26 +53,31 @@ public class CarServiceImplTest {
                 .number("AA000A00")
                 .build();
         List<Car> sampleCars = List.of(car, car2);
-        when(carRepository.findAll()).thenReturn(sampleCars);
+
+        when(carRepository.findAll())
+                .thenReturn(sampleCars);
 
         //Act
         List<Car> cars = carService.getAll();
 
         //Assert
-        assertEquals(sampleCars, cars, "Returned list should be the same");
+        assertEquals(sampleCars, cars,
+                "Returned list should be the same");
     }
 
     @DisplayName("Get car by correct id")
     @Test
     public void testGetCarById_whenValidId_returnsCarObject() {
         //Arrange
-        when(carRepository.findById(car.getId())).thenReturn(Optional.of(car));
+        when(carRepository.findById(car.getId()))
+                .thenReturn(Optional.of(car));
 
         //Act
         Car foundCar = carService.getById(car.getId());
 
         //Assert
-        assertEquals(car, foundCar, "Returned car should be the same");
+        assertEquals(car, foundCar,
+                "Returned car should be the same");
     }
 
     @DisplayName("Get car by not existing id")
@@ -81,7 +86,8 @@ public class CarServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Car not found";
         Long nonExistingId = 12L;
-        when(carRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(carRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
@@ -101,13 +107,15 @@ public class CarServiceImplTest {
                 .number("AA000A00")
                 .build();
         List<Car> sampleCars = List.of(car, car2);
-        when(carRepository.findAllByUserId(anyLong())).thenReturn(sampleCars);
+        when(carRepository.findAllByUserId(anyLong()))
+                .thenReturn(sampleCars);
 
         //Act
         List<Car> foundCars = carService.getAllByUserId(anyLong());
 
         //Assert
-        assertEquals(sampleCars, foundCars, "Returned list should be the same");
+        assertEquals(sampleCars, foundCars,
+                "Returned list should be the same");
     }
 
     @DisplayName("Get all cars by user id when user has no cars")
@@ -115,27 +123,31 @@ public class CarServiceImplTest {
     public void testGetCarsByUserId_whenUserHasNoCars_throwsIllegalStateException() {
         //Arrange
         String expectedErrorMessage = "User hasn't registered any car";
-        when(carRepository.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        when(carRepository.findAllByUserId(anyLong()))
+                .thenReturn(Collections.emptyList());
 
         //Act
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 carService.getAllByUserId(anyLong()));
 
         //Assert
-        assertEquals(expectedErrorMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedErrorMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create car with valid number")
     @Test
     public void testCreateCar_whenUserHasNoCarsWithThisNumber_returnsCarObject() {
         //Arrange
-        when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.empty());
+        when(carRepository.findByNumber(car.getNumber()))
+                .thenReturn(Optional.empty());
 
         //Act
         Car createdCar = carService.create(car, anyLong());
 
         //Assert
-        assertNotNull(createdCar, "Created car should not be empty");
+        assertNotNull(createdCar,
+                "Created car should not be empty");
 
         verify(carRepository).assignToUser(anyLong(), eq(car.getId()));
         verify(carRepository).save(car);
@@ -149,14 +161,16 @@ public class CarServiceImplTest {
         Car creatingCar = Car.builder()
                 .number("AA000A00")
                 .build();
-        when(carRepository.findByNumber(creatingCar.getNumber())).thenReturn(Optional.of(car));
+        when(carRepository.findByNumber(creatingCar.getNumber()))
+                .thenReturn(Optional.of(car));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 carService.create(creatingCar, anyLong()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception message is not correct");
     }
 
     @DisplayName("Update car with valid details")
@@ -168,9 +182,12 @@ public class CarServiceImplTest {
                 .number("UU000U00")
                 .build();
 
-        when(carRepository.findByNumber(updatedCar.getNumber())).thenReturn(Optional.empty());
-        when(carRepository.findById(updatedCar.getId())).thenReturn(Optional.of(car));
-        when(carRepository.save(car)).thenReturn(car);
+        when(carRepository.findByNumber(updatedCar.getNumber()))
+                .thenReturn(Optional.empty());
+        when(carRepository.findById(updatedCar.getId()))
+                .thenReturn(Optional.of(car));
+        when(carRepository.save(car))
+                .thenReturn(car);
 
         //Act
         Car result = carService.update(updatedCar);
@@ -188,14 +205,16 @@ public class CarServiceImplTest {
     public void testUpdateCar_whenNewNumberIsEqualsExistingNumber_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Car has the same number";
-        when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.of(car));
+        when(carRepository.findByNumber(car.getNumber()))
+                .thenReturn(Optional.of(car));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 carService.update(car));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Update non-existing car")
@@ -203,22 +222,26 @@ public class CarServiceImplTest {
     public void testUpdateCar_whenCarDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedErrorMessage = "Car not found";
-        when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.empty());
-        when(carRepository.findById(car.getId())).thenReturn(Optional.empty());
+        when(carRepository.findByNumber(car.getNumber()))
+                .thenReturn(Optional.empty());
+        when(carRepository.findById(car.getId()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
                 carService.update(car));
 
         //Assert
-        assertEquals(expectedErrorMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedErrorMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete car with valid details")
     @Test
     public void testDeleteCar_whenCarDetailsAreValid_returnsNothing() {
         //Arrange
-        when(reservationRepository.findByCarId(car.getId())).thenReturn(Optional.empty());
+        when(reservationRepository.findByCarId(car.getId()))
+                .thenReturn(Optional.empty());
 
         //Act
         carService.delete(car.getId());
@@ -232,13 +255,15 @@ public class CarServiceImplTest {
     public void testDeleteCar_whenCarHasReservations_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Car has reservations";
-        when(reservationRepository.findByCarId(car.getId())).thenReturn(Optional.of(new Reservation()));
+        when(reservationRepository.findByCarId(car.getId()))
+                .thenReturn(Optional.of(new Reservation()));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 carService.delete(car.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 }

@@ -17,7 +17,9 @@ public class JsonUtils {
     private static final JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static ArrayNode createJsonNodeForObjects(List<?> objects, List<String> properties) throws JsonProcessingException {
+    public static ArrayNode createJsonNodeForObjects(
+            List<?> objects, List<String> properties)
+            throws JsonProcessingException {
         ArrayNode json = objectMapper.createArrayNode();
         for (Object obj : objects) {
             ObjectNode objNode = createJsonNodeForObject(obj, properties);
@@ -27,14 +29,18 @@ public class JsonUtils {
     }
 
 
-    public static ObjectNode createJsonNodeForObject(Object obj, List<String> properties) {
+    public static ObjectNode createJsonNodeForObject(
+            Object obj, List<String> properties) {
         ObjectNode objNode = jsonNodeFactory.objectNode();
         for (String prop : properties) {
             try {
                 Field field = obj.getClass().getDeclaredField(prop);
                 field.setAccessible(true);
                 Object value = field.get(obj);
-                if (prop.equals("zone") || prop.equals("place") || prop.equals("car") || prop.equals("user")) {
+                if (prop.equals("zone")
+                        || prop.equals("place")
+                        || prop.equals("car")
+                        || prop.equals("user")) {
                     ObjectNode nestedNode = jsonNodeFactory.objectNode();
                     List<String> nestedProperties = getNestedProperties(value);
 
@@ -49,8 +55,7 @@ public class JsonUtils {
                 } else {
                     objNode.putPOJO(prop, convertValueToJson(value));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
             }
         }
         return objNode;
@@ -64,7 +69,8 @@ public class JsonUtils {
         else if (value instanceof Double)
             return jsonNodeFactory.numberNode((Double) value);
         else if (value instanceof LocalDateTime)
-            return jsonNodeFactory.textNode(DateUtils.customFormatter.format((LocalDateTime) value));
+            return jsonNodeFactory.textNode(DateUtils.customFormatter
+                    .format((LocalDateTime) value));
         else
             return jsonNodeFactory.textNode(String.valueOf(value));
     }
@@ -77,8 +83,7 @@ public class JsonUtils {
             Object fieldValue = null;
             try {
                 fieldValue = field.get(value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (IllegalAccessException ignored) {
             }
             if (fieldValue != null) nestedProperties.add(field.getName());
         }
@@ -96,12 +101,22 @@ public class JsonUtils {
                         "\"car\":{\"id\":%d,\"number\":\"%s\"}," +
                         "\"user\":{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\"}}",
                 jsonNode.get("id").asLong(),
+
                 jsonNode.get("timeFrom").asText(),
+
                 jsonNode.get("timeTo").asText(),
-                jsonNode.get("zone").get("id").asLong(), jsonNode.get("zone").get("number").asInt(),
-                jsonNode.get("place").get("id").asLong(), jsonNode.get("place").get("number").asInt(),
-                jsonNode.get("car").get("id").asLong(), jsonNode.get("car").get("number").asText(),
-                jsonNode.get("user").get("id").asLong(), jsonNode.get("user").get("name").asText(),
+
+                jsonNode.get("zone").get("id").asLong(),
+                jsonNode.get("zone").get("number").asInt(),
+
+                jsonNode.get("place").get("id").asLong(),
+                jsonNode.get("place").get("number").asInt(),
+
+                jsonNode.get("car").get("id").asLong(),
+                jsonNode.get("car").get("number").asText(),
+
+                jsonNode.get("user").get("id").asLong(),
+                jsonNode.get("user").get("name").asText(),
                 jsonNode.get("user").get("email").asText());
     }
 }

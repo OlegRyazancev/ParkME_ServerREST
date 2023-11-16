@@ -25,6 +25,8 @@ public abstract class BaseIT {
 
     protected <T> T findObjectForTests(JpaRepository<T, Long> repository, Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Resource for tests not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Resource for tests not found"));
     }
 }

@@ -112,13 +112,6 @@ public class APIPaths {
             .withPath(PathParts.RESERVATIONS)
             .build();
 
-    public static final String ZONE_PLACES = APIPathBuilder.builder()
-            .withBase(APIBase.V1)
-            .withPath(PathParts.ZONES)
-            .withId()
-            .withPath(PathParts.PLACES)
-            .build();
-
     public static final String LOGIN = APIPathBuilder.builder()
             .withBase(APIBase.V1)
             .withPath(PathParts.AUTH)

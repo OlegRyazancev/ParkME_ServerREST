@@ -71,26 +71,30 @@ public class UserServiceImplTest {
 
         List<User> sampleUsers = List.of(user, user2);
 
-        when(userRepository.findAll()).thenReturn(sampleUsers);
+        when(userRepository.findAll())
+                .thenReturn(sampleUsers);
 
         //Act
         List<User> users = userService.getAll();
 
         //Assert
-        assertEquals(sampleUsers, users, "Returned list should be the same");
+        assertEquals(sampleUsers, users,
+                "Returned list should be the same");
     }
 
     @DisplayName("Get user by id")
     @Test
     public void testGetUserById_whenValidId_returnsUserObject() {
         //Arrange
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findById(user.getId()))
+                .thenReturn(Optional.of(user));
 
         //Act
         User foundUser = userService.getById(user.getId());
 
         //Assert
-        assertEquals(user, foundUser, "Returned user should be th same");
+        assertEquals(user, foundUser,
+                "Returned user should be th same");
     }
 
     @DisplayName("Get user by non-existing id")
@@ -99,29 +103,32 @@ public class UserServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "User not found";
         Long nonExistingId = 12L;
-        when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(userRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            userService.getById(nonExistingId);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                userService.getById(nonExistingId));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Get user by username(email)")
     @Test
     public void testGetUserByUsername_whenValidUsername_returnsUserObject() {
         //Arrange
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(user));
 
 
         //Act
         User foundUser = userService.getByUsername(user.getEmail());
 
         //Assert
-        assertEquals(user, foundUser, "Returned user should be the same");
+        assertEquals(user, foundUser,
+                "Returned user should be the same");
     }
 
     @DisplayName("Get user by non-existing username")
@@ -130,15 +137,16 @@ public class UserServiceImplTest {
         //Arrange
         String expectedErrorMessage = "User not found";
         String nonExistingUsername = "nonExistingUsername";
-        when(userRepository.findByEmail(nonExistingUsername)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(nonExistingUsername))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            userService.getByUsername(nonExistingUsername);
-        });
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
+                userService.getByUsername(nonExistingUsername));
 
         //Assert
-        assertEquals(expectedErrorMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedErrorMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create user with valid details")
@@ -146,15 +154,19 @@ public class UserServiceImplTest {
     public void testCreateUser_whenUserDetailsAreValid_returnsUserObject() {
         //Arrange
         String encodedPassword = "encodedPassword";
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(user.getPassword())).thenReturn(encodedPassword);
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.empty());
+        when(passwordEncoder.encode(user.getPassword()))
+                .thenReturn(encodedPassword);
 
         //Act
         User createdUser = userService.create(user);
 
         //Assert
-        assertNotNull(createdUser, "Created user should not be null");
-        assertEquals(encodedPassword, createdUser.getPassword(), "Created user must have encoded password");
+        assertNotNull(createdUser,
+                "Created user should not be null");
+        assertEquals(encodedPassword, createdUser.getPassword(),
+                "Created user must have encoded password");
         assertEquals(Set.of(Role.ROLE_USER), createdUser.getRoles());
 
         verify(userRepository).save(user);
@@ -165,15 +177,16 @@ public class UserServiceImplTest {
     public void testCreateUser_whenUserEmailExists_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "User already exists";
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(user));
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            userService.create(user);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                userService.create(user));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Create user with different password and password confirmation")
@@ -182,15 +195,16 @@ public class UserServiceImplTest {
         //Arrange
         user.setPasswordConfirmation("qwerty");
         String expectedExceptionMessage = "Password and password confirmation do not equals";
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            userService.create(user);
-        });
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+                userService.create(user));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("If user is car owner")
@@ -200,7 +214,8 @@ public class UserServiceImplTest {
         Long carId = 12L;
         Long userId = user.getId();
 
-        when(userRepository.isCarOwner(userId, carId)).thenReturn(true);
+        when(userRepository.isCarOwner(userId, carId))
+                .thenReturn(true);
 
         //Act
         boolean result = userService.isCarOwner(userId, carId);
@@ -218,7 +233,8 @@ public class UserServiceImplTest {
         Long carId = 12L;
         Long userId = user.getId();
 
-        when(userRepository.isCarOwner(userId, carId)).thenReturn(false);
+        when(userRepository.isCarOwner(userId, carId))
+                .thenReturn(false);
 
         //Act
         boolean result = userService.isCarOwner(userId, carId);
@@ -236,7 +252,8 @@ public class UserServiceImplTest {
         Long reservationId = 12L;
         Long userId = user.getId();
 
-        when(userRepository.isReservationOwner(userId, reservationId)).thenReturn(true);
+        when(userRepository.isReservationOwner(userId, reservationId))
+                .thenReturn(true);
 
         //Act
         boolean result = userService.isReservationOwner(userId, reservationId);
@@ -254,7 +271,8 @@ public class UserServiceImplTest {
         Long reservationId = 12L;
         Long userId = user.getId();
 
-        when(userRepository.isReservationOwner(userId, reservationId)).thenReturn(false);
+        when(userRepository.isReservationOwner(userId, reservationId))
+                .thenReturn(false);
 
         //Act
         boolean result = userService.isReservationOwner(userId, reservationId);
@@ -276,16 +294,21 @@ public class UserServiceImplTest {
                 .password("password")
                 .build();
 
-        when(passwordEncoder.encode(updatedUser.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.findById(updatedUser.getId())).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
+        when(passwordEncoder.encode(updatedUser.getPassword()))
+                .thenReturn("encodedPassword");
+        when(userRepository.findById(updatedUser.getId()))
+                .thenReturn(Optional.of(user));
+        when(userRepository.save(user))
+                .thenReturn(user);
         //Act
         User result = userService.update(updatedUser);
 
         //Assert
 
-        assertEquals(updatedUser.getName(), result.getName(), "Name should be updated");
-        assertEquals(updatedUser.getEmail(), result.getEmail(), "Email should be updated");
+        assertEquals(updatedUser.getName(), result.getName(),
+                "Name should be updated");
+        assertEquals(updatedUser.getEmail(), result.getEmail(),
+                "Email should be updated");
         verify(userRepository).save(user);
     }
 
@@ -304,7 +327,8 @@ public class UserServiceImplTest {
                 Reservation.builder().id(2L).build())
         );
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
 
         //Act
         userService.delete(userId);

@@ -47,7 +47,8 @@ public class CarRepositoryIT extends BaseIT {
         //Assert
         List<Car> userCars = carRepository.findAllByUserId(userId);
         boolean carIsAssigned = userCars.stream()
-                .anyMatch(c -> c.getNumber().equals(savedCar.getNumber()));
+                .anyMatch(c ->
+                        c.getNumber().equals(savedCar.getNumber()));
 
         assertTrue(carIsAssigned);
     }

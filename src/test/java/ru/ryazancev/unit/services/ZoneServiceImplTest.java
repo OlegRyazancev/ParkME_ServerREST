@@ -61,13 +61,15 @@ public class ZoneServiceImplTest {
                 .places(List.of(new Place()))
                 .build();
         List<Zone> sampleZones = List.of(zone, zone2);
-        when(zoneRepository.findAll()).thenReturn(sampleZones);
+        when(zoneRepository.findAll())
+                .thenReturn(sampleZones);
 
         //Act
         List<Zone> zones = zoneService.getAll();
 
         //Assert
-        assertEquals(sampleZones.size(), zones.size(), "Returned list should have the same size");
+        assertEquals(sampleZones.size(), zones.size(),
+                "Returned list should have the same size");
     }
 
 
@@ -75,13 +77,15 @@ public class ZoneServiceImplTest {
     @Test
     public void testGetZoneById_whenValidId_returnsZoneObject() {
         //Arrange
-        when(zoneRepository.findById(zone.getId())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findById(zone.getId()))
+                .thenReturn(Optional.of(zone));
 
         //Act
         Zone foundZone = zoneService.getById(zone.getId());
 
         //Assert
-        assertEquals(zone, foundZone, "Returned zone should be the same");
+        assertEquals(zone, foundZone,
+                "Returned zone should be the same");
     }
 
     @DisplayName("Get zone by not existing id")
@@ -90,7 +94,8 @@ public class ZoneServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "Zone not found";
         Long nonExistingId = 12L;
-        when(zoneRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(zoneRepository.findById(nonExistingId))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
@@ -105,13 +110,15 @@ public class ZoneServiceImplTest {
     @Test
     public void testCreateZone_whenValidNumber_returnsZoneObject() {
         //Arrange
-        when(zoneRepository.findByNumber(zone.getNumber())).thenReturn(Optional.empty());
+        when(zoneRepository.findByNumber(zone.getNumber()))
+                .thenReturn(Optional.empty());
 
         //Act
         Zone createdZone = zoneService.create(zone);
 
         //Assert
-        assertNotNull(createdZone, "Created zone should not be empty");
+        assertNotNull(createdZone,
+                "Created zone should not be empty");
 
         verify(zoneRepository).save(zone);
     }
@@ -125,14 +132,16 @@ public class ZoneServiceImplTest {
                 .number(1)
                 .build();
 
-        when(zoneRepository.findByNumber(creatingZone.getNumber())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findByNumber(creatingZone.getNumber()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 zoneService.create(creatingZone));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Update zone with valid details")
@@ -144,16 +153,20 @@ public class ZoneServiceImplTest {
                 .number(213)
                 .build();
 
-        when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
-        when(zoneRepository.findById(updatedZone.getId())).thenReturn(Optional.of(zone));
-        when(zoneRepository.save(zone)).thenReturn(zone);
+        when(zoneRepository.findByNumber(updatedZone.getNumber()))
+                .thenReturn(Optional.empty());
+        when(zoneRepository.findById(updatedZone.getId()))
+                .thenReturn(Optional.of(zone));
+        when(zoneRepository.save(zone))
+                .thenReturn(zone);
 
         //Act
         Zone result = zoneService.update(updatedZone);
 
         //Assert
 
-        assertEquals(updatedZone.getNumber(), result.getNumber(), "Number should be updated");
+        assertEquals(updatedZone.getNumber(), result.getNumber(),
+                "Number should be updated");
         verify(zoneRepository).findById(updatedZone.getId());
         verify(zoneRepository).findByNumber(updatedZone.getNumber());
         verify(zoneRepository).save(zone);
@@ -164,21 +177,24 @@ public class ZoneServiceImplTest {
     public void testUpdateZone_whenNewNumberIsEqualsExistingNumber_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Zone is already exists";
-        when(zoneRepository.findByNumber(zone.getNumber())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findByNumber(zone.getNumber()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 zoneService.update(zone));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete zone with valid details")
     @Test
     public void testDeleteZone_whenZoneDetailsAreValid_returnsNothing() {
         //Arrange
-        when(zoneRepository.findById(zone.getId())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findById(zone.getId()))
+                .thenReturn(Optional.of(zone));
 
         //Act
         zoneService.delete(zone.getId());
@@ -196,14 +212,16 @@ public class ZoneServiceImplTest {
         //Arrange
         zone.getPlaces().get(1).setStatus(Status.OCCUPIED);
         String expectedExceptionMessage = "Zone have occupied places";
-        when(zoneRepository.findById(zone.getId())).thenReturn(Optional.of(zone));
+        when(zoneRepository.findById(zone.getId()))
+                .thenReturn(Optional.of(zone));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 zoneService.delete(zone.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
     @DisplayName("Delete non existing zone")
@@ -211,14 +229,16 @@ public class ZoneServiceImplTest {
     public void testDeleteZone_whenZoneDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Zone not found";
-        when(zoneRepository.findById(zone.getId())).thenReturn(Optional.empty());
+        when(zoneRepository.findById(zone.getId()))
+                .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
                 zoneService.delete(zone.getId()));
 
         //Assert
-        assertEquals(expectedExceptionMessage, thrown.getMessage(), "Exception error message is not correct");
+        assertEquals(expectedExceptionMessage, thrown.getMessage(),
+                "Exception error message is not correct");
     }
 
 }

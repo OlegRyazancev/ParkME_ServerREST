@@ -8,11 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.testutils.paths.APIPaths;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +48,10 @@ public class CarControllerIT extends BaseIT {
         //Act && Assert
         mockMvc.perform(get(APIPaths.CAR_BY_ID, testCar.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testCar.getId()))
-                .andExpect(jsonPath("$.number").value(testCar.getNumber()));
+                .andExpect(jsonPath("$.id")
+                        .value(testCar.getId()))
+                .andExpect(jsonPath("$.number")
+                        .value(testCar.getNumber()));
     }
 
     @DisplayName("Update car")
@@ -61,15 +63,21 @@ public class CarControllerIT extends BaseIT {
                 .id(testCar.getId())
                 .number("X000XX00")
                 .build();
-        String json = createJsonNodeForObject(updatingCarDTO, List.of("id", "number")).toString();
+        String json = createJsonNodeForObject(
+                updatingCarDTO,
+                List.of("id",
+                        "number"))
+                .toString();
 
         //Act
         mockMvc.perform(put(APIPaths.CARS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(updatingCarDTO.getId()))
-                .andExpect(jsonPath("$.number").value(updatingCarDTO.getNumber()));
+                .andExpect(jsonPath("$.id")
+                        .value(updatingCarDTO.getId()))
+                .andExpect(jsonPath("$.number")
+                        .value(updatingCarDTO.getNumber()));
 
         //Assert
         Optional<Car> updatedCar = carRepository.findById(updatingCarDTO.getId());

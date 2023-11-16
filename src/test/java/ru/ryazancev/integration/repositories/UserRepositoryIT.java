@@ -36,7 +36,8 @@ public class UserRepositoryIT extends BaseIT {
         Long reservationId = 1L;
 
         //Act
-        Boolean isReservationOwner = userRepository.isReservationOwner(userId, reservationId);
+        Boolean isReservationOwner =
+                userRepository.isReservationOwner(userId, reservationId);
 
         //Assert
         assertTrue(isReservationOwner);

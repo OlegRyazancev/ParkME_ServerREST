@@ -42,7 +42,11 @@ public class ZoneControllerIT extends BaseIT {
     public void testGetZones_returnsListOfAllZones() throws Exception {
         //Arrange
         List<Zone> zones = zoneRepository.findAll();
-        String zonesJson = JsonUtils.createJsonNodeForObjects(zones, List.of("id", "number")).toString();
+        String zonesJson = JsonUtils.createJsonNodeForObjects(
+                        zones,
+                        List.of("id",
+                                "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ZONES))
@@ -58,9 +62,12 @@ public class ZoneControllerIT extends BaseIT {
         //Act && Assert
         mockMvc.perform(get(APIPaths.ZONE_BY_ID, testZone.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testZone.getId()))
-                .andExpect(jsonPath("$.number").value(testZone.getNumber()))
-                .andExpect(jsonPath("$.places").exists());
+                .andExpect(jsonPath("$.id")
+                        .value(testZone.getId()))
+                .andExpect(jsonPath("$.number")
+                        .value(testZone.getNumber()))
+                .andExpect(jsonPath("$.places")
+                        .exists());
     }
 
 }

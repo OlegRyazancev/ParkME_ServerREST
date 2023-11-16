@@ -8,9 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.ryazancev.testutils.DateUtils;
-import ru.ryazancev.testutils.JsonUtils;
-import ru.ryazancev.testutils.paths.APIPaths;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
@@ -25,6 +22,9 @@ import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
+import ru.ryazancev.testutils.DateUtils;
+import ru.ryazancev.testutils.JsonUtils;
+import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,9 +67,12 @@ public class UserControllerIT extends BaseIT {
         //Act && Assert
         mockMvc.perform(get(APIPaths.USER_BY_ID, testUser.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testUser.getId()))
-                .andExpect(jsonPath("$.name").value(testUser.getName()))
-                .andExpect(jsonPath("$.email").value(testUser.getEmail()));
+                .andExpect(jsonPath("$.id")
+                        .value(testUser.getId()))
+                .andExpect(jsonPath("$.name")
+                        .value(testUser.getName()))
+                .andExpect(jsonPath("$.email")
+                        .value(testUser.getEmail()));
     }
 
 
@@ -79,7 +82,11 @@ public class UserControllerIT extends BaseIT {
     void testGetCarsByUserId_returnsListOfCars() throws Exception {
         //Arrange
         List<Car> userCars = testUser.getCars();
-        String carsJson = JsonUtils.createJsonNodeForObjects(userCars, List.of("id", "number")).toString();
+        String carsJson = JsonUtils.createJsonNodeForObjects(
+                        userCars,
+                        List.of("id",
+                                "number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.USER_CARS, testUser.getId()))
@@ -93,7 +100,12 @@ public class UserControllerIT extends BaseIT {
     void testGetReservationsByUserId_returnsListOfReservations() throws Exception {
         //Arrange
         List<Reservation> usersReservations = testUser.getReservations();
-        String reservationsJson = JsonUtils.createJsonNodeForObjects(usersReservations, List.of("id", "timeFrom", "timeTo")).toString();
+        String reservationsJson = JsonUtils.createJsonNodeForObjects(
+                        usersReservations,
+                        List.of("id",
+                                "timeFrom",
+                                "timeTo"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.USER_RESERVATIONS, testUser.getId()))
@@ -109,15 +121,20 @@ public class UserControllerIT extends BaseIT {
         int countUserCars = testUser.getCars().size();
 
         CarDTO creatingCar = CarDTO.builder().number("X000XX00").build();
-        String carJson = JsonUtils.createJsonNodeForObject(creatingCar, List.of("number")).toString();
+        String carJson = JsonUtils.createJsonNodeForObject(
+                        creatingCar,
+                        List.of("number"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.USER_CARS, testUser.getId())
                         .content(carJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.number").value(creatingCar.getNumber()));
+                .andExpect(jsonPath("$.id")
+                        .exists())
+                .andExpect(jsonPath("$.number")
+                        .value(creatingCar.getNumber()));
 
         //Assert
         List<Car> userCars = carRepository.findAllByUserId(testUser.getId());
@@ -145,23 +162,39 @@ public class UserControllerIT extends BaseIT {
                 .car(CarDTO.builder().number("C000CC00").build())
                 .build();
 
-        String json = JsonUtils.createJsonNodeForObject(reservationInfoDTO, List.of("timeFrom", "timeTo", "zone", "place", "car")).toString();
+        String json = JsonUtils.createJsonNodeForObject(
+                        reservationInfoDTO,
+                        List.of("timeFrom",
+                                "timeTo",
+                                "zone",
+                                "place",
+                                "car"))
+                .toString();
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.USER_RESERVATIONS, testUser.getId())
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.timeFrom").value(reservationInfoDTO.getTimeFrom().format(DateUtils.customFormatter)))
-                .andExpect(jsonPath("$.timeTo").value(reservationInfoDTO.getTimeTo().format(DateUtils.customFormatter)));
+                .andExpect(jsonPath("$.id")
+                        .exists())
+                .andExpect(jsonPath("$.timeFrom")
+                        .value(reservationInfoDTO.getTimeFrom()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.timeTo")
+                        .value(reservationInfoDTO.getTimeTo()
+                                .format(DateUtils.customFormatter)));
 
         //Assert
-        Optional<Place> occupiedPlace = getOccupiedPlace(reservationInfoDTO.getZone().getId(), reservationInfoDTO.getPlace().getNumber());
+        Optional<Place> occupiedPlace = getOccupiedPlace(
+                reservationInfoDTO.getZone().getId(),
+                reservationInfoDTO.getPlace().getNumber());
         assertTrue(occupiedPlace.isPresent());
         assertEquals(Status.OCCUPIED, occupiedPlace.get().getStatus());
 
-        Optional<Reservation> createdReservation = findCreatedReservation(testUser.getId(), occupiedPlace.get().getId());
+        Optional<Reservation> createdReservation = findCreatedReservation(
+                testUser.getId(),
+                occupiedPlace.get().getId());
         assertTrue(createdReservation.isPresent());
         assertEquals(reservationInfoDTO.getTimeFrom(), createdReservation.get().getTimeFrom());
         assertEquals(reservationInfoDTO.getTimeTo(), createdReservation.get().getTimeTo());
@@ -178,18 +211,28 @@ public class UserControllerIT extends BaseIT {
                 .email(testUser.getEmail())
                 .password("password")
                 .build();
-        String json = JsonUtils.createJsonNodeForObject(updatingUser, List.of("id", "name", "email", "password")).toString();
+        String json = JsonUtils.createJsonNodeForObject(
+                        updatingUser,
+                        List.of("id",
+                                "name",
+                                "email",
+                                "password"))
+                .toString();
         //Act
         mockMvc.perform(put(APIPaths.USERS)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(updatingUser.getId()))
-                .andExpect(jsonPath("$.name").value(updatingUser.getName()))
-                .andExpect(jsonPath("$.email").value(updatingUser.getEmail()));
+                .andExpect(jsonPath("$.id")
+                        .value(updatingUser.getId()))
+                .andExpect(jsonPath("$.name")
+                        .value(updatingUser.getName()))
+                .andExpect(jsonPath("$.email")
+                        .value(updatingUser.getEmail()));
 
         //Assert
-        Optional<User> updatedUser = userRepository.findById(updatingUser.getId());
+        Optional<User> updatedUser =
+                userRepository.findById(updatingUser.getId());
         assertTrue(updatedUser.isPresent());
         System.out.println(updatedUser.get().getPassword());
         assertEquals(updatingUser.getId(), updatedUser.get().getId());
@@ -208,10 +251,12 @@ public class UserControllerIT extends BaseIT {
         List<Car> cars = carRepository.findAllByUserId(testUser.getId());
         assertTrue(cars.isEmpty());
 
-        List<Reservation> reservations = reservationRepository.findAllByUserId(testUser.getId());
+        List<Reservation> reservations =
+                reservationRepository.findAllByUserId(testUser.getId());
         assertTrue(reservations.isEmpty());
 
-        List<Place> places = placeRepository.findAllOccupiedByUserId(testUser.getId());
+        List<Place> places =
+                placeRepository.findAllOccupiedByUserId(testUser.getId());
         assertTrue(places.isEmpty());
 
         Optional<User> user = userRepository.findById(testUser.getId());

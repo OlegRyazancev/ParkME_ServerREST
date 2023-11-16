@@ -10,12 +10,16 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @UtilityClass
 public class Postgres {
 
-    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:16-alpine");
+    public static final PostgreSQLContainer<?> container =
+            new PostgreSQLContainer<>("postgres:16-alpine");
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    public static class Initializer
+            implements
+            ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
-        public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
+        public void initialize(
+                @NotNull ConfigurableApplicationContext applicationContext) {
             TestPropertyValues.of(
                     "spring.datasource.url=" + container.getJdbcUrl(),
                     "spring.datasource.username=" + container.getUsername(),

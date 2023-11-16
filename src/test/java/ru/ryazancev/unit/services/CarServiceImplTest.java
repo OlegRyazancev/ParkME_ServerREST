@@ -163,22 +163,24 @@ public class CarServiceImplTest {
     @Test
     public void testUpdateCar_whenCarDetailsAreValid_returnsUpdatedCarObject() {
         //Arrange
-        Car updatedCar = new Car();
-        updatedCar.setId(car.getId());
-        updatedCar.setNumber("UU000U00");
+        Car updatedCar = Car.builder()
+                .id(car.getId())
+                .number("UU000U00")
+                .build();
 
         when(carRepository.findByNumber(updatedCar.getNumber())).thenReturn(Optional.empty());
         when(carRepository.findById(updatedCar.getId())).thenReturn(Optional.of(car));
-
-        when(carRepository.save(updatedCar)).thenReturn(updatedCar);
+        when(carRepository.save(car)).thenReturn(car);
 
         //Act
         Car result = carService.update(updatedCar);
 
         //Assert
+        assertEquals(updatedCar.getNumber(), result.getNumber(),
+                "The car number should be updated");
+        verify(carRepository).findById(updatedCar.getId());
         verify(carRepository).findByNumber(updatedCar.getNumber());
-        verify(carRepository).save(updatedCar);
-        assertEquals(updatedCar, result, "Updated car should be equals to input car");
+        verify(carRepository).save(car);
     }
 
     @DisplayName("Update car number to the same number")
@@ -200,7 +202,7 @@ public class CarServiceImplTest {
     @Test
     public void testUpdateCar_whenCarDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
-        String expectedErrorMessage = "Car does not exists";
+        String expectedErrorMessage = "Car not found";
         when(carRepository.findByNumber(car.getNumber())).thenReturn(Optional.empty());
         when(carRepository.findById(car.getId())).thenReturn(Optional.empty());
 

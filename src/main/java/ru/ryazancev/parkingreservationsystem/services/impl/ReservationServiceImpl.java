@@ -110,7 +110,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (existingRes.getTimeFrom().isAfter(reservation.getTimeTo())) {
             throw new IllegalStateException(
-                    "Can not extend reservation, "
+                    "Can not change status, "
                             + "because time from is before time to");
         }
 

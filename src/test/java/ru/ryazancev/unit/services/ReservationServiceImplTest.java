@@ -60,7 +60,7 @@ public class ReservationServiceImplTest {
     public void setup() {
         reservation = Reservation.builder().id(2L)
                 .timeFrom(LocalDateTime.now())
-                .timeTo(LocalDateTime.now().plusHours(7))
+                .timeTo(LocalDateTime.now().plusHours(15))
                 .build();
 
         place = new Place(1L, 1, Status.FREE);
@@ -316,17 +316,21 @@ public class ReservationServiceImplTest {
     @Test
     public void testChangeReservationTimeTo_whenReservationDetailsAreValid_returnsReservationObject() {
         //Arrange
-        reservation.setTimeTo(LocalDateTime.now().plusHours(5));
+        Reservation updatedReservation = Reservation.builder()
+                .id(reservation.getId())
+                .timeTo(LocalDateTime.now().plusHours(5))
+                .build();
 
-        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.findById(updatedReservation.getId())).thenReturn(Optional.of(reservation));
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
 
         //Act
-        Reservation result = reservationService.changeTimeTo(reservation);
+        Reservation result = reservationService.changeTimeTo(updatedReservation);
 
         //Assert
+        assertEquals(updatedReservation.getTimeTo(), result.getTimeTo(),
+                "Time to should be updated");
         verify(reservationRepository).save(reservation);
-
-        assertEquals(reservation, result, "Updated reservation should be equals to input reservation");
     }
 
     @DisplayName("Change  non-existing reservation's time to")
@@ -350,7 +354,7 @@ public class ReservationServiceImplTest {
     @Test
     public void testChangeReservationTimeTo_whenUpdatedTimeToIsBeforeActualValue_throwsIllegalStateException() {
         //Arrange
-        String expectedExceptionMessage = "Can not extend reservation, because time from is before time to";
+        String expectedExceptionMessage = "Can not change status, because time from is before time to";
         reservation.setTimeTo(LocalDateTime.now().minusHours(2));
         when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
 

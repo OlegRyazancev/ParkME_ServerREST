@@ -136,12 +136,14 @@ public class PlaceServiceImplTest {
         Status status = Status.DISABLE;
 
         when(placeRepository.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepository.save(place)).thenReturn(place);
 
         //Act
         Place placeWithChangedStatus = placeService.changeStatus(place.getId(), status);
 
         //Assert
-        assertEquals(place, placeWithChangedStatus, "Place with changed status should be equals to input place");
+        assertEquals(status, placeWithChangedStatus.getStatus(), "Place status should be changed");
+        verify(placeRepository).save(place);
     }
 
     @DisplayName("Change place status to OCCUPIED status")

@@ -9,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
-import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -18,6 +16,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
+import ru.ryazancev.parkingreservationsystem.services.impl.ReservationServiceImpl;
 import ru.ryazancev.parkingreservationsystem.services.impl.UserServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
@@ -26,8 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -47,8 +45,12 @@ public class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private ReservationServiceImpl reservationService;
+
     @InjectMocks
     private UserServiceImpl userService;
+
 
     private User user;
 
@@ -58,8 +60,8 @@ public class UserServiceImplTest {
                 .id(1L)
                 .name("Name")
                 .email("Email")
-                .password("password")
-                .passwordConfirmation("password")
+                .password("encodedPassword")
+                .passwordConfirmation("encodedPassword")
                 .build();
     }
 
@@ -275,21 +277,24 @@ public class UserServiceImplTest {
     @Test
     public void testUpdateUser_returnsUpdatedUserObject() {
         //Arrange
-        User updatedUser = new User();
-        updatedUser.setId(user.getId());
-        updatedUser.setPassword(user.getPassword());
-        String encodedPassword = "encodedPassword";
+        User updatedUser = User.builder()
+                .id(user.getId())
+                .name("TestName")
+                .email("TestEmail")
+                .password("password")
+                .build();
 
-        when(passwordEncoder.encode(updatedUser.getPassword())).thenReturn(encodedPassword);
-
+        when(passwordEncoder.encode(updatedUser.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.findById(updatedUser.getId())).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
         //Act
         User result = userService.update(updatedUser);
 
         //Assert
 
-        assertEquals(updatedUser, result, "Updated user should be equals to input user");
-
-        verify(userRepository).save(updatedUser);
+        assertEquals(updatedUser.getName(), result.getName(), "Name should be updated");
+        assertEquals(updatedUser.getEmail(), result.getEmail(), "Email should be updated");
+        verify(userRepository).save(user);
     }
 
     @DisplayName("Delete user")
@@ -298,53 +303,23 @@ public class UserServiceImplTest {
         //Arrange
 
         Long userId = user.getId();
+        user.setCars(List.of(
+                Car.builder().id(1L).build(),
+                Car.builder().id(2L).build())
+        );
+        user.setReservations(List.of(
+                Reservation.builder().id(1L).build(),
+                Reservation.builder().id(2L).build())
+        );
 
-        List<Place> places = List.of(
-                Place.builder()
-                        .id(1L)
-                        .status(Status.FREE)
-                        .build(),
-                Place.builder()
-                        .id(2L)
-                        .status(Status.DISABLE)
-                        .build());
-
-        List<Reservation> reservations = List.of(
-                Reservation.builder()
-                        .id(1L)
-                        .build(),
-                Reservation.builder()
-                        .id(2L)
-                        .build());
-
-        List<Car> cars = List.of(
-                Car.builder()
-                        .id(1L)
-                        .build(),
-                Car.builder()
-                        .id(2L)
-                        .build());
-
-        when(placeRepository.findAllOccupiedByUserId(userId)).thenReturn(places);
-        when(reservationRepository.findAllByUserId(userId)).thenReturn(reservations);
-        when(carRepository.findAllByUserId(userId)).thenReturn(cars);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         //Act
         userService.delete(userId);
 
         //Assert
-        places.forEach(place -> {
-            assertEquals(Status.FREE, place.getStatus(), "Place status should be change to free");
-            verify(placeRepository).save(place);
-        });
-        reservations.forEach(reservation -> {
-            verify(reservationRepository).deleteById(reservation.getId());
-        });
-
-        cars.forEach(car -> {
-            verify(carRepository).deleteById(car.getId());
-        });
-
+        verify(reservationService, times(user.getReservations().size())).delete(anyLong());
+        verify(carRepository).deleteAll(user.getCars());
         verify(userRepository).deleteById(user.getId());
     }
 

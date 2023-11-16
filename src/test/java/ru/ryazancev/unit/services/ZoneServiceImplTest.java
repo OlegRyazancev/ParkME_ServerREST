@@ -139,20 +139,24 @@ public class ZoneServiceImplTest {
     @Test
     public void testUpdateZone_whenZoneDetailsAreValid_returnsUpdatedZoneObject() {
         //Arrange
-        Zone updatedZone = new Zone();
-        updatedZone.setId(zone.getId());
-        updatedZone.setNumber(213);
+        Zone updatedZone = Zone.builder()
+                .id(zone.getId())
+                .number(213)
+                .build();
 
         when(zoneRepository.findByNumber(updatedZone.getNumber())).thenReturn(Optional.empty());
+        when(zoneRepository.findById(updatedZone.getId())).thenReturn(Optional.of(zone));
+        when(zoneRepository.save(zone)).thenReturn(zone);
 
         //Act
         Zone result = zoneService.update(updatedZone);
 
         //Assert
-        verify(zoneRepository).findByNumber(updatedZone.getNumber());
-        verify(zoneRepository).save(updatedZone);
 
-        assertEquals(updatedZone, result, "UpdatedZone should be equals inputZone ");
+        assertEquals(updatedZone.getNumber(), result.getNumber(), "Number should be updated");
+        verify(zoneRepository).findById(updatedZone.getId());
+        verify(zoneRepository).findByNumber(updatedZone.getNumber());
+        verify(zoneRepository).save(zone);
     }
 
     @DisplayName("Update zone number to the same number")

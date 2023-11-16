@@ -19,7 +19,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceInfoDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 import ru.ryazancev.testutils.DateUtils;
@@ -158,7 +158,7 @@ public class UserControllerIT extends BaseIT {
                 .timeFrom(LocalDateTime.of(2030, 1, 29, 10, 54))
                 .timeTo(LocalDateTime.of(2030, 8, 10, 10, 0))
                 .zone(ZoneDTO.builder().id(1L).number(1).build())
-                .place(PlaceInfoDTO.builder().number(2).build())
+                .place(PlaceDTO.builder().number(2).build())
                 .car(CarDTO.builder().number("C000CC00").build())
                 .build();
 

@@ -110,8 +110,8 @@ public class AdminController {
 
     @PostMapping("/zones/{id}/places")
     @MutationMapping("createPlacesInZoneById")
-    @Operation(summary = "Create a fix number places in zone by zone id")
-    public List<PlaceDTO> createPlacesInZoneByZoneId(
+    @Operation(summary = "Create a fix number places in zone")
+    public List<PlaceDTO> createPlacesInZone(
             @PathVariable("id")
             @Argument final Long zoneId,
             @RequestParam("places") final int numberOfPlaces) {
@@ -141,9 +141,9 @@ public class AdminController {
     }
 
     @PutMapping("places/{id}/status")
-    @MutationMapping("changePlaceStatusById")
-    @Operation(summary = "Change place status by id")
-    public PlaceDTO changePlaceStatusById(
+    @MutationMapping("changePlaceStatus")
+    @Operation(summary = "Change place status")
+    public PlaceDTO changePlaceStatus(
             @PathVariable("id")
             @Argument final Long placeId,
             @RequestParam

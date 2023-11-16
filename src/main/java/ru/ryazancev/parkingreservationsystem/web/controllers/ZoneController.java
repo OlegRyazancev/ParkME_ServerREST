@@ -38,15 +38,15 @@ public class ZoneController {
     @Operation(summary = "Get zones")
     public List<ZoneDTO> getZones() {
         List<Zone> zones = zoneService.getAll();
-        List<ZoneDTO> zonesReadDTO = zoneMapper.toDTO(zones);
-        zonesReadDTO.forEach(zone -> {
+        List<ZoneDTO> zoneDTO = zoneMapper.toDTO(zones);
+        zoneDTO.forEach(zone -> {
             zone.setTotalPlaces(
                     placeService.countAllPlacesByZoneID(zone.getId()));
             zone.setFreePlaces(
                     placeService.countFreePlacesByZoneID(zone.getId()));
         });
 
-        return zonesReadDTO;
+        return zoneDTO;
     }
 
     @GetMapping("/{id}")

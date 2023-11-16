@@ -13,8 +13,6 @@ import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
-import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.UserRepository;
 import ru.ryazancev.parkingreservationsystem.services.impl.ReservationServiceImpl;
 import ru.ryazancev.parkingreservationsystem.services.impl.UserServiceImpl;
@@ -34,13 +32,7 @@ public class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
     private CarRepository carRepository;
-
-    @Mock
-    private PlaceRepository placeRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;

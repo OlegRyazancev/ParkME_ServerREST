@@ -1,0 +1,11 @@
+type UserQueries{
+    userById(userId: ID): User
+    carsByUserId(userId: ID): [Car]
+    reservationsByUserId(userId: ID): [Reservation]
+}
+type UserMutations{
+    createCar(userId: ID, carDTO: InputCar): Car
+    makeReservation(userId:ID, rInfoDTO: InputReservationInfo): Reservation
+    updateUser (userDTO: InputUser): User
+    deleteUserById(userId: ID): Boolean
+}

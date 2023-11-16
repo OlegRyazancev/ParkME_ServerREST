@@ -1,0 +1,15 @@
+type AdminQueries{
+    cars: [Car]
+    users: [User]
+    reservations: [Reservation]
+    reservationInfoById(reservationId: ID): ReservationInfo
+    placeById(placeId: ID): Place
+}
+type AdminMutations{
+    createZone(zoneDTO: InputZone): Zone
+    createPlacesInZone(zoneId: ID, numberOfPlaces: Int): [Place]
+    updateZone(zoneDTO: InputZone): Zone
+    changePlaceStatus(placeId: ID, status: String): Place
+    deleteZoneAndAssociatedPlacesByZoneId(zoneId: ID): Boolean
+    deletePlaceById(placeId:ID):Boolean
+}

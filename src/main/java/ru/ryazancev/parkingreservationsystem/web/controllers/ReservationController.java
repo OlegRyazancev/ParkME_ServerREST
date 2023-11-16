@@ -43,7 +43,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    @MutationMapping("deleteReservation")
+    @MutationMapping("deleteReservationById")
     @Operation(summary = "Delete reservation by id")
     @PreAuthorize("@customSecurityExpression.canAccessReservation(#resId)")
     public void deleteById(

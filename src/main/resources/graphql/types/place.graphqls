@@ -1,0 +1,12 @@
+type Place{
+    id: ID
+    number: Int
+    status: Status
+}
+input InputPlace{
+    id: ID
+    number: Int
+}
+enum Status{
+    FREE, OCCUPIED, DISABLE
+}

@@ -1,0 +1,4 @@
+type ZoneQueries {
+    zones: [Zone]
+    zoneById(zoneId: ID): ZoneInfo
+}

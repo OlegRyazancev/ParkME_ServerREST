@@ -1,0 +1,15 @@
+type Zone{
+    id: ID,
+    number: Int
+    totalPlaces: Int
+    freePlaces: Int
+}
+type ZoneInfo{
+    id: ID,
+    number: Int,
+    places: [Place]
+}
+input InputZone{
+    id: ID
+    number: Int
+}

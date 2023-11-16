@@ -53,7 +53,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
-    @MutationMapping("deleteCar")
+    @MutationMapping("deleteCarById")
     @Operation(summary = "Delete car by id")
     @PreAuthorize("@customSecurityExpression.canAccessCar(#carId)")
     public void deleteById(

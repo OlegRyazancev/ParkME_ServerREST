@@ -135,7 +135,7 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
-    @MutationMapping("deleteUser")
+    @MutationMapping("deleteUserById")
     @Operation(summary = "Delete user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
     public void deleteById(

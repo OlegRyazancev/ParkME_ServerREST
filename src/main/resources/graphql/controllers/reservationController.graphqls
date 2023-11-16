@@ -1,0 +1,4 @@
+type ReservationMutations{
+    changeTimeTo(reservationDTO: InputReservation): Reservation
+    deleteReservationById(resId: ID): Boolean
+}

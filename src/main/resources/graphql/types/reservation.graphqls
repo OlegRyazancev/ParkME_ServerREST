@@ -1,0 +1,29 @@
+scalar LocalDateTime
+
+type Reservation{
+    id: ID
+    timeTo: LocalDateTime
+    timeFrom: LocalDateTime
+}
+input InputReservation{
+    id: ID
+    timeTo: LocalDateTime
+}
+
+type ReservationInfo{
+    id: ID
+    timeFrom: LocalDateTime
+    timeTo: LocalDateTime
+    zone: Zone
+    place: Place
+    car: Car
+    user: User
+}
+input  InputReservationInfo{
+    id: ID
+    timeFrom: LocalDateTime
+    timeTo: LocalDateTime
+    zone: InputZone
+    place: InputPlace
+    car: InputCar
+}

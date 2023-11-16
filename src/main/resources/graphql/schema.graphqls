@@ -1,47 +1,12 @@
 type Query{
-
-    #    userController
-    userById(id: ID): User
-    carsByUserId(id: ID): [Car]
-    reservationsByUserId(id: ID): [Reservation]
-
-    #    zoneController
-    zones: [Zone]
-    zoneById(id: ID): Zone
-    placesByZoneId(id: ID): [Place]
-    freePlacesByZoneId(id: ID): [Place]
-
-    #    carController
-    carById(id: ID): Car
-
-    #    adminController
-    reservationInfoById(id: ID): ReservationInfo
-    placeById(id:ID): Place
-    cars: [Car]
-    users: [User]
-    reservations: [Reservation]
+    adminController: AdminQueries
+    userController: UserQueries
+    carController: CarQueries
+    zoneController: ZoneQueries
 }
-
-type Mutation {
-    #    userController
-    createCar(userId: ID, carDTO: InputCar): Car
-    makeReservation(userId:ID, rInfoDTO: InputReservationInfo): Reservation
-    updateUser (userDTO: InputUser): User
-    deleteUser(id: ID): Boolean
-
-    #    reservationController
-    changeTimeTo(reservationDTO: InputReservation): Reservation
-    deleteReservation(id: ID): Boolean
-
-    #    carController
-    updateCar(carDTO: InputCar): Car
-    deleteCar(id: ID): Boolean
-
-    #    adminController
-    createZone(zoneDTO: InputZone): Zone
-    createPlaceInZoneById(zoneId: ID placeDTO:InputPlace): Place
-    updateZone(zoneDTO: InputZone): Zone
-    changePlaceStatusById(id: ID status: String): Place
-    deleteZoneAndAssociatedPlaces(id: ID): Boolean
-    deletePlaceById(id: ID): Boolean
+type Mutation{
+    adminController: AdminMutations
+    userController: UserMutations
+    carController: CarMutations
+    reservationController: ReservationMutations
 }

@@ -1,0 +1,7 @@
+type CarQueries{
+    carById(carId:ID): Car
+}
+type CarMutations{
+    updateCar(carDTO: InputCar): Car
+    deleteCarById(carId: ID): Boolean
+}

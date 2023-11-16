@@ -109,7 +109,7 @@ public class AdminController {
     }
 
     @PostMapping("/zones/{id}/places")
-    @MutationMapping("createPlacesInZoneById")
+    @MutationMapping("createPlacesInZone")
     @Operation(summary = "Create a fix number places in zone")
     public List<PlaceDTO> createPlacesInZone(
             @PathVariable("id")
@@ -156,7 +156,7 @@ public class AdminController {
     }
 
     @DeleteMapping("zones/{id}")
-    @MutationMapping("deleteZoneAndAssociatedPlaces")
+    @MutationMapping("deleteZoneAndAssociatedPlacesByZoneId")
     @Operation(summary = "Delete zone and associated places")
     public void deleteZoneAndAssociatedPlaces(
             @PathVariable("id")

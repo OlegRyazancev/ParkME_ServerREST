@@ -1,0 +1,8 @@
+type Car{
+    id: ID
+    number: String
+}
+input InputCar{
+    id: ID
+    number: String
+}

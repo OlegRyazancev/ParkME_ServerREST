@@ -32,6 +32,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<Reservation> getExpiredReservations() {
+        return reservationRepository.findExpiredReservations();
+    }
+
+    @Override
     public Reservation getInfo(final Long reservationId) {
         return reservationRepository
                 .findById(reservationId)
@@ -132,5 +137,16 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteById(foundReservation.getId());
     }
 
-
+    @Transactional
+    @Override
+    public void deleteExpiredReservations(
+            final List<Reservation> reservations) {
+        reservations.forEach(reservation -> {
+                    Place place = reservation.getPlace();
+                    place.setStatus(Status.FREE);
+                    placeRepository.save(place);
+                    reservationRepository.deleteById(reservation.getId());
+                }
+        );
+    }
 }

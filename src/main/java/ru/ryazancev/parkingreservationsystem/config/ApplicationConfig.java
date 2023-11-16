@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
+import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanUpFilterProvider;
+import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanupFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenProvider;
 
@@ -34,7 +36,7 @@ public class ApplicationConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-//    private final ReservationCleanUpFilterProvider cleanUpFilterProvider;
+    private final ReservationCleanUpFilterProvider cleanUpFilterProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -105,10 +107,10 @@ public class ApplicationConfig {
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
                         new JwtTokenFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(
+                        new ReservationCleanupFilter(cleanUpFilterProvider),
                         UsernamePasswordAuthenticationFilter.class);
-//                .addFilterAfter(
-//                        new ReservationCleanupFilter(cleanUpFilterProvider),
-//                        UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

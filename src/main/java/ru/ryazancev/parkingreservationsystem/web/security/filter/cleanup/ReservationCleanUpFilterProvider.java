@@ -3,21 +3,21 @@ package ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
+import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReservationCleanUpFilterProvider {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
     @Transactional
     public void clean() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        System.out.println(currentTime);
-        reservationRepository.deleteExpiredReservations(currentTime);
+        List<Reservation> expiredReservations =
+                reservationService.getExpiredReservations();
+        reservationService.deleteExpiredReservations(expiredReservations);
     }
 }

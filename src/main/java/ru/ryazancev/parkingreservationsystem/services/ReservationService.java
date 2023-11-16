@@ -8,6 +8,8 @@ public interface ReservationService {
 
     List<Reservation> getAll();
 
+    List<Reservation> getExpiredReservations();
+
     Reservation getInfo(Long reservationId);
 
     List<Reservation> getReservationsByUserId(Long userId);
@@ -17,4 +19,6 @@ public interface ReservationService {
     Reservation changeTimeTo(Reservation reservation);
 
     void delete(Long reservationId);
+
+    void deleteExpiredReservations(List<Reservation> reservations);
 }

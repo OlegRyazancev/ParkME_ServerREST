@@ -7,9 +7,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceForReservationInfoDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneForReservationInfoDTO;
+import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
 
 import java.time.LocalDateTime;
 
@@ -37,11 +37,11 @@ public class ReservationInfoDTO {
 
     @NotNull(message = "Zone must not be null",
             groups = OnCreate.class)
-    private ZoneForReservationInfoDTO zone;
+    private ZoneDTO zone;
 
     @NotNull(message = "Car must not be null",
             groups = OnCreate.class)
-    private PlaceForReservationInfoDTO place;
+    private PlaceDTO place;
 
     @NotNull(message = "Car must not be null",
             groups = OnCreate.class)

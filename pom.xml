@@ -281,7 +281,7 @@
                 <executions>
                     <execution>
                         <id>integration-tests</id>
-                        <phase>verify</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
@@ -333,8 +333,8 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-                            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+                            <suppressionsFileExpression/>
+                            <suppressionsLocation/>
                         </configuration>
                     </execution>
                 </executions>

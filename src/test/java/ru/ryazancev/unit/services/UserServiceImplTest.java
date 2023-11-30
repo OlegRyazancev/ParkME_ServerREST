@@ -176,7 +176,7 @@ public class UserServiceImplTest {
     @Test
     public void testCreateUser_whenUserEmailExists_throwsIllegalStateException() {
         //Arrange
-        String expectedExceptionMessage = "User already exists";
+        String expectedExceptionMessage = "User with this email already exists";
         when(userRepository.findByEmail(user.getEmail()))
                 .thenReturn(Optional.of(user));
 

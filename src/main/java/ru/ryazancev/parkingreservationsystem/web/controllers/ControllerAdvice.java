@@ -85,7 +85,8 @@ public class ControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ExceptionBody handleAny() {
+    public ExceptionBody handleAny(final Exception e) {
+        e.printStackTrace();
         return new ExceptionBody("InternalError");
     }
 }

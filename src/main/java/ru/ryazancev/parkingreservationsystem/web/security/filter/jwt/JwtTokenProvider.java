@@ -94,10 +94,12 @@ public class JwtTokenProvider {
         jwtResponse.setAccessToken(createAccessToken(
                 userId,
                 user.getEmail(),
-                user.getRoles()));
+                user.getRoles()
+        ));
         jwtResponse.setRefreshToken(createRefreshToken(
                 userId,
-                user.getEmail()));
+                user.getEmail()
+        ));
 
         return jwtResponse;
     }

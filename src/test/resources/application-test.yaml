@@ -1,9 +1,4 @@
 spring:
-  #  jpa:
-  #    show-sql: true
-  #    properties:
-  #      hibernate.format_sql: true
-
   liquibase:
     change-log: classpath:liquibase/db.changelog-test.yaml
     enabled: true

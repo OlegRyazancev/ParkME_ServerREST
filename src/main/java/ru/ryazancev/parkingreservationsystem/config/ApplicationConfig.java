@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,11 +21,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanUpFilterProvider;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.cleanup.ReservationCleanupFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenProvider;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -75,8 +77,26 @@ public class ApplicationConfig {
             final HttpSecurity httpSecurity)
             throws Exception {
         httpSecurity
+                .cors(cors ->
+                        cors.configurationSource(request -> {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(
+                                    List.of("http://localhost:3000"));
+                            config.setAllowedMethods(
+                                    List.of("GET",
+                                            "POST",
+                                            "PUT",
+                                            "DELETE",
+                                            "OPTIONS"));
+                            config.setAllowedHeaders(
+                                    List.of("Authorization",
+                                            "Content-Type",
+                                            "Accept"));
+                            config.setAllowCredentials(true);
+                            config.setMaxAge(3600L);
+                            return config;
+                        }))
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(

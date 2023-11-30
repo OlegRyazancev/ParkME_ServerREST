@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(final User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalStateException("User already exists");
+            throw new IllegalStateException("User with this email already exists");
         }
 
         if (!user.getPassword().equals(user.getPasswordConfirmation())) {

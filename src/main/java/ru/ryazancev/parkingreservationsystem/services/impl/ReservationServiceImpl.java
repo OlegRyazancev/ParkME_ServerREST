@@ -52,6 +52,36 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
+    public Reservation cancel(final Long reservationId) {
+
+        Reservation existingReservation = reservationRepository
+                .findById(reservationId).orElseThrow(() ->
+                        new ResourceNotFoundException("Reservation not found")
+                );
+
+        switch (existingReservation.getStatus()) {
+            case ACTIVE -> {
+                Place foundPlace = placeRepository
+                        .findById(existingReservation.getPlace().getId())
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Place not found"));
+                foundPlace.setPlaceStatus(PlaceStatus.FREE);
+                placeRepository.save(foundPlace);
+                existingReservation.setStatus(ReservationStatus.COMPLETED);
+                return reservationRepository.save(existingReservation);
+            }
+            case COMPLETED -> throw new IllegalStateException(
+                    "Cannot cancel completed reservation");
+            default -> {
+                existingReservation.setStatus(ReservationStatus.CANCELED);
+                return reservationRepository.save(existingReservation);
+            }
+        }
+    }
+
+    @Transactional
+    @Override
     public Reservation create(final Reservation reservation,
                               final Long userId) {
         Zone foundZone = zoneRepository

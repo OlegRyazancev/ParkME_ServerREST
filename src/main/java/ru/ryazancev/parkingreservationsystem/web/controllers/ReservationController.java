@@ -25,7 +25,7 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
 
-    @PutMapping
+    @PutMapping()
     @MutationMapping("changeTimeTo")
     @Operation(summary = "Change reservation's time to")
     @PreAuthorize(
@@ -40,6 +40,18 @@ public class ReservationController {
                 reservationService.changeTimeTo(reservation);
 
         return reservationMapper.toDTO(updatedReservation);
+    }
+
+    @PutMapping("/{id}")
+    @MutationMapping("cancelReservation")
+    @Operation(summary = "Cancel reservation")
+    @PreAuthorize("@customSecurityExpression.canAccessReservation(#resId)")
+    public ReservationDTO cancelReservation(
+            @PathVariable("id")
+            @Argument final Long resId) {
+        Reservation canceledReservation = reservationService
+                .cancel(resId);
+        return reservationMapper.toDTO(canceledReservation);
     }
 
     @DeleteMapping("/{id}")

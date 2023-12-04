@@ -11,6 +11,8 @@ public interface ReservationService {
 
     List<Reservation> getReservationsByUserId(Long userId);
 
+    Reservation cancel(Long reservationId);
+
     Reservation create(Reservation reservation, Long userId);
 
     Reservation changeTimeTo(Reservation reservation);

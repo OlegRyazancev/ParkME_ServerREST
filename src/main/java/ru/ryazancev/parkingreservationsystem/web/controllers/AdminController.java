@@ -149,10 +149,10 @@ public class AdminController {
             @RequestParam
             @Argument final String status) {
 
-        Place disabledPlace = placeService
+        Place changedPlace = placeService
                 .changeStatus(placeId, PlaceStatus.valueOf(status));
 
-        return placeMapper.toDTO(disabledPlace);
+        return placeMapper.toDTO(changedPlace);
     }
 
     @DeleteMapping("zones/{id}")

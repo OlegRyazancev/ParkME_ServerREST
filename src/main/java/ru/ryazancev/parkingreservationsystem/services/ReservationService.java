@@ -5,10 +5,7 @@ import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import java.util.List;
 
 public interface ReservationService {
-
     List<Reservation> getAll();
-
-    List<Reservation> getExpiredReservations();
 
     Reservation getInfo(Long reservationId);
 
@@ -19,6 +16,4 @@ public interface ReservationService {
     Reservation changeTimeTo(Reservation reservation);
 
     void delete(Long reservationId);
-
-    void deleteExpiredReservations(List<Reservation> reservations);
-}
+    }

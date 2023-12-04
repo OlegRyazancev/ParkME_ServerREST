@@ -8,6 +8,7 @@ import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.models.reservation.ReservationStatus;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.*;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
@@ -32,11 +33,6 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getExpiredReservations() {
-        return reservationRepository.findExpiredReservations();
-    }
-
-    @Override
     public Reservation getInfo(final Long reservationId) {
         return reservationRepository
                 .findById(reservationId)
@@ -47,7 +43,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getReservationsByUserId(final Long userId) {
         List<Reservation> reservations = reservationRepository
-                .findAllByUserId(userId);
+                .findAllByUserIdOrderByTimeFromDesc(userId);
         if (reservations.isEmpty()) {
             throw new IllegalStateException("User don't make any reservation");
         }
@@ -60,46 +56,56 @@ public class ReservationServiceImpl implements ReservationService {
                               final Long userId) {
         Zone foundZone = zoneRepository
                 .findByNumber(reservation.getZone().getNumber())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "No zone with the specified number"));
-
-        Place foundPlace = foundZone.getPlaces()
-                .stream()
-                .filter(place -> place
-                        .getNumber()
-                        .equals(reservation.getPlace().getNumber()))
-                .findFirst()
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "No place with the specified number "
-                                        + "in the selected zone"));
+                                "No zone with the specified number"
+                        ));
 
-        if (foundPlace.getPlaceStatus() != PlaceStatus.FREE) {
-            throw new IllegalStateException(
-                    "Place is already occupied or disabled");
-        }
+        User foundUser = userRepository
+                .findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+
         Car foundCar = carRepository
                 .findByNumber(reservation.getCar().getNumber())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Car not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Car not found"));
 
-        if (reservationRepository.findByCarId(foundCar.getId()).isPresent()) {
-            throw new IllegalStateException("Car already has a reservation");
+        Place foundPlace = foundZone.getPlaces().stream()
+                .filter(place ->
+                        place.getNumber().equals(
+                                reservation.getPlace().getNumber()
+                        ))
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No place with the" +
+                                " specified number in the selected zone"));
+
+        if (foundPlace.getPlaceStatus().equals(PlaceStatus.DISABLE)) {
+            throw new IllegalStateException("Place is disabled");
         }
 
-        User foundUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "User not found"));
+        List<Reservation> placeReservations =
+                findActiveOrPlannedReservationsByPlace(foundPlace);
+        List<Reservation> carReservations =
+                findActiveOrPlannedReservationsByCar(foundCar);
 
-
-        foundPlace.setPlaceStatus(PlaceStatus.OCCUPIED);
-        placeRepository.save(foundPlace);
+        validateNoOverlap(
+                placeReservations,
+                reservation,
+                "Place already has reservations on these dates"
+        );
+        validateNoOverlap(
+                carReservations,
+                reservation,
+                "Car already has reservations on these dates"
+        );
 
         reservation.setZone(foundZone);
         reservation.setCar(foundCar);
         reservation.setPlace(foundPlace);
         reservation.setUser(foundUser);
-
+        reservation.setStatus(ReservationStatus.PLANNED);
         reservationRepository.save(reservation);
 
         return reservation;
@@ -137,16 +143,46 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteById(foundReservation.getId());
     }
 
-    @Transactional
-    @Override
-    public void deleteExpiredReservations(
-            final List<Reservation> reservations) {
-        reservations.forEach(reservation -> {
-                    Place place = reservation.getPlace();
-                    place.setPlaceStatus(PlaceStatus.FREE);
-                    placeRepository.save(place);
-                    reservationRepository.deleteById(reservation.getId());
-                }
-        );
+    public static boolean isOverlap(Reservation res1, Reservation res2) {
+        return !(res1.getTimeFrom().isAfter(res2.getTimeTo())
+                || res1.getTimeTo().isBefore(res2.getTimeFrom()));
+    }
+
+    public static boolean checkIntervalOverlap(List<Reservation> existing,
+                                               Reservation actual) {
+        return existing.stream()
+                .anyMatch(res -> isOverlap(res, actual));
+    }
+
+
+    private List<Reservation>
+    findActiveOrPlannedReservationsByPlace(Place place) {
+        return reservationRepository.findAllByPlaceId(place.getId())
+                .stream()
+                .filter(res ->
+                        res.getStatus()
+                                .equals(ReservationStatus.ACTIVE) ||
+                                res.getStatus()
+                                        .equals(ReservationStatus.PLANNED))
+                .toList();
+    }
+
+    private List<Reservation> findActiveOrPlannedReservationsByCar(Car car) {
+        return reservationRepository.findAllByCarId(car.getId())
+                .stream()
+                .filter(res ->
+                        res.getStatus()
+                                .equals(ReservationStatus.ACTIVE) ||
+                                res.getStatus()
+                                        .equals(ReservationStatus.PLANNED))
+                .toList();
+    }
+
+    private void validateNoOverlap(List<Reservation> reservations,
+                                   Reservation newReservation,
+                                   String errorMessage) {
+        if (checkIntervalOverlap(reservations, newReservation)) {
+            throw new IllegalStateException(errorMessage);
+        }
     }
 }

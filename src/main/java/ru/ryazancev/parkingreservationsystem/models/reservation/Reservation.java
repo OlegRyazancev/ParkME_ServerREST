@@ -30,6 +30,7 @@ public class Reservation implements Serializable {
     @Column(name = "time_to")
     private LocalDateTime timeTo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ReservationStatus status;
 

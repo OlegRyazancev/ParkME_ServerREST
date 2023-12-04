@@ -24,5 +24,5 @@ public class Place implements Serializable {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    private PlaceStatus placeStatus;
 }

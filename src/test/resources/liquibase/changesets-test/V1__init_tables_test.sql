@@ -39,7 +39,7 @@ create table if not exists places
 (
     id     bigserial primary key,
     number bigint       not null,
-    status varchar(255) not null
+    placeStatus varchar(255) not null
 );
 
 create table if not exists zones_places

@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -63,7 +63,7 @@ public class ReservationServiceImplTest {
                 .timeTo(LocalDateTime.now().plusHours(15))
                 .build();
 
-        place = new Place(1L, 1, Status.FREE);
+        place = new Place(1L, 1, PlaceStatus.FREE);
         zone = new Zone(1L, 1, List.of(place));
         car = new Car(1L, "XX000X00");
         user = User.builder().id(1L).build();
@@ -187,7 +187,7 @@ public class ReservationServiceImplTest {
         //Assert
         assertNotNull(createdReservation,
                 "Created reservation should not be null");
-        assertEquals(Status.OCCUPIED, createdReservation.getPlace().getStatus(),
+        assertEquals(PlaceStatus.OCCUPIED, createdReservation.getPlace().getPlaceStatus(),
                 "Place status should be changed to OCCUPIED");
 
         verify(reservationRepository).save(reservation);
@@ -217,7 +217,7 @@ public class ReservationServiceImplTest {
         //Arrange
         String expectedExceptionMessage = "No place with the specified number in the selected zone";
         reservation.getPlace().setNumber(2);
-        zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.FREE)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -236,7 +236,7 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenPlaceIsOccupied_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Place is already occupied or disabled";
-        zone.setPlaces(List.of(new Place(1L, 1, Status.OCCUPIED)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.OCCUPIED)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -255,7 +255,7 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenPlaceIsDisabled_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Place is already occupied or disabled";
-        zone.setPlaces(List.of(new Place(1L, 1, Status.DISABLE)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.DISABLE)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -274,7 +274,7 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenCarNotExists_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Car not found";
-        zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.FREE)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -296,7 +296,7 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenCarHasReservation_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Car already has a reservation";
-        zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.FREE)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -319,7 +319,7 @@ public class ReservationServiceImplTest {
     public void testCreateReservation_whenUserNotFound_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "User not found";
-        zone.setPlaces(List.of(new Place(1L, 1, Status.FREE)));
+        zone.setPlaces(List.of(new Place(1L, 1, PlaceStatus.FREE)));
 
         when(zoneRepository.findByNumber(any()))
                 .thenReturn(Optional.of(zone));
@@ -401,7 +401,7 @@ public class ReservationServiceImplTest {
     @Test
     public void testDeleteReservation_whenReservationDetailsAreValid_returnsNothing() {
         //Arrange
-        reservation.getPlace().setStatus(Status.DISABLE);
+        reservation.getPlace().setPlaceStatus(PlaceStatus.DISABLE);
         when(reservationRepository.findById(reservation.getId()))
                 .thenReturn(Optional.of(reservation));
 
@@ -411,7 +411,7 @@ public class ReservationServiceImplTest {
         //Assert
         verify(placeRepository).save(reservation.getPlace());
         verify(reservationRepository).deleteById(reservation.getId());
-        assertEquals(Status.FREE, reservation.getPlace().getStatus(),
+        assertEquals(PlaceStatus.FREE, reservation.getPlace().getPlaceStatus(),
                 "Reservation's place status should be changed to FREE");
     }
 

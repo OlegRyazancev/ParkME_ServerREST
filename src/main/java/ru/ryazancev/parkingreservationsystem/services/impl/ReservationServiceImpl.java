@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -74,7 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
                                 "No place with the specified number "
                                         + "in the selected zone"));
 
-        if (foundPlace.getStatus() != Status.FREE) {
+        if (foundPlace.getPlaceStatus() != PlaceStatus.FREE) {
             throw new IllegalStateException(
                     "Place is already occupied or disabled");
         }
@@ -92,7 +92,7 @@ public class ReservationServiceImpl implements ReservationService {
                         "User not found"));
 
 
-        foundPlace.setStatus(Status.OCCUPIED);
+        foundPlace.setPlaceStatus(PlaceStatus.OCCUPIED);
         placeRepository.save(foundPlace);
 
         reservation.setZone(foundZone);
@@ -132,7 +132,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Reservation not found"));
 
-        foundReservation.getPlace().setStatus(Status.FREE);
+        foundReservation.getPlace().setPlaceStatus(PlaceStatus.FREE);
         placeRepository.save(foundReservation.getPlace());
         reservationRepository.deleteById(foundReservation.getId());
     }
@@ -143,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService {
             final List<Reservation> reservations) {
         reservations.forEach(reservation -> {
                     Place place = reservation.getPlace();
-                    place.setStatus(Status.FREE);
+                    place.setPlaceStatus(PlaceStatus.FREE);
                     placeRepository.save(place);
                     reservationRepository.deleteById(reservation.getId());
                 }

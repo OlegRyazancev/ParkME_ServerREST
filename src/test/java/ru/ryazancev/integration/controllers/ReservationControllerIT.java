@@ -10,7 +10,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
@@ -102,7 +102,7 @@ public class ReservationControllerIT extends BaseIT {
         Optional<Place> placeAfterDeleteReservation =
                 placeRepository.findById(testReservation.getPlace().getId());
         assertTrue(placeAfterDeleteReservation.isPresent());
-        assertEquals(Status.FREE, placeAfterDeleteReservation.get().getStatus());
+        assertEquals(PlaceStatus.FREE, placeAfterDeleteReservation.get().getPlaceStatus());
 
         List<Reservation> usersReservations =
                 reservationRepository.findAllByUserId(testReservation.getUser().getId());

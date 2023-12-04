@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -251,7 +251,7 @@ public class AdminControllerIT extends BaseIT {
     public void testChangePlaceStatus_returnsPlaceJSONWithChangedStatus() throws Exception {
         //Arrange
         Place placeToUpdate = findObjectForTests(placeRepository, 1L);
-        String status = Status.DISABLE.name();
+        String status = PlaceStatus.DISABLE.name();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.ADMIN_PLACE_STATUS, placeToUpdate.getId())
@@ -270,7 +270,7 @@ public class AdminControllerIT extends BaseIT {
                 placeRepository.findById(placeToUpdate.getId());
         assertTrue(updatedPlace.isPresent());
         assertEquals(placeToUpdate.getNumber(), updatedPlace.get().getNumber());
-        assertEquals(Status.DISABLE, updatedPlace.get().getStatus());
+        assertEquals(PlaceStatus.DISABLE, updatedPlace.get().getPlaceStatus());
     }
 
     @DisplayName("Delete zone and associated places")

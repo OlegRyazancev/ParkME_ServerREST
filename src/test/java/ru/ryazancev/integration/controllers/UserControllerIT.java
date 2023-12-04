@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
@@ -190,7 +190,7 @@ public class UserControllerIT extends BaseIT {
                 reservationInfoDTO.getZone().getId(),
                 reservationInfoDTO.getPlace().getNumber());
         assertTrue(occupiedPlace.isPresent());
-        assertEquals(Status.OCCUPIED, occupiedPlace.get().getStatus());
+        assertEquals(PlaceStatus.OCCUPIED, occupiedPlace.get().getPlaceStatus());
 
         Optional<Reservation> createdReservation = findCreatedReservation(
                 testUser.getId(),

@@ -9,7 +9,7 @@ type AdminMutations{
     createZone(zoneDTO: InputZone): Zone
     createPlacesInZone(zoneId: ID, numberOfPlaces: Int): [Place]
     updateZone(zoneDTO: InputZone): Zone
-    changePlaceStatus(placeId: ID, status: String): Place
+    changePlaceStatus(placeId: ID, placeStatus: String): Place
     deleteZoneAndAssociatedPlacesByZoneId(zoneId: ID): Boolean
     deletePlaceById(placeId:ID):Boolean
 }

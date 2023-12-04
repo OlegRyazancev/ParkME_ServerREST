@@ -24,7 +24,7 @@ values (1),
        (2),
        (3);
 
-insert into places (number, status)
+insert into places (number, placeStatus)
 VALUES (1, 'FREE'),
        (2, 'FREE'),
        (3, 'OCCUPIED'),

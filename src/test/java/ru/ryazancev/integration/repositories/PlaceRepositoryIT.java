@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public class PlaceRepositoryIT extends BaseIT {
         //Arrange
         Place place = Place.builder()
                 .number(100)
-                .status(Status.FREE)
+                .placeStatus(PlaceStatus.FREE)
                 .build();
 
         Place savedPlace = placeRepository.save(place);

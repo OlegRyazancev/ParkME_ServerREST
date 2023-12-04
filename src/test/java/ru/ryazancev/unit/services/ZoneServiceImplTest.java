@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
@@ -45,9 +45,9 @@ public class ZoneServiceImplTest {
                 .number(1)
                 .build();
         associatedPlaces = List.of(
-                new Place(1L, 1, Status.FREE),
-                new Place(2L, 2, Status.FREE),
-                new Place(3L, 3, Status.DISABLE));
+                new Place(1L, 1, PlaceStatus.FREE),
+                new Place(2L, 2, PlaceStatus.FREE),
+                new Place(3L, 3, PlaceStatus.DISABLE));
         zone.setPlaces(associatedPlaces);
     }
 
@@ -210,7 +210,7 @@ public class ZoneServiceImplTest {
     @Test
     public void testDeleteZone_whenZoneHasOccupiedPlaces_throwsIllegalStateException() {
         //Arrange
-        zone.getPlaces().get(1).setStatus(Status.OCCUPIED);
+        zone.getPlaces().get(1).setPlaceStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Zone have occupied places";
         when(zoneRepository.findById(zone.getId()))
                 .thenReturn(Optional.of(zone));

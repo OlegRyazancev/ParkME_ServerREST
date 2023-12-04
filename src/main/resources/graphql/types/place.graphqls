@@ -1,7 +1,7 @@
 type Place{
     id: ID
     number: Int
-    status: Status
+    placeStatus: Status
 }
 input InputPlace{
     id: ID

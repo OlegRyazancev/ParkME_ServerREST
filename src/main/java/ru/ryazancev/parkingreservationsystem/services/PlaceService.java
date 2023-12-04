@@ -1,7 +1,7 @@
 package ru.ryazancev.parkingreservationsystem.services;
 
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface PlaceService {
 
     List<Place> createPlacesInZone(Long zoneId, int numberOfPlaces);
 
-    Place changeStatus(Long placeId, Status status);
+    Place changeStatus(Long placeId, PlaceStatus placeStatus);
 
     Integer countAllPlacesByZoneID(Long zoneId);
 

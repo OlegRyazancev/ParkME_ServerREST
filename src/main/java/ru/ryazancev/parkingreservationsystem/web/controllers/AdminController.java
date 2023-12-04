@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -150,7 +150,7 @@ public class AdminController {
             @Argument final String status) {
 
         Place disabledPlace = placeService
-                .changeStatus(placeId, Status.valueOf(status));
+                .changeStatus(placeId, PlaceStatus.valueOf(status));
 
         return placeMapper.toDTO(disabledPlace);
     }

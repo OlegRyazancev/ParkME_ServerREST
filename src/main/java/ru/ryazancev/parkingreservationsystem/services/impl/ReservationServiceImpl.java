@@ -125,6 +125,24 @@ public class ReservationServiceImpl implements ReservationService {
                             + "because time from is before time to");
         }
 
+        reservation.setTimeFrom(existingRes.getTimeFrom());
+
+        List<Reservation> placeReservations =
+                findActiveOrPlannedReservationsByPlace(existingRes.getPlace());
+        List<Reservation> carReservations =
+                findActiveOrPlannedReservationsByCar(existingRes.getCar());
+
+        validateNoOverlap(
+                placeReservations,
+                reservation,
+                "Place already has reservations on these dates"
+        );
+        validateNoOverlap(
+                carReservations,
+                reservation,
+                "Car already has reservations on these dates"
+        );
+
         existingRes.setTimeTo(reservation.getTimeTo());
 
         return reservationRepository.save(existingRes);
@@ -142,6 +160,8 @@ public class ReservationServiceImpl implements ReservationService {
         placeRepository.save(foundReservation.getPlace());
         reservationRepository.deleteById(foundReservation.getId());
     }
+
+//    --------------------------------------------------------------------------
 
     public static boolean isOverlap(Reservation res1, Reservation res2) {
         return !(res1.getTimeFrom().isAfter(res2.getTimeTo())

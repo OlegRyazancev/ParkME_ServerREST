@@ -138,7 +138,7 @@ public class ReservationServiceImplTest {
                 .timeTo(LocalDateTime.now().plusHours(2))
                 .build();
         List<Reservation> sampleReservations = List.of(reservation, reservation2);
-        when(reservationRepository.findAllByUserId(anyLong()))
+        when(reservationRepository.findAllByUserIdOrderByTimeFromDesc(anyLong()))
                 .thenReturn(sampleReservations);
 
         //Act
@@ -154,7 +154,7 @@ public class ReservationServiceImplTest {
     public void testGetReservationsByUserId_whenUserHasNoReservations_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "User don't make any reservation";
-        when(reservationRepository.findAllByUserId(anyLong()))
+        when(reservationRepository.findAllByUserIdOrderByTimeFromDesc(anyLong()))
                 .thenReturn(Collections.emptyList());
 
         //Act && Assert

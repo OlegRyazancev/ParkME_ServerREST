@@ -252,7 +252,7 @@ public class UserControllerIT extends BaseIT {
         assertTrue(cars.isEmpty());
 
         List<Reservation> reservations =
-                reservationRepository.findAllByUserId(testUser.getId());
+                reservationRepository.findAllByUserIdOrderByTimeFromDesc(testUser.getId());
         assertTrue(reservations.isEmpty());
 
         List<Place> places =
@@ -272,7 +272,7 @@ public class UserControllerIT extends BaseIT {
     }
 
     private Optional<Reservation> findCreatedReservation(Long userId, Long placeId) {
-        return reservationRepository.findAllByUserId(userId)
+        return reservationRepository.findAllByUserIdOrderByTimeFromDesc(userId)
                 .stream()
                 .filter(reservation -> reservation
                         .getPlace()

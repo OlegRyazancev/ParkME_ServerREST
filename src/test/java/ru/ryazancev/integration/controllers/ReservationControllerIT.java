@@ -105,7 +105,8 @@ public class ReservationControllerIT extends BaseIT {
         assertEquals(PlaceStatus.FREE, placeAfterDeleteReservation.get().getPlaceStatus());
 
         List<Reservation> usersReservations =
-                reservationRepository.findAllByUserId(testReservation.getUser().getId());
+                reservationRepository.findAllByUserIdOrderByTimeFromDesc(
+                        testReservation.getUser().getId());
         assertTrue(usersReservations
                 .stream()
                 .noneMatch(reservation ->

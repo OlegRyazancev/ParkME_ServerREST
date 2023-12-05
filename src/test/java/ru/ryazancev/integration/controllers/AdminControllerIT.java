@@ -102,13 +102,12 @@ public class AdminControllerIT extends BaseIT {
                                 "user"))
                 .toString();
 
-        String extractedReservationJson = JsonUtils.extractJsonArray(reservationsJson);
-        System.out.println(extractedReservationJson);
+        String extractedReservationsJson = JsonUtils.extractJsonArray(reservationsJson);
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_RESERVATIONS))
                 .andExpect(status().isOk())
-                .andExpect(content().json(extractedReservationJson));
+                .andExpect(content().json(extractedReservationsJson));
     }
 
     @DisplayName("Get place by id")

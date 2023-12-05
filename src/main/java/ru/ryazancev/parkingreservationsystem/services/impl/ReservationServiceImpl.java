@@ -14,6 +14,7 @@ import ru.ryazancev.parkingreservationsystem.repositories.*;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -157,10 +158,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservation.setTimeFrom(existingRes.getTimeFrom());
 
-        List<Reservation> placeReservations =
-                findActiveOrPlannedReservationsByPlace(existingRes.getPlace());
-        List<Reservation> carReservations =
-                findActiveOrPlannedResByCar(existingRes.getCar());
+        List<Reservation> placeReservations = new ArrayList<>(
+                findActiveOrPlannedReservationsByPlace(existingRes.getPlace()));
+        placeReservations.remove(existingRes);
+
+        List<Reservation> carReservations = new ArrayList<>(
+                findActiveOrPlannedResByCar(existingRes.getCar()));
+        carReservations.remove(existingRes);
 
         validateNoOverlap(
                 placeReservations,

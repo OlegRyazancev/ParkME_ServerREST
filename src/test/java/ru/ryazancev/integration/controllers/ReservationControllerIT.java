@@ -57,7 +57,7 @@ public class ReservationControllerIT extends BaseIT {
         //Arrange
         ReservationDTO updatingReservationDTO = ReservationDTO.builder()
                 .id(testReservation.getId())
-                .timeTo(LocalDateTime.of(2024, 2, 23, 14, 0, 0))
+                .timeTo(LocalDateTime.of(2024, 11, 14, 14, 0, 0))
                 .build();
 
         String reservationJson = JsonUtils.createJsonNodeForObject(

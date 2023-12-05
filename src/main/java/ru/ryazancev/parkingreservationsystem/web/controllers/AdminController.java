@@ -21,7 +21,6 @@ import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
@@ -69,20 +68,9 @@ public class AdminController {
     @GetMapping("/reservations")
     @QueryMapping("reservations")
     @Operation(summary = "Get all reservations")
-    public List<ReservationDTO> getReservations() {
+    public List<ReservationInfoDTO> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
-        return reservationMapper.toDTO(reservations);
-    }
-
-    @GetMapping("/reservations/{id}")
-    @QueryMapping("reservationInfoById")
-    @Operation(summary = "Get reservation info by id")
-    public ReservationInfoDTO getReservationInfoById(
-            @PathVariable("id")
-            @Argument final Long reservationId) {
-        Reservation reservation = reservationService.getInfo(reservationId);
-
-        return reservationInfoMapper.toDTO(reservation);
+        return reservationInfoMapper.toDTO(reservations);
     }
 
     @GetMapping("/places/{id}")

@@ -73,13 +73,13 @@ public class UserController {
     @QueryMapping("reservationsByUserId")
     @Operation(summary = "Get reservations by user id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
-    public List<ReservationDTO> getReservationsByUserId(
+    public List<ReservationInfoDTO> getReservationsByUserId(
             @PathVariable("id")
             @Argument final Long userId) {
         List<Reservation> reservations =
                 reservationService.getReservationsByUserId(userId);
 
-        return reservationMapper.toDTO(reservations);
+        return reservationInfoMapper.toDTO(reservations);
     }
 
 
@@ -98,6 +98,7 @@ public class UserController {
 
         return carMapper.toDTO(createdCar);
     }
+
 
     @PostMapping("/{id}/reservations")
     @MutationMapping("makeReservation")

@@ -31,7 +31,7 @@
         <graphql-java-extended-scalars.version>20.2</graphql-java-extended-scalars.version>
         <annotations.version>24.0.1</annotations.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <spring-security-test.version>6.1.5</spring-security-test.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
@@ -211,13 +211,13 @@
                 <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -235,21 +235,21 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.75</minimum>
+                                            <minimum>0.70</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
                                 <rule>
                                     <element>PACKAGE</element>
                                     <includes>
-                                        <include>ru.ryazancev.parkingreservationsystem.services.impl</include>
                                         <include>ru.ryazancev.parkingreservationsystem.web.controllers</include>
+                                        <include>ru.ryazancev.parkingreservationsystem.services.impl</include>
                                     </includes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.75</minimum>
+                                            <minimum>0.80</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

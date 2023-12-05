@@ -43,7 +43,7 @@ public class PlaceServiceImpl implements PlaceService {
                 .mapToObj(i ->
                         Place.builder()
                                 .number(startNumberOfPlace + i)
-                                .placeStatus(PlaceStatus.FREE)
+                                .status(PlaceStatus.FREE)
                                 .build())
                 .peek(placeRepository::save)
                 .peek(createdPlace ->
@@ -63,16 +63,16 @@ public class PlaceServiceImpl implements PlaceService {
         }
         Place existingPlace = getById(placeId);
 
-        if (existingPlace.getPlaceStatus().equals(placeStatus)) {
+        if (existingPlace.getStatus().equals(placeStatus)) {
             throw new IllegalStateException(
                     "Place already has this status");
         }
-        if (existingPlace.getPlaceStatus().equals(PlaceStatus.OCCUPIED)) {
+        if (existingPlace.getStatus().equals(PlaceStatus.OCCUPIED)) {
             throw new IllegalStateException(
                     "Can not change status, because place is occupied");
         }
 
-        existingPlace.setPlaceStatus(placeStatus);
+        existingPlace.setStatus(placeStatus);
 
         return placeRepository.save(existingPlace);
     }
@@ -91,7 +91,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public void delete(final Long placeId) {
         Place foundPlace = getById(placeId);
-        if (foundPlace.getPlaceStatus().equals(PlaceStatus.OCCUPIED)) {
+        if (foundPlace.getStatus().equals(PlaceStatus.OCCUPIED)) {
             throw new IllegalStateException("Can not delete occupied place");
         }
         placeRepository.deleteById(foundPlace.getId());

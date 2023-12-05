@@ -102,7 +102,7 @@ public class ReservationControllerIT extends BaseIT {
         Optional<Place> placeAfterDeleteReservation =
                 placeRepository.findById(testReservation.getPlace().getId());
         assertTrue(placeAfterDeleteReservation.isPresent());
-        assertEquals(PlaceStatus.FREE, placeAfterDeleteReservation.get().getPlaceStatus());
+        assertEquals(PlaceStatus.FREE, placeAfterDeleteReservation.get().getStatus());
 
         List<Reservation> usersReservations =
                 reservationRepository.findAllByUserIdOrderByTimeFromDesc(

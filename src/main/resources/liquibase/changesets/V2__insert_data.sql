@@ -1,11 +1,18 @@
 insert into users (name, email, password)
-values ('John Doe', 'johndoe@gmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Mike Smith', 'mikesmith@yahoo.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Sam Nilson', 'samnilson@icloud.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Emily Johnson', 'emilyjohnson@gmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Alex Rodriguez', 'alexrodriguez@yahoo.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Jessica White', 'jessicawhite@hotmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
-       ('Ryan Carter', 'ryancarter@gmail.com', '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e');
+values ('John Doe', 'johndoe@gmail.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Mike Smith', 'mikesmith@yahoo.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Sam Nilson', 'samnilson@icloud.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Emily Johnson', 'emilyjohnson@gmail.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Alex Rodriguez', 'alexrodriguez@yahoo.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Jessica White', 'jessicawhite@hotmail.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e'),
+       ('Ryan Carter', 'ryancarter@gmail.com',
+        '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e');
 
 insert into cars (number)
 values ('G784TW777'),
@@ -171,7 +178,8 @@ values (1, 1),
        (6, 49);
 
 
-insert into reservations (time_from, time_to, status, user_id, car_id, zone_id, place_id)
+insert into reservations (time_from, time_to, status, user_id, car_id, zone_id,
+                          place_id)
 values
     -- 3 start in past and end in future
     ('2023-05-10 08:30:00', '2024-06-15 18:45:00', 'ACTIVE', 1, 1, 2, 16),

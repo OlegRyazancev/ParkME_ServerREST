@@ -36,7 +36,7 @@ public class PlaceServiceImplTest {
         place = Place.builder()
                 .id(1L)
                 .number(1)
-                .placeStatus(PlaceStatus.FREE)
+                .status(PlaceStatus.FREE)
                 .build();
     }
 
@@ -111,7 +111,7 @@ public class PlaceServiceImplTest {
         assertEquals(lastExistPlace.getNumber() + 1, firstCreatedPlace.getNumber());
 
         createdPlaces.forEach(p ->
-                assertEquals(PlaceStatus.FREE, p.getPlaceStatus()));
+                assertEquals(PlaceStatus.FREE, p.getStatus()));
 
         verify(placeRepository, times(numberOfPlaces)).save(any(Place.class));
         verify(placeRepository, times(numberOfPlaces)).assignToZone(anyLong(), anyLong());
@@ -149,7 +149,7 @@ public class PlaceServiceImplTest {
         Place placeWithChangedStatus = placeService.changeStatus(place.getId(), placeStatus);
 
         //Assert
-        assertEquals(placeStatus, placeWithChangedStatus.getPlaceStatus(),
+        assertEquals(placeStatus, placeWithChangedStatus.getStatus(),
                 "Place status should be changed");
         verify(placeRepository).save(place);
     }
@@ -211,7 +211,7 @@ public class PlaceServiceImplTest {
     @Test
     public void testChangeStatus_whenPlaceStatusIsOccupied_thenThrowsIllegalStateException() {
         //Arrange
-        place.setPlaceStatus(PlaceStatus.OCCUPIED);
+        place.setStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Can not change status, because place is occupied";
         PlaceStatus placeStatus = PlaceStatus.FREE;
 
@@ -262,7 +262,7 @@ public class PlaceServiceImplTest {
     @Test
     public void testDeletePlace_whenPlaceStatusIsOccupied_throwsIllegalStateException() {
         //Arrange
-        place.setPlaceStatus(PlaceStatus.OCCUPIED);
+        place.setStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Can not delete occupied place";
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.of(place));

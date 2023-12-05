@@ -65,7 +65,8 @@ public class ZoneServiceImpl implements ZoneService {
 
         if (foundZone.getPlaces()
                 .stream()
-                .anyMatch(place -> place.getPlaceStatus().equals(PlaceStatus.OCCUPIED))) {
+                .anyMatch(place ->
+                        place.getStatus().equals(PlaceStatus.OCCUPIED))) {
             throw new IllegalStateException("Zone have occupied places");
         }
 

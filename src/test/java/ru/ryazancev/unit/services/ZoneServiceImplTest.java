@@ -210,7 +210,7 @@ public class ZoneServiceImplTest {
     @Test
     public void testDeleteZone_whenZoneHasOccupiedPlaces_throwsIllegalStateException() {
         //Arrange
-        zone.getPlaces().get(1).setPlaceStatus(PlaceStatus.OCCUPIED);
+        zone.getPlaces().get(1).setStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Zone have occupied places";
         when(zoneRepository.findById(zone.getId()))
                 .thenReturn(Optional.of(zone));

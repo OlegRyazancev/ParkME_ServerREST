@@ -43,7 +43,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             FROM places p
                      JOIN zones_places zp on p.id = zp.place_id
             WHERE zp.zone_id = :zoneId
-              AND p.placeStatus LIKE 'FREE'
+              AND p.status LIKE 'FREE'
             """, nativeQuery = true)
     Integer countFreePlacesByZoneId(@Param("zoneId") Long zoneId);
 

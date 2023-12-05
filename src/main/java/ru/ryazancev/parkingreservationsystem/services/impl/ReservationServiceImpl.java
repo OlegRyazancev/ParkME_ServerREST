@@ -66,7 +66,7 @@ public class ReservationServiceImpl implements ReservationService {
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Place not found"));
-                foundPlace.setPlaceStatus(PlaceStatus.FREE);
+                foundPlace.setStatus(PlaceStatus.FREE);
                 placeRepository.save(foundPlace);
                 existingReservation.setStatus(ReservationStatus.COMPLETED);
                 return reservationRepository.save(existingReservation);
@@ -108,17 +108,17 @@ public class ReservationServiceImpl implements ReservationService {
                         ))
                 .findFirst()
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("No place with the" +
-                                " specified number in the selected zone"));
+                        new ResourceNotFoundException("No place with the"
+                                + " specified number in the selected zone"));
 
-        if (foundPlace.getPlaceStatus().equals(PlaceStatus.DISABLE)) {
+        if (foundPlace.getStatus().equals(PlaceStatus.DISABLE)) {
             throw new IllegalStateException("Place is disabled");
         }
 
         List<Reservation> placeReservations =
                 findActiveOrPlannedReservationsByPlace(foundPlace);
         List<Reservation> carReservations =
-                findActiveOrPlannedReservationsByCar(foundCar);
+                findActiveOrPlannedResByCar(foundCar);
 
         validateNoOverlap(
                 placeReservations,
@@ -160,7 +160,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> placeReservations =
                 findActiveOrPlannedReservationsByPlace(existingRes.getPlace());
         List<Reservation> carReservations =
-                findActiveOrPlannedReservationsByCar(existingRes.getCar());
+                findActiveOrPlannedResByCar(existingRes.getCar());
 
         validateNoOverlap(
                 placeReservations,
@@ -186,51 +186,52 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Reservation not found"));
 
-        foundReservation.getPlace().setPlaceStatus(PlaceStatus.FREE);
+        foundReservation.getPlace().setStatus(PlaceStatus.FREE);
         placeRepository.save(foundReservation.getPlace());
         reservationRepository.deleteById(foundReservation.getId());
     }
 
 //    --------------------------------------------------------------------------
 
-    public static boolean isOverlap(Reservation res1, Reservation res2) {
+    public static boolean isOverlap(final Reservation res1,
+                                    final Reservation res2) {
         return !(res1.getTimeFrom().isAfter(res2.getTimeTo())
                 || res1.getTimeTo().isBefore(res2.getTimeFrom()));
     }
 
-    public static boolean checkIntervalOverlap(List<Reservation> existing,
-                                               Reservation actual) {
+    public static boolean checkIntervalOverlap(final List<Reservation> existing,
+                                               final Reservation actual) {
         return existing.stream()
                 .anyMatch(res -> isOverlap(res, actual));
     }
 
 
     private List<Reservation>
-    findActiveOrPlannedReservationsByPlace(Place place) {
+    findActiveOrPlannedReservationsByPlace(final Place place) {
         return reservationRepository.findAllByPlaceId(place.getId())
                 .stream()
                 .filter(res ->
                         res.getStatus()
-                                .equals(ReservationStatus.ACTIVE) ||
-                                res.getStatus()
-                                        .equals(ReservationStatus.PLANNED))
+                                .equals(ReservationStatus.ACTIVE)
+                                || res.getStatus()
+                                .equals(ReservationStatus.PLANNED))
                 .toList();
     }
 
-    private List<Reservation> findActiveOrPlannedReservationsByCar(Car car) {
+    private List<Reservation> findActiveOrPlannedResByCar(final Car car) {
         return reservationRepository.findAllByCarId(car.getId())
                 .stream()
                 .filter(res ->
                         res.getStatus()
-                                .equals(ReservationStatus.ACTIVE) ||
-                                res.getStatus()
-                                        .equals(ReservationStatus.PLANNED))
+                                .equals(ReservationStatus.ACTIVE)
+                                || res.getStatus()
+                                .equals(ReservationStatus.PLANNED))
                 .toList();
     }
 
-    private void validateNoOverlap(List<Reservation> reservations,
-                                   Reservation newReservation,
-                                   String errorMessage) {
+    private void validateNoOverlap(final List<Reservation> reservations,
+                                   final Reservation newReservation,
+                                   final String errorMessage) {
         if (checkIntervalOverlap(reservations, newReservation)) {
             throw new IllegalStateException(errorMessage);
         }

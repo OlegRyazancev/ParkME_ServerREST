@@ -25,6 +25,6 @@ public class PlaceDTO {
             groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
-    private PlaceStatus placeStatus;
+    private PlaceStatus status;
 
 }

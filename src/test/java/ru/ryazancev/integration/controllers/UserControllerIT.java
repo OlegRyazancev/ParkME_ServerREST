@@ -190,7 +190,7 @@ public class UserControllerIT extends BaseIT {
                 reservationInfoDTO.getZone().getId(),
                 reservationInfoDTO.getPlace().getNumber());
         assertTrue(occupiedPlace.isPresent());
-        assertEquals(PlaceStatus.OCCUPIED, occupiedPlace.get().getPlaceStatus());
+        assertEquals(PlaceStatus.OCCUPIED, occupiedPlace.get().getStatus());
 
         Optional<Reservation> createdReservation = findCreatedReservation(
                 testUser.getId(),

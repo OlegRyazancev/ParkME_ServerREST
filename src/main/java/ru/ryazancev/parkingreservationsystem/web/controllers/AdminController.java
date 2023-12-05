@@ -43,7 +43,6 @@ public class AdminController {
     private final ZoneMapper zoneMapper;
     private final PlaceMapper placeMapper;
     private final UserMapper userMapper;
-    private final ReservationMapper reservationMapper;
     private final ReservationInfoMapper reservationInfoMapper;
     private final CarMapper carMapper;
 

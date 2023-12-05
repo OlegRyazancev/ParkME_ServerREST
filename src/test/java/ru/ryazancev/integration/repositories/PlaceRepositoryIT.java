@@ -79,7 +79,7 @@ public class PlaceRepositoryIT extends BaseIT {
         //Arrange
         Place place = Place.builder()
                 .number(100)
-                .placeStatus(PlaceStatus.FREE)
+                .status(PlaceStatus.FREE)
                 .build();
 
         Place savedPlace = placeRepository.save(place);

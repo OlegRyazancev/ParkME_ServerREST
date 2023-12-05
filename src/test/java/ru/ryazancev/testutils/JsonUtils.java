@@ -90,8 +90,7 @@ public class JsonUtils {
         return nestedProperties;
     }
 
-    public static String extractJson(String fullJson) throws JsonProcessingException {
-        JsonNode jsonNode = objectMapper.readTree(fullJson);
+    public static String extractJson(JsonNode jsonNode) throws JsonProcessingException {
 
         return String.format("{\"id\":%d," +
                         "\"timeFrom\":\"%s\"," +
@@ -118,5 +117,23 @@ public class JsonUtils {
                 jsonNode.get("user").get("id").asLong(),
                 jsonNode.get("user").get("name").asText(),
                 jsonNode.get("user").get("email").asText());
+    }
+
+    public static String extractJsonArray(String jsonArray) throws JsonProcessingException {
+        JsonNode reservationsArray = objectMapper.readTree(jsonArray);
+
+        StringBuilder result = new StringBuilder("[");
+
+        for (JsonNode reservationNode : reservationsArray) {
+            if (result.length() > 1) {
+                result.append(",");  // Add a comma for all elements except the first one
+            }
+
+            result.append(extractJson(reservationNode));
+        }
+
+        result.append("]");
+
+        return result.toString();
     }
 }

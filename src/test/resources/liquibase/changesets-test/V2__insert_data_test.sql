@@ -28,7 +28,8 @@ values ('G784TW777'),
        ('Z876IJ01'),
        ('B345DE67'),
        ('F890QR23'),
-       ('N678ST45');
+       ('N678ST45'),
+       ('Y000YY00');
 
 insert into zones(number)
 values (1),
@@ -97,6 +98,7 @@ VALUES (1, 'FREE'),
 insert into users_cars(user_id, car_id)
 values (1, 1),
        (1, 2),
+       (1, 15),
        (2, 3),
        (2, 4),
        (3, 5),

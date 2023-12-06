@@ -55,12 +55,13 @@ create table if not exists zones_places
 create table if not exists reservations
 (
     id        bigserial primary key,
-    time_from timestamp not null,
-    time_to   timestamp not null,
-    user_id   bigint    not null,
-    car_id    bigint    not null,
-    zone_id   bigint    not null,
-    place_id  bigint    not null,
+    time_from timestamp    not null,
+    time_to   timestamp    not null,
+    status    varchar(255) not null,
+    user_id   bigint       not null,
+    car_id    bigint       not null,
+    zone_id   bigint       not null,
+    place_id  bigint       not null,
 
     constraint fk_reservations_users foreign key (user_id) references users (id) on delete cascade on update no action,
     constraint fk_reservations_cars foreign key (car_id) references cars (id) on delete cascade on update no action,

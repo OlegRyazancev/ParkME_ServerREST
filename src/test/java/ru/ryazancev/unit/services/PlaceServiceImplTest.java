@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.services.impl.PlaceServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
@@ -36,7 +36,7 @@ public class PlaceServiceImplTest {
         place = Place.builder()
                 .id(1L)
                 .number(1)
-                .status(Status.FREE)
+                .status(PlaceStatus.FREE)
                 .build();
     }
 
@@ -111,7 +111,7 @@ public class PlaceServiceImplTest {
         assertEquals(lastExistPlace.getNumber() + 1, firstCreatedPlace.getNumber());
 
         createdPlaces.forEach(p ->
-                assertEquals(Status.FREE, p.getStatus()));
+                assertEquals(PlaceStatus.FREE, p.getStatus()));
 
         verify(placeRepository, times(numberOfPlaces)).save(any(Place.class));
         verify(placeRepository, times(numberOfPlaces)).assignToZone(anyLong(), anyLong());
@@ -138,7 +138,7 @@ public class PlaceServiceImplTest {
     @Test
     public void testChangePlaceStatus_whenPlaceDetailsAreValid_shouldReturnPlaceObject() {
         //Arrange
-        Status status = Status.DISABLE;
+        PlaceStatus placeStatus = PlaceStatus.DISABLE;
 
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.of(place));
@@ -146,10 +146,10 @@ public class PlaceServiceImplTest {
                 .thenReturn(place);
 
         //Act
-        Place placeWithChangedStatus = placeService.changeStatus(place.getId(), status);
+        Place placeWithChangedStatus = placeService.changeStatus(place.getId(), placeStatus);
 
         //Assert
-        assertEquals(status, placeWithChangedStatus.getStatus(),
+        assertEquals(placeStatus, placeWithChangedStatus.getStatus(),
                 "Place status should be changed");
         verify(placeRepository).save(place);
     }
@@ -159,11 +159,11 @@ public class PlaceServiceImplTest {
     public void testChangeStatus_whenChangingStatusIsOccupied_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Can not use OCCUPIED status here";
-        Status status = Status.OCCUPIED;
+        PlaceStatus placeStatus = PlaceStatus.OCCUPIED;
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
-                placeService.changeStatus(place.getId(), status));
+                placeService.changeStatus(place.getId(), placeStatus));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -175,13 +175,13 @@ public class PlaceServiceImplTest {
     public void testChangeStatus_whenPlaceDoesNotExist_throwsResourceNotFoundException() {
         //Arrange
         String expectedExceptionMessage = "Place not found";
-        Status status = Status.DISABLE;
+        PlaceStatus placeStatus = PlaceStatus.DISABLE;
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.empty());
 
         //Act && Assert
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () ->
-                placeService.changeStatus(place.getId(), status));
+                placeService.changeStatus(place.getId(), placeStatus));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -193,14 +193,14 @@ public class PlaceServiceImplTest {
     public void testChangeStatus_whenChangingStatusEqualActualPlaceStatus_throwsIllegalStateException() {
         //Arrange
         String expectedExceptionMessage = "Place already has this status";
-        Status status = Status.FREE;
+        PlaceStatus placeStatus = PlaceStatus.FREE;
 
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.of(place));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
-                placeService.changeStatus(place.getId(), status));
+                placeService.changeStatus(place.getId(), placeStatus));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -211,16 +211,16 @@ public class PlaceServiceImplTest {
     @Test
     public void testChangeStatus_whenPlaceStatusIsOccupied_thenThrowsIllegalStateException() {
         //Arrange
-        place.setStatus(Status.OCCUPIED);
+        place.setStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Can not change status, because place is occupied";
-        Status status = Status.FREE;
+        PlaceStatus placeStatus = PlaceStatus.FREE;
 
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.of(place));
 
         //Act && Assert
         IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
-                placeService.changeStatus(place.getId(), status));
+                placeService.changeStatus(place.getId(), placeStatus));
 
         //Assert
         assertEquals(expectedExceptionMessage, thrown.getMessage(),
@@ -262,7 +262,7 @@ public class PlaceServiceImplTest {
     @Test
     public void testDeletePlace_whenPlaceStatusIsOccupied_throwsIllegalStateException() {
         //Arrange
-        place.setStatus(Status.OCCUPIED);
+        place.setStatus(PlaceStatus.OCCUPIED);
         String expectedExceptionMessage = "Can not delete occupied place";
         when(placeRepository.findById(place.getId()))
                 .thenReturn(Optional.of(place));

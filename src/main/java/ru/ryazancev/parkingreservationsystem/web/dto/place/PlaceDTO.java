@@ -3,7 +3,7 @@ package ru.ryazancev.parkingreservationsystem.web.dto.place;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 
@@ -25,7 +25,6 @@ public class PlaceDTO {
             groups = {OnCreate.class, OnUpdate.class})
     private Integer number;
 
-
-    private Status status;
+    private PlaceStatus status;
 
 }

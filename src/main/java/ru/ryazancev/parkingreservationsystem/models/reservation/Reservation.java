@@ -30,6 +30,10 @@ public class Reservation implements Serializable {
     @Column(name = "time_to")
     private LocalDateTime timeTo;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ReservationStatus status;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -49,9 +53,11 @@ public class Reservation implements Serializable {
 
     public Reservation(final Long id,
                        final LocalDateTime timeFrom,
-                       final LocalDateTime timeTo) {
+                       final LocalDateTime timeTo,
+                       final ReservationStatus status) {
         this.id = id;
         this.timeFrom = timeFrom;
         this.timeTo = timeTo;
+        this.status = status;
     }
 }

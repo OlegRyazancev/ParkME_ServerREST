@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.security.filter.jwt;
+package ru.ryazancev.parkingreservationsystem.web.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;

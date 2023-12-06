@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -64,7 +64,6 @@ public class AdminControllerIT extends BaseIT {
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_CARS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(content().json(carsJson));
     }
 
@@ -84,7 +83,6 @@ public class AdminControllerIT extends BaseIT {
         //Act && Assert
         mockMvc.perform(get(APIPaths.ADMIN_USERS))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(usersJson));
     }
 
@@ -98,39 +96,18 @@ public class AdminControllerIT extends BaseIT {
                         reservations,
                         List.of("id",
                                 "timeFrom",
-                                "timeTo"))
-                .toString();
-
-        //Act && Assert
-        mockMvc.perform(get(APIPaths.ADMIN_RESERVATIONS))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(content().json(reservationsJson));
-    }
-
-    @DisplayName("Get reservation info by id by admin")
-    @Test
-    @WithUserDetails("test1@gmail.com")
-    public void testGetReservationInfoById_returnsReservationInfoJson() throws Exception {
-        //Arrange
-        Reservation reservation = findObjectForTests(reservationRepository, 1L);
-        String fullReservationInfoJson = JsonUtils.createJsonNodeForObject(
-                        reservation,
-                        List.of("id",
-                                "timeFrom",
                                 "timeTo", "zone",
                                 "place",
                                 "car",
                                 "user"))
                 .toString();
 
-        String extractedReservationInfoJson = JsonUtils
-                .extractJson(fullReservationInfoJson);
+        String extractedReservationsJson = JsonUtils.extractJsonArray(reservationsJson);
 
         //Act && Assert
-        mockMvc.perform(get(APIPaths.ADMIN_RESERVATION_BY_ID, reservation.getId()))
+        mockMvc.perform(get(APIPaths.ADMIN_RESERVATIONS))
                 .andExpect(status().isOk())
-                .andExpect(content().json(extractedReservationInfoJson));
+                .andExpect(content().json(extractedReservationsJson));
     }
 
     @DisplayName("Get place by id")
@@ -158,11 +135,11 @@ public class AdminControllerIT extends BaseIT {
     public void testCreateZone_returnsNewZoneJSONWithId() throws Exception {
         //Arrange
         ZoneDTO creatingZone = ZoneDTO.builder()
-                .number(4)
+                .number(999)
                 .build();
         String zoneJson = JsonUtils.createJsonNodeForObject(
                         creatingZone,
-                        List.of("number"))
+                        List.of("number", "totalPlaces", "freePlaces"))
                 .toString();
 
         //Act && Assert
@@ -251,7 +228,7 @@ public class AdminControllerIT extends BaseIT {
     public void testChangePlaceStatus_returnsPlaceJSONWithChangedStatus() throws Exception {
         //Arrange
         Place placeToUpdate = findObjectForTests(placeRepository, 1L);
-        String status = Status.DISABLE.name();
+        String status = PlaceStatus.DISABLE.name();
 
         //Act && Assert
         mockMvc.perform(put(APIPaths.ADMIN_PLACE_STATUS, placeToUpdate.getId())
@@ -270,7 +247,7 @@ public class AdminControllerIT extends BaseIT {
                 placeRepository.findById(placeToUpdate.getId());
         assertTrue(updatedPlace.isPresent());
         assertEquals(placeToUpdate.getNumber(), updatedPlace.get().getNumber());
-        assertEquals(Status.DISABLE, updatedPlace.get().getStatus());
+        assertEquals(PlaceStatus.DISABLE, updatedPlace.get().getStatus());
     }
 
     @DisplayName("Delete zone and associated places")
@@ -278,7 +255,7 @@ public class AdminControllerIT extends BaseIT {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteZoneWithPlaces_returnsNothing() throws Exception {
         //Arrange
-        Zone zoneToDelete = findObjectForTests(zoneRepository, 2L);
+        Zone zoneToDelete = findObjectForTests(zoneRepository, 4L);
 
         //Act && Assert
         mockMvc.perform(delete(APIPaths.ADMIN_ZONE_BY_ID, zoneToDelete.getId()))

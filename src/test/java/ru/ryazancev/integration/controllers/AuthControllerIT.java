@@ -40,7 +40,7 @@ public class AuthControllerIT extends BaseIT {
         User userForLogin = findObjectForTests(userRepository, 1L);
         JwtRequest jwtRequest = JwtRequest.builder()
                 .username(userForLogin.getEmail())
-                .password("password")
+                .password("12345")
                 .build();
 
         String loginJson = JsonUtils.createJsonNodeForObject(

@@ -1,4 +1,4 @@
-package ru.ryazancev.parkingreservationsystem.web.security.filter.jwt;
+package ru.ryazancev.parkingreservationsystem.web.security.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

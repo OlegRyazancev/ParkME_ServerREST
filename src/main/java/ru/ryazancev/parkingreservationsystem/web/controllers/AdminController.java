@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
@@ -21,7 +21,6 @@ import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.place.PlaceDTO;
-import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfoDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneDTO;
@@ -44,7 +43,6 @@ public class AdminController {
     private final ZoneMapper zoneMapper;
     private final PlaceMapper placeMapper;
     private final UserMapper userMapper;
-    private final ReservationMapper reservationMapper;
     private final ReservationInfoMapper reservationInfoMapper;
     private final CarMapper carMapper;
 
@@ -69,20 +67,9 @@ public class AdminController {
     @GetMapping("/reservations")
     @QueryMapping("reservations")
     @Operation(summary = "Get all reservations")
-    public List<ReservationDTO> getReservations() {
+    public List<ReservationInfoDTO> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
-        return reservationMapper.toDTO(reservations);
-    }
-
-    @GetMapping("/reservations/{id}")
-    @QueryMapping("reservationInfoById")
-    @Operation(summary = "Get reservation info by id")
-    public ReservationInfoDTO getReservationInfoById(
-            @PathVariable("id")
-            @Argument final Long reservationId) {
-        Reservation reservation = reservationService.getInfo(reservationId);
-
-        return reservationInfoMapper.toDTO(reservation);
+        return reservationInfoMapper.toDTO(reservations);
     }
 
     @GetMapping("/places/{id}")
@@ -149,10 +136,10 @@ public class AdminController {
             @RequestParam
             @Argument final String status) {
 
-        Place disabledPlace = placeService
-                .changeStatus(placeId, Status.valueOf(status));
+        Place changedPlace = placeService
+                .changeStatus(placeId, PlaceStatus.valueOf(status));
 
-        return placeMapper.toDTO(disabledPlace);
+        return placeMapper.toDTO(changedPlace);
     }
 
     @DeleteMapping("zones/{id}")

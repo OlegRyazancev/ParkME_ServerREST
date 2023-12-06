@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.ryazancev.parkingreservationsystem.models.reservation.ReservationStatus;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnCreate;
 import ru.ryazancev.parkingreservationsystem.util.validation.OnUpdate;
 import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
@@ -34,6 +35,8 @@ public class ReservationInfoDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timeTo;
+
+    private ReservationStatus status;
 
     @NotNull(message = "Zone must not be null",
             groups = OnCreate.class)

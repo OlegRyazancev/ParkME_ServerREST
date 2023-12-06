@@ -38,6 +38,7 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handleIllegalState(
             final IllegalStateException e) {
+        e.printStackTrace();
         return new ExceptionBody(e.getMessage());
     }
 

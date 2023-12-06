@@ -10,8 +10,9 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.models.reservation.ReservationStatus;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
@@ -43,11 +44,11 @@ public class ReservationControllerIT extends BaseIT {
 
     private final Long RESERVATION_ID_FOR_TESTS = 1L;
 
-    private Reservation testReservation;
+    private Reservation plannedReservation;
 
     @BeforeEach
     public void setUp() {
-        testReservation = findObjectForTests(reservationRepository, RESERVATION_ID_FOR_TESTS);
+        plannedReservation = findObjectForTests(reservationRepository, RESERVATION_ID_FOR_TESTS);
     }
 
     @DisplayName("Change timeTo of reservation")
@@ -56,8 +57,8 @@ public class ReservationControllerIT extends BaseIT {
     public void testChangeTimeTo_returnsStatusOkAndReservationJSON() throws Exception {
         //Arrange
         ReservationDTO updatingReservationDTO = ReservationDTO.builder()
-                .id(testReservation.getId())
-                .timeTo(LocalDateTime.of(2024, 2, 23, 14, 0, 0))
+                .id(plannedReservation.getId())
+                .timeTo(LocalDateTime.of(2024, 11, 14, 14, 0, 0))
                 .build();
 
         String reservationJson = JsonUtils.createJsonNodeForObject(
@@ -72,9 +73,9 @@ public class ReservationControllerIT extends BaseIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id")
-                        .value(testReservation.getId()))
+                        .value(plannedReservation.getId()))
                 .andExpect(jsonPath("$.timeFrom")
-                        .value(testReservation.getTimeFrom()
+                        .value(plannedReservation.getTimeFrom()
                                 .format(DateUtils.customFormatter)))
                 .andExpect(jsonPath("$.timeTo")
                         .value(
@@ -83,10 +84,57 @@ public class ReservationControllerIT extends BaseIT {
 
         //Assert
         Optional<Reservation> updatedReservation =
-                reservationRepository.findById(testReservation.getId());
+                reservationRepository.findById(plannedReservation.getId());
         assertTrue(updatedReservation.isPresent());
         assertEquals(updatingReservationDTO.getId(), updatedReservation.get().getId());
-        assertEquals(testReservation.getTimeFrom(), updatedReservation.get().getTimeFrom());
+        assertEquals(plannedReservation.getTimeFrom(), updatedReservation.get().getTimeFrom());
+    }
+
+    @DisplayName("Cancel reservation")
+    @Test
+    @WithUserDetails("test1@gmail.com")
+    public void testCancelReservation_ifReservationIsActive_shouldReturnCompletedReservation() throws Exception {
+        //Act
+        mockMvc.perform(put(APIPaths.RESERVATION_BY_ID, plannedReservation.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id")
+                        .value(plannedReservation.getId()))
+                .andExpect(jsonPath("$.timeFrom")
+                        .value(plannedReservation.getTimeFrom()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.timeTo")
+                        .value(plannedReservation.getTimeTo()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.status")
+                        .value(ReservationStatus.COMPLETED.name()));
+
+        //Assert
+        Optional<Place> place = placeRepository
+                .findById(plannedReservation.getPlace().getId());
+        assertTrue(place.isPresent());
+        assertEquals(PlaceStatus.FREE, place.get().getStatus());
+    }
+
+    @DisplayName("Cancel reservation")
+    @Test
+    @WithUserDetails("test1@gmail.com")
+    public void testCancelReservation_ifReservationIsPlanned_shouldReturnCanceledReservation() throws Exception {
+        //Arrange
+        Reservation plannedReservation = findObjectForTests(reservationRepository, 11L);
+
+        //Act
+        mockMvc.perform(put(APIPaths.RESERVATION_BY_ID, plannedReservation.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id")
+                        .value(plannedReservation.getId()))
+                .andExpect(jsonPath("$.timeFrom")
+                        .value(plannedReservation.getTimeFrom()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.timeTo")
+                        .value(plannedReservation.getTimeTo()
+                                .format(DateUtils.customFormatter)))
+                .andExpect(jsonPath("$.status")
+                        .value(ReservationStatus.CANCELED.name()));
     }
 
     @DisplayName("Delete reservation")
@@ -94,21 +142,23 @@ public class ReservationControllerIT extends BaseIT {
     @WithUserDetails("test1@gmail.com")
     public void testDeleteReservation_shouldDeleteAllDependencies_returnsNothing() throws Exception {
         //Act
-        mockMvc.perform(delete(APIPaths.RESERVATION_BY_ID, testReservation.getId()))
+        mockMvc.perform(delete(APIPaths.RESERVATION_BY_ID, plannedReservation.getId()))
                 .andExpect(status().isOk());
         //Assert
-        assertFalse(reservationRepository.existsById(testReservation.getId()));
+        assertFalse(reservationRepository.existsById(plannedReservation.getId()));
 
         Optional<Place> placeAfterDeleteReservation =
-                placeRepository.findById(testReservation.getPlace().getId());
+                placeRepository.findById(plannedReservation.getPlace().getId());
         assertTrue(placeAfterDeleteReservation.isPresent());
-        assertEquals(Status.FREE, placeAfterDeleteReservation.get().getStatus());
+        assertEquals(PlaceStatus.FREE, placeAfterDeleteReservation.get().getStatus());
 
         List<Reservation> usersReservations =
-                reservationRepository.findAllByUserId(testReservation.getUser().getId());
+                reservationRepository.findAllByUserIdOrderByTimeFromDesc(
+                        plannedReservation.getUser().getId());
         assertTrue(usersReservations
                 .stream()
                 .noneMatch(reservation ->
-                        reservation.getId().equals(testReservation.getId())));
+                        reservation.getId()
+                                .equals(plannedReservation.getId())));
     }
 }

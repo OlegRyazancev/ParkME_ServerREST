@@ -32,7 +32,7 @@ public class CarControllerIT extends BaseIT {
     @Autowired
     private CarRepository carRepository;
 
-    private final Long CAR_ID_FOR_TESTS = 3L;
+    private final Long CAR_ID_FOR_TESTS = 15L;
 
     private Car testCar;
 
@@ -61,7 +61,7 @@ public class CarControllerIT extends BaseIT {
         //Arrange
         CarDTO updatingCarDTO = CarDTO.builder()
                 .id(testCar.getId())
-                .number("X000XX00")
+                .number("Y001YY00")
                 .build();
         String json = createJsonNodeForObject(
                 updatingCarDTO,

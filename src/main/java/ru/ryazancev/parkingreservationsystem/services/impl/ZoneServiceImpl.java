@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.parking.Zone;
 import ru.ryazancev.parkingreservationsystem.repositories.PlaceRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ZoneRepository;
@@ -65,7 +65,8 @@ public class ZoneServiceImpl implements ZoneService {
 
         if (foundZone.getPlaces()
                 .stream()
-                .anyMatch(place -> place.getStatus().equals(Status.OCCUPIED))) {
+                .anyMatch(place ->
+                        place.getStatus().equals(PlaceStatus.OCCUPIED))) {
             throw new IllegalStateException("Zone have occupied places");
         }
 

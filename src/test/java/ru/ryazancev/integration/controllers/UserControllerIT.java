@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
-import ru.ryazancev.parkingreservationsystem.models.parking.Status;
+import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
@@ -104,13 +104,18 @@ public class UserControllerIT extends BaseIT {
                         usersReservations,
                         List.of("id",
                                 "timeFrom",
-                                "timeTo"))
+                                "timeTo",
+                                "status",
+                                "zone",
+                                "place",
+                                "car"))
                 .toString();
+
+        String extractedReservationsJson = JsonUtils.extractJsonArray(reservationsJson);
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.USER_RESERVATIONS, testUser.getId()))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(content().json(reservationsJson));
+                .andExpect(content().json(extractedReservationsJson));
     }
 
     @DisplayName("Create car")
@@ -120,7 +125,7 @@ public class UserControllerIT extends BaseIT {
         //Arrange
         int countUserCars = testUser.getCars().size();
 
-        CarDTO creatingCar = CarDTO.builder().number("X000XX00").build();
+        CarDTO creatingCar = CarDTO.builder().number("T000TT00").build();
         String carJson = JsonUtils.createJsonNodeForObject(
                         creatingCar,
                         List.of("number"))
@@ -159,7 +164,7 @@ public class UserControllerIT extends BaseIT {
                 .timeTo(LocalDateTime.of(2030, 8, 10, 10, 0))
                 .zone(ZoneForReservationInfoDTO.builder().id(1L).number(1).build())
                 .place(PlaceForReservationInfoDTO.builder().number(2).build())
-                .car(CarDTO.builder().number("C000CC00").build())
+                .car(CarDTO.builder().number("Y000YY00").build())
                 .build();
 
         String json = JsonUtils.createJsonNodeForObject(
@@ -170,6 +175,7 @@ public class UserControllerIT extends BaseIT {
                                 "place",
                                 "car"))
                 .toString();
+        System.out.println(json);
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.USER_RESERVATIONS, testUser.getId())
@@ -186,15 +192,15 @@ public class UserControllerIT extends BaseIT {
                                 .format(DateUtils.customFormatter)));
 
         //Assert
-        Optional<Place> occupiedPlace = getOccupiedPlace(
+        Optional<Place> reservedPlace = getReservedPlace(
                 reservationInfoDTO.getZone().getId(),
                 reservationInfoDTO.getPlace().getNumber());
-        assertTrue(occupiedPlace.isPresent());
-        assertEquals(Status.OCCUPIED, occupiedPlace.get().getStatus());
+        assertTrue(reservedPlace.isPresent());
+        assertEquals(PlaceStatus.FREE, reservedPlace.get().getStatus());
 
         Optional<Reservation> createdReservation = findCreatedReservation(
                 testUser.getId(),
-                occupiedPlace.get().getId());
+                reservedPlace.get().getId());
         assertTrue(createdReservation.isPresent());
         assertEquals(reservationInfoDTO.getTimeFrom(), createdReservation.get().getTimeFrom());
         assertEquals(reservationInfoDTO.getTimeTo(), createdReservation.get().getTimeTo());
@@ -252,7 +258,7 @@ public class UserControllerIT extends BaseIT {
         assertTrue(cars.isEmpty());
 
         List<Reservation> reservations =
-                reservationRepository.findAllByUserId(testUser.getId());
+                reservationRepository.findAllByUserIdOrderByTimeFromDesc(testUser.getId());
         assertTrue(reservations.isEmpty());
 
         List<Place> places =
@@ -264,7 +270,7 @@ public class UserControllerIT extends BaseIT {
     }
 
 
-    private Optional<Place> getOccupiedPlace(Long zoneId, Integer placeNumber) {
+    private Optional<Place> getReservedPlace(Long zoneId, Integer placeNumber) {
         return placeRepository.findAllByZoneId(zoneId)
                 .stream()
                 .filter(p -> p.getNumber().equals(placeNumber))
@@ -272,7 +278,7 @@ public class UserControllerIT extends BaseIT {
     }
 
     private Optional<Reservation> findCreatedReservation(Long userId, Long placeId) {
-        return reservationRepository.findAllByUserId(userId)
+        return reservationRepository.findAllByUserIdOrderByTimeFromDesc(userId)
                 .stream()
                 .filter(reservation -> reservation
                         .getPlace()

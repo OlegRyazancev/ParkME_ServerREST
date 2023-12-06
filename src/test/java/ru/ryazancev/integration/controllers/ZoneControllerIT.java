@@ -15,7 +15,6 @@ import ru.ryazancev.testutils.paths.APIPaths;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,13 +44,14 @@ public class ZoneControllerIT extends BaseIT {
         String zonesJson = JsonUtils.createJsonNodeForObjects(
                         zones,
                         List.of("id",
-                                "number"))
+                                "number",
+                                "totalPlaces",
+                                "freePlaces"))
                 .toString();
 
         //Act && Assert
         mockMvc.perform(get(APIPaths.ZONES))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(content().json(zonesJson));
     }
 

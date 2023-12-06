@@ -90,33 +90,62 @@ public class JsonUtils {
         return nestedProperties;
     }
 
-    public static String extractJson(String fullJson) throws JsonProcessingException {
-        JsonNode jsonNode = objectMapper.readTree(fullJson);
+    public static String extractJson(JsonNode jsonNode) throws JsonProcessingException {
+        StringBuilder result = new StringBuilder("{\"id\":%d," +
+                "\"timeFrom\":\"%s\"," +
+                "\"timeTo\":\"%s\"," +
+                "\"zone\":{\"id\":%d,\"number\":%d}," +
+                "\"place\":{\"id\":%d,\"number\":%d}," +
+                "\"car\":{\"id\":%d,\"number\":\"%s\"}");
 
-        return String.format("{\"id\":%d," +
-                        "\"timeFrom\":\"%s\"," +
-                        "\"timeTo\":\"%s\"," +
-                        "\"zone\":{\"id\":%d,\"number\":%d}," +
-                        "\"place\":{\"id\":%d,\"number\":%d}," +
-                        "\"car\":{\"id\":%d,\"number\":\"%s\"}," +
-                        "\"user\":{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\"}}",
-                jsonNode.get("id").asLong(),
+        JsonNode userNode = jsonNode.get("user");
+        if (userNode != null) {
+            result.append(",\"user\":{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\"}");
+            result.append("}");
 
-                jsonNode.get("timeFrom").asText(),
+            return String.format(result.toString(),
+                    jsonNode.get("id").asLong(),
+                    jsonNode.get("timeFrom").asText(),
+                    jsonNode.get("timeTo").asText(),
+                    jsonNode.get("zone").get("id").asLong(),
+                    jsonNode.get("zone").get("number").asInt(),
+                    jsonNode.get("place").get("id").asLong(),
+                    jsonNode.get("place").get("number").asInt(),
+                    jsonNode.get("car").get("id").asLong(),
+                    jsonNode.get("car").get("number").asText(),
+                    userNode.get("id").asLong(),
+                    userNode.get("name").asText(),
+                    userNode.get("email").asText());
+        } else {
+            result.append("}");
+            return String.format(result.toString(),
+                    jsonNode.get("id").asLong(),
+                    jsonNode.get("timeFrom").asText(),
+                    jsonNode.get("timeTo").asText(),
+                    jsonNode.get("zone").get("id").asLong(),
+                    jsonNode.get("zone").get("number").asInt(),
+                    jsonNode.get("place").get("id").asLong(),
+                    jsonNode.get("place").get("number").asInt(),
+                    jsonNode.get("car").get("id").asLong(),
+                    jsonNode.get("car").get("number").asText());
+        }
+    }
 
-                jsonNode.get("timeTo").asText(),
+    public static String extractJsonArray(String jsonArray) throws JsonProcessingException {
+        JsonNode reservationsArray = objectMapper.readTree(jsonArray);
 
-                jsonNode.get("zone").get("id").asLong(),
-                jsonNode.get("zone").get("number").asInt(),
+        StringBuilder result = new StringBuilder("[");
 
-                jsonNode.get("place").get("id").asLong(),
-                jsonNode.get("place").get("number").asInt(),
+        for (JsonNode reservationNode : reservationsArray) {
+            if (result.length() > 1) {
+                result.append(",");
+            }
 
-                jsonNode.get("car").get("id").asLong(),
-                jsonNode.get("car").get("number").asText(),
+            result.append(extractJson(reservationNode));
+        }
 
-                jsonNode.get("user").get("id").asLong(),
-                jsonNode.get("user").get("name").asText(),
-                jsonNode.get("user").get("email").asText());
+        result.append("]");
+
+        return result.toString();
     }
 }

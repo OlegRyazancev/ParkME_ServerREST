@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.services.UserService;
-import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtEntity;
+import ru.ryazancev.parkingreservationsystem.web.security.jwt.JwtEntity;
 
 @Service("customSecurityExpression")
 @RequiredArgsConstructor

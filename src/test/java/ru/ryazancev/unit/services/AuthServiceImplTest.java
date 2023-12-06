@@ -15,7 +15,7 @@ import ru.ryazancev.parkingreservationsystem.services.impl.AuthServiceImpl;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtRequest;
 import ru.ryazancev.parkingreservationsystem.web.dto.auth.JwtResponse;
-import ru.ryazancev.parkingreservationsystem.web.security.filter.jwt.JwtTokenProvider;
+import ru.ryazancev.parkingreservationsystem.web.security.jwt.JwtTokenProvider;
 
 import java.util.Collections;
 

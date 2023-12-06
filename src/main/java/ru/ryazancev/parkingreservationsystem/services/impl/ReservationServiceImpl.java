@@ -34,14 +34,6 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Reservation getInfo(final Long reservationId) {
-        return reservationRepository
-                .findById(reservationId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Reservation not found"));
-    }
-
-    @Override
     public List<Reservation> getReservationsByUserId(final Long userId) {
         List<Reservation> reservations = reservationRepository
                 .findAllByUserIdOrderByTimeFromDesc(userId);

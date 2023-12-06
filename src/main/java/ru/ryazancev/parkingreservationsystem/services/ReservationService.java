@@ -7,8 +7,6 @@ import java.util.List;
 public interface ReservationService {
     List<Reservation> getAll();
 
-    Reservation getInfo(Long reservationId);
-
     List<Reservation> getReservationsByUserId(Long userId);
 
     Reservation cancel(Long reservationId);
@@ -18,4 +16,5 @@ public interface ReservationService {
     Reservation changeTimeTo(Reservation reservation);
 
     void delete(Long reservationId);
-    }
+
+}

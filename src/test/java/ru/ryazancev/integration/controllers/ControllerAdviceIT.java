@@ -64,7 +64,7 @@ public class ControllerAdviceIT extends BaseIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message")
-                        .value("Car has the same number"));
+                        .value("Car with this number already exists"));
     }
 
     @DisplayName("Handle access denied exception when the user try to get cars of another user")

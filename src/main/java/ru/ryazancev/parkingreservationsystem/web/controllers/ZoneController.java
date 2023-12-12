@@ -31,7 +31,6 @@ public class ZoneController {
     private final PlaceService placeService;
     private final ZoneInfoMapper zoneReadMapper;
     private final ZoneMapper zoneMapper;
-//    private final PlaceMapper placeMapper;
 
     @GetMapping
     @QueryMapping(name = "zones")

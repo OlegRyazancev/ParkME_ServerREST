@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
+import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
+import ru.ryazancev.parkingreservationsystem.models.reservation.ReservationStatus;
 import ru.ryazancev.parkingreservationsystem.repositories.CarRepository;
 import ru.ryazancev.parkingreservationsystem.repositories.ReservationRepository;
 import ru.ryazancev.parkingreservationsystem.services.CarService;
@@ -44,7 +46,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car create(final Car car, final Long userId) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car already exists");
+            throw new IllegalStateException("Car with this "
+                    + "number already exists");
         }
         carRepository.save(car);
         carRepository.assignToUser(userId, car.getId());
@@ -55,7 +58,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car update(final Car car) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car has the same number");
+            throw new IllegalStateException("Car with this number "
+                    + "already exists");
         }
         Car existingCar = getById(car.getId());
         existingCar.setNumber(car.getNumber());
@@ -65,8 +69,17 @@ public class CarServiceImpl implements CarService {
     @Transactional
     @Override
     public void delete(final Long carId) {
-        if (reservationRepository.findByCarId(carId).isPresent()) {
-            throw new IllegalStateException("Car has reservations");
+        List<Reservation> carReservations = reservationRepository
+                .findAllByCarId(carId);
+
+        if (carReservations.stream()
+                .anyMatch(res ->
+                        res.getStatus()
+                                .equals(ReservationStatus.ACTIVE)
+                                || res.getStatus()
+                                .equals(ReservationStatus.PLANNED))) {
+            throw new IllegalStateException("Can not delete!"
+                    + " Car has active or planned reservations.");
         }
 
         carRepository.deleteById(carId);

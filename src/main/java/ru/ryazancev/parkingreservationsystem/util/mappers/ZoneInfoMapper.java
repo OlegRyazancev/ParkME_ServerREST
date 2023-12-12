@@ -7,7 +7,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.zone.ZoneInfoDTO;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = BaseMapperConfig.class)
 public interface ZoneInfoMapper extends Mappable<Zone, ZoneInfoDTO> {
 
     @Mapping(target = "places", source = "places")

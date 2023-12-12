@@ -8,7 +8,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationInfo
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = BaseMapperConfig.class)
 public interface ReservationInfoMapper
         extends Mappable<Reservation, ReservationInfoDTO> {
 

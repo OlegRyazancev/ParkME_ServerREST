@@ -14,6 +14,7 @@ import ru.ryazancev.parkingreservationsystem.services.UserService;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -83,6 +84,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User update(final User user) {
+        Optional<User> foundUser = userRepository
+                .findByEmail(user.getEmail());
+        if (foundUser.isPresent()
+                && !foundUser.get().getId().equals(user.getId())) {
+            throw new IllegalStateException(
+                    "User with the same email is already exists");
+        }
+
         User existingUser = getById(user.getId());
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());

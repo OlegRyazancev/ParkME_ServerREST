@@ -46,7 +46,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car create(final Car car, final Long userId) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car already exists");
+            throw new IllegalStateException("Car with this " +
+                    "number already exists");
         }
         carRepository.save(car);
         carRepository.assignToUser(userId, car.getId());
@@ -57,7 +58,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car update(final Car car) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car has the same number");
+            throw new IllegalStateException("Car with this number " +
+                    "already exists");
         }
         Car existingCar = getById(car.getId());
         existingCar.setNumber(car.getNumber());

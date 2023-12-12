@@ -78,8 +78,8 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation create(final Reservation reservation,
                               final Long userId) {
         if (reservation.getTimeTo().isBefore(reservation.getTimeFrom())) {
-            throw new IllegalStateException("Please ensure that the time to" +
-                    " is set after the time from");
+            throw new IllegalStateException("Please ensure that the time to"
+                    + " is set after the time from");
         }
         Zone foundZone = zoneRepository
                 .findByNumber(reservation.getZone().getNumber())
@@ -147,8 +147,8 @@ public class ReservationServiceImpl implements ReservationService {
                         "Reservation not found"));
 
         if (reservation.getTimeTo().isBefore(existingRes.getTimeFrom())) {
-            throw new IllegalStateException("Please ensure that the time to" +
-                    " is set after the time from");
+            throw new IllegalStateException("Please ensure that the time to"
+                    + " is set after the time from");
         }
 
         reservation.setTimeFrom(existingRes.getTimeFrom());

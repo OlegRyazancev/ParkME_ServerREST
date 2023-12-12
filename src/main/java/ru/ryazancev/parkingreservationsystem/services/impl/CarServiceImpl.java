@@ -46,8 +46,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car create(final Car car, final Long userId) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car with this " +
-                    "number already exists");
+            throw new IllegalStateException("Car with this "
+                    + "number already exists");
         }
         carRepository.save(car);
         carRepository.assignToUser(userId, car.getId());
@@ -58,8 +58,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public Car update(final Car car) {
         if (carRepository.findByNumber(car.getNumber()).isPresent()) {
-            throw new IllegalStateException("Car with this number " +
-                    "already exists");
+            throw new IllegalStateException("Car with this number "
+                    + "already exists");
         }
         Car existingCar = getById(car.getId());
         existingCar.setNumber(car.getNumber());
@@ -77,10 +77,10 @@ public class CarServiceImpl implements CarService {
                         res.getStatus()
                                 .equals(ReservationStatus.ACTIVE)
                                 || res.getStatus()
-                                .equals(ReservationStatus.PLANNED)))
-            throw new IllegalStateException("Can not delete!" +
-                    " Car has active or planned reservations.");
-
+                                .equals(ReservationStatus.PLANNED))) {
+            throw new IllegalStateException("Can not delete!"
+                    + " Car has active or planned reservations.");
+        }
 
         carRepository.deleteById(carId);
     }

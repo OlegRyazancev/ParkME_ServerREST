@@ -10,6 +10,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.ryazancev.integration.BaseIT;
 import ru.ryazancev.parkingreservationsystem.models.car.Car;
+import ru.ryazancev.parkingreservationsystem.models.car.CarType;
 import ru.ryazancev.parkingreservationsystem.models.parking.Place;
 import ru.ryazancev.parkingreservationsystem.models.parking.PlaceStatus;
 import ru.ryazancev.parkingreservationsystem.models.reservation.Reservation;
@@ -125,11 +126,15 @@ public class UserControllerIT extends BaseIT {
         //Arrange
         int countUserCars = testUser.getCars().size();
 
-        CarDTO creatingCar = CarDTO.builder().number("T000TT00").build();
+        CarDTO creatingCar = CarDTO.builder()
+                .number("T000TT00")
+                .type(CarType.COUPE)
+                .build();
         String carJson = JsonUtils.createJsonNodeForObject(
                         creatingCar,
-                        List.of("number"))
+                        List.of("number", "type"))
                 .toString();
+        System.out.println(carJson);
 
         //Act && Assert
         mockMvc.perform(post(APIPaths.USER_CARS, testUser.getId())

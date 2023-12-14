@@ -21,4 +21,9 @@ public class Car implements Serializable {
 
     @Column(name = "number")
     private String number;
+
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "type")
+    private CarType type;
 }

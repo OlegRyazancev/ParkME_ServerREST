@@ -9,7 +9,8 @@ create table if not exists users
 create table if not exists cars
 (
     id     bigserial primary key,
-    number varchar(255) not null unique
+    number varchar(255) not null unique,
+    type   varchar(255) not null
 );
 
 create table if not exists users_roles

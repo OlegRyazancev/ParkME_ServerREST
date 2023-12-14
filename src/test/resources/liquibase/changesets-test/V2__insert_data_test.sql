@@ -14,22 +14,22 @@ values ('Test1', 'test1@gmail.com',
        ('Test7', 'test7@gmail.com',
         '$2a$10$rG8IgrbLTcX5lsWIiNhmCeznXeVZMur6d3ss.YGPMhIEWQUJ7c63e');
 
-insert into cars (number)
-values ('G784TW777'),
-       ('Q568WF33'),
-       ('K156JH31'),
-       ('X000XX00'),
-       ('A123BC45'),
-       ('M789NP12'),
-       ('R456GH78'),
-       ('S901KL23'),
-       ('T567UV89'),
-       ('W234XY90'),
-       ('Z876IJ01'),
-       ('B345DE67'),
-       ('F890QR23'),
-       ('N678ST45'),
-       ('Y000YY00');
+insert into cars (number, type)
+values ('G784TW777', 'SEDAN'),
+       ('Q568WF33', 'HYBRID'),
+       ('K156JH31', 'MINIVAN'),
+       ('X000XX00', 'HATCHBACK'),
+       ('A123BC45', 'SUV'),
+       ('M789NP12', 'TRUCK'),
+       ('R456GH78', 'COUPE'),
+       ('S901KL23', 'SEDAN'),
+       ('T567UV89', 'COUPE'),
+       ('W234XY90', 'MINIVAN'),
+       ('Z876IJ01', 'HATCHBACK'),
+       ('B345DE67', 'SEDAN'),
+       ('F890QR23', 'COUPE'),
+       ('N678ST45', 'ELECTRIC'),
+       ('Y000YY00', 'SEDAN');
 
 insert into zones(number)
 values (1),

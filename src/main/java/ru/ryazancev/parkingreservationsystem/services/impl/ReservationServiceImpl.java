@@ -12,6 +12,7 @@ import ru.ryazancev.parkingreservationsystem.models.reservation.ReservationStatu
 import ru.ryazancev.parkingreservationsystem.models.user.User;
 import ru.ryazancev.parkingreservationsystem.repositories.*;
 import ru.ryazancev.parkingreservationsystem.services.ReservationService;
+import ru.ryazancev.parkingreservationsystem.util.ReservationUtils;
 import ru.ryazancev.parkingreservationsystem.util.exceptions.ResourceNotFoundException;
 
 import java.util.ArrayList;
@@ -113,16 +114,18 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         List<Reservation> placeReservations =
-                findActiveOrPlannedReservationsByPlace(foundPlace);
+                ReservationUtils.findActiveOrPlannedReservationsByPlace(
+                        foundPlace, reservationRepository);
         List<Reservation> carReservations =
-                findActiveOrPlannedResByCar(foundCar);
+                ReservationUtils.findActiveOrPlannedResByCar(
+                        foundCar, reservationRepository);
 
-        validateNoOverlap(
+        ReservationUtils.validateNoOverlap(
                 placeReservations,
                 reservation,
                 "Place already has reservations on these dates"
         );
-        validateNoOverlap(
+        ReservationUtils.validateNoOverlap(
                 carReservations,
                 reservation,
                 "Car already has reservations on these dates"
@@ -154,19 +157,21 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setTimeFrom(existingRes.getTimeFrom());
 
         List<Reservation> placeReservations = new ArrayList<>(
-                findActiveOrPlannedReservationsByPlace(existingRes.getPlace()));
+                ReservationUtils.findActiveOrPlannedReservationsByPlace(
+                        existingRes.getPlace(), reservationRepository));
         placeReservations.remove(existingRes);
 
         List<Reservation> carReservations = new ArrayList<>(
-                findActiveOrPlannedResByCar(existingRes.getCar()));
+                ReservationUtils.findActiveOrPlannedResByCar(
+                        existingRes.getCar(), reservationRepository));
         carReservations.remove(existingRes);
 
-        validateNoOverlap(
+        ReservationUtils.validateNoOverlap(
                 placeReservations,
                 reservation,
                 "Place already has reservations on these dates"
         );
-        validateNoOverlap(
+        ReservationUtils.validateNoOverlap(
                 carReservations,
                 reservation,
                 "Car already has reservations on these dates"
@@ -190,49 +195,4 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteById(foundReservation.getId());
     }
 
-//    --------------------------------------------------------------------------
-
-    public static boolean isOverlap(final Reservation res1,
-                                    final Reservation res2) {
-        return !(res1.getTimeFrom().isAfter(res2.getTimeTo())
-                || res1.getTimeTo().isBefore(res2.getTimeFrom()));
-    }
-
-    public static boolean checkIntervalOverlap(final List<Reservation> existing,
-                                               final Reservation actual) {
-        return existing.stream()
-                .anyMatch(res -> isOverlap(res, actual));
-    }
-
-
-    private List<Reservation>
-    findActiveOrPlannedReservationsByPlace(final Place place) {
-        return reservationRepository.findAllByPlaceId(place.getId())
-                .stream()
-                .filter(res ->
-                        res.getStatus()
-                                .equals(ReservationStatus.ACTIVE)
-                                || res.getStatus()
-                                .equals(ReservationStatus.PLANNED))
-                .toList();
-    }
-
-    private List<Reservation> findActiveOrPlannedResByCar(final Car car) {
-        return reservationRepository.findAllByCarId(car.getId())
-                .stream()
-                .filter(res ->
-                        res.getStatus()
-                                .equals(ReservationStatus.ACTIVE)
-                                || res.getStatus()
-                                .equals(ReservationStatus.PLANNED))
-                .toList();
-    }
-
-    private void validateNoOverlap(final List<Reservation> reservations,
-                                   final Reservation newReservation,
-                                   final String errorMessage) {
-        if (checkIntervalOverlap(reservations, newReservation)) {
-            throw new IllegalStateException(errorMessage);
-        }
-    }
 }

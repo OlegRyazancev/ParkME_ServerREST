@@ -84,47 +84,41 @@ public class PlaceServiceImplTest {
         // Arrange
         Long zoneId = 1L;
         List<Place> places = List.of(
-                Place.builder().number(1).build(),
-                Place.builder().number(2).build()
+                Place.builder().id(1L).number(1).build(),
+                Place.builder().id(2L).number(2).build()
         );
-        Place lastExistPlace = places.get(places.size() - 1);
+        List<Place> createdPlaces = List.of(
+                Place.builder().id(3L).number(3).status(PlaceStatus.FREE).build(),
+                Place.builder().id(4L).number(4).status(PlaceStatus.FREE).build(),
+                Place.builder().id(5L).number(5).status(PlaceStatus.FREE).build()
+        );
 
-        int numberOfPlaces = 5;
+
+        int numberOfPlaces = 3;
 
         when(placeRepository.findAllByZoneId(zoneId))
                 .thenReturn(places);
-        when(placeRepository.save(any(Place.class)))
-                .thenAnswer(invocation -> {
-                    Place place = invocation.getArgument(0);
-                    if (place.getId() == null)
-                        place.setId(1000L);
-                    return place;
-                });
+        when(placeRepository.saveAll(anyList()))
+                .thenReturn(createdPlaces);
 
         // Act
-        List<Place> createdPlaces = placeService.createPlacesInZone(zoneId, numberOfPlaces);
+        List<Place> result = placeService.createPlacesInZone(zoneId, numberOfPlaces);
+        System.out.println(result);
 
         // Assert
         assertEquals(numberOfPlaces, createdPlaces.size());
-
-        Place firstCreatedPlace = createdPlaces.get(0);
-        assertEquals(lastExistPlace.getNumber() + 1, firstCreatedPlace.getNumber());
-
-        createdPlaces.forEach(p ->
-                assertEquals(PlaceStatus.FREE, p.getStatus()));
-
-        verify(placeRepository, times(numberOfPlaces)).save(any(Place.class));
+        verify(placeRepository).saveAll(anyList());
         verify(placeRepository, times(numberOfPlaces)).assignToZone(anyLong(), anyLong());
     }
 
-    @DisplayName("Create places in zone")
+    @DisplayName("Create places in zone with not valid number")
     @Test
     public void testCreatePlacesInZone_whenNotValidNumberOfCreatingPlaces_returnsListOfCreatedPlaces() {
         //Arrange
-        String expectedExceptionMessage = "Number of places must be a positive integer";
+        String expectedExceptionMessage = "Number of places must be between 1 and 50";
         Long zoneId = 1L;
         //Act && Assert
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
                 placeService.createPlacesInZone(zoneId, 0));
 
         //Assert

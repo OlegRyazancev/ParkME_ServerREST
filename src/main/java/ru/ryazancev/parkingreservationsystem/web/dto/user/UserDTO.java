@@ -22,7 +22,8 @@ public class UserDTO {
 
     @NotNull(message = "Name must not be null",
             groups = {OnCreate.class, OnUpdate.class})
-    @Length(message = "Name length must be smaller than 255 symbols",
+    @Length(max = 255,
+            message = "Name length must be smaller than 255 symbols",
             groups = {OnCreate.class, OnUpdate.class})
     private String name;
 

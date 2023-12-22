@@ -17,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(name = "user_entity_graph",
+        attributeNodes = @NamedAttributeNode("roles"))
 public class User implements Serializable {
 
     @Id

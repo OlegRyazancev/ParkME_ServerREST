@@ -31,26 +31,29 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<Place> createPlacesInZone(final Long zoneId,
                                           final int numberOfPlaces) {
-        if (numberOfPlaces <= 0) {
-            throw new IllegalArgumentException(
-                    "Number of places must be a positive integer");
+        if (numberOfPlaces <= 0 || numberOfPlaces > 50) {
+            throw new IllegalStateException(
+                    "Number of places must be between 1 and 50");
         }
         List<Place> zonesPlaces = placeRepository.findAllByZoneId(zoneId);
 
         int startNumberOfPlace = getStartNumberOfPlace(zonesPlaces);
 
-        return IntStream.range(0, numberOfPlaces)
+
+        List<Place> createdPlaces = IntStream.range(0, numberOfPlaces)
                 .mapToObj(i ->
                         Place.builder()
                                 .number(startNumberOfPlace + i)
                                 .status(PlaceStatus.FREE)
                                 .build())
-                .peek(placeRepository::save)
-                .peek(createdPlace ->
-                        placeRepository.assignToZone(
-                                createdPlace.getId(),
-                                zoneId))
                 .toList();
+
+
+        createdPlaces = placeRepository.saveAll(createdPlaces);
+
+        createdPlaces.forEach(place ->
+                placeRepository.assignToZone(place.getId(), zoneId));
+        return createdPlaces;
     }
 
     @Transactional

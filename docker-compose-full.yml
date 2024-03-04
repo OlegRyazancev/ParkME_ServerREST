@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  backend:
+    container_name: backend
+    image: extenz16/parkme_backend:latest
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - parkme
+
+  frontend:
+    container_name: frontend
+    image: extenz16/parkme_front:latest
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - REACT_APP_PROFILE_ACTIVE=docker
+      - REACT_APP_BACKEND_PORT=8080
+    networks:
+      - parkme
+
+networks:
+  parkme:
+    driver: bridge

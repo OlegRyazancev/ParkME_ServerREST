@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://${PROD_DB_HOST}:${PROD_DB_PORT}/${PROD_DB_NAME}?currentSchema=${PROD_DB_SCHEMA}
     username: ${PROD_DB_USERNAME}
-    password: ${PROD_DB_HOST}
+    password: ${PROD_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:

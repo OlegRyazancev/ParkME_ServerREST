@@ -69,14 +69,3 @@ create table if not exists reservations
     constraint fk_reservations_zones foreign key (zone_id) references zones (id) on delete cascade on update no action,
     constraint fk_reservations_places foreign key (place_id) references places (id) on delete cascade on update no action
 );
-
-
-
-
-
-
-
-
-
-
-

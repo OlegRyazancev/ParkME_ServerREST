@@ -1,6 +1,6 @@
 # Parking Reservation System Monolithic Project
 
-[![Coverage](https://img.shields.io/badge/coverage-${{ steps.extract_coverage.outputs.coverage }}%25-green)](https://olegryazancev.github.io/ParkME_Server/coverage-report/index.html)
+[![codecov](https://codecov.io/gh/OlegRyazancev/ParkME_Server/graph/badge.svg?token=VKDE6V1J7Q)](https://codecov.io/gh/OlegRyazancev/ParkME_Server)
 
 
 Welcome to the Parking Reservation System project. This project serves as the

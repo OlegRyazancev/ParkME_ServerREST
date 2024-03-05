@@ -19,6 +19,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.reservation.ReservationDTO;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Reservation Controller", description = "Reservation API")
+@CrossOrigin
 public class ReservationController {
 
 

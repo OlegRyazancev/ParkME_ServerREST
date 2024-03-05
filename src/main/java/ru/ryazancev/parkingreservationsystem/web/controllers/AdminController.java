@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Admin Controller", description = "Admin API")
+@CrossOrigin
 public class AdminController {
 
     private final ZoneService zoneService;

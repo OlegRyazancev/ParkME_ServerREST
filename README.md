@@ -1,5 +1,7 @@
 # Parking Reservation System Monolithic Project
 
+[![Static Badge](https://img.shields.io/badge/check_it-check_it?style=for-the-badge&logo=railway&label=deployed%20in%20Railway&color=red)](https://parkmeclient-production.up.railway.app)
+
 [![codecov](https://codecov.io/gh/OlegRyazancev/ParkME_Server/graph/badge.svg?token=VKDE6V1J7Q)](https://codecov.io/gh/OlegRyazancev/ParkME_Server)
 [![maven-build](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml/badge.svg?branch=master)](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml)
 [![Docker Image CI](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/docker.yml/badge.svg)](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/docker.yml)

@@ -59,8 +59,6 @@ providing a seamless experience for end-users.
 - `POSTGRES_SCHEMA` - Name of the related schema
 - `PGADMIN_DEFAULT_EMAIL` - Default email address for PGAdmin.
 - `PGADMIN_DEFAULT_PASSWORD` - Default password for PGAdmin.
-- `JWT_ACCESS` - Expiration time for JWT access token.
-- `JWT_REFRESH` - Expiration time for JWT refresh token.
 
 You can use example `.env.example` file with some predefined environments.
 

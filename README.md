@@ -52,7 +52,7 @@ providing a seamless experience for end-users.
 
 ## Technologies Used
 
-**Spring Boot, Spring Security, JWT (JSON Web Tokens), Docker, PostgreSQL, Liquibase, GraphQL**
+**Spring Boot, Spring Security, JWT (JSON Web Tokens), Docker, PostgreSQL, Liquibase, GraphQL, Swagger**
 
 ## Environment Variables
 

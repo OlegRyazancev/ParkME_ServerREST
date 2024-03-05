@@ -31,8 +31,8 @@ spring:
 
 security:
   jwt:
-    access: ${JWT_ACCESS}
-    refresh: ${JWT_REFRESH}
+    access: 1
+    refresh: 30
 
 springdoc:
   override-with-generic-response: false

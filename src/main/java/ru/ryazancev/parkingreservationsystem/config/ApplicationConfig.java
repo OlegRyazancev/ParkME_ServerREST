@@ -78,7 +78,8 @@ public class ApplicationConfig {
                             CorsConfiguration config = new CorsConfiguration();
                             config.setAllowedOrigins(
                                     List.of("http://localhost:3000",
-                                            "https://parkmeclient-production.up.railway.app"));
+                                            "https://parkmeclient-productio"
+                                                    + "n.up.railway.app"));
                             config.setAllowedMethods(
                                     List.of("GET",
                                             "POST",

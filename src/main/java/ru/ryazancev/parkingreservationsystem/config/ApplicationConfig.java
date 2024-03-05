@@ -26,6 +26,7 @@ import ru.ryazancev.parkingreservationsystem.models.user.Role;
 import ru.ryazancev.parkingreservationsystem.web.security.jwt.JwtTokenFilter;
 import ru.ryazancev.parkingreservationsystem.web.security.jwt.JwtTokenProvider;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -76,20 +77,10 @@ public class ApplicationConfig {
                 .cors(cors ->
                         cors.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(
-                                    List.of("http://localhost:3000"));
-                            config.setAllowedMethods(
-                                    List.of("GET",
-                                            "POST",
-                                            "PUT",
-                                            "DELETE",
-                                            "OPTIONS"));
-                            config.setAllowedHeaders(
-                                    List.of("Authorization",
-                                            "Content-Type",
-                                            "Accept"));
-                            config.setAllowCredentials(true);
-                            config.setMaxAge(3600L);
+                            config.setAllowedOriginPatterns(
+                                    Collections.singletonList("*"));
+                            config.setAllowedMethods(List.of("*"));
+                            config.setAllowedHeaders(List.of("*"));
                             return config;
                         }))
                 .csrf(AbstractHttpConfigurer::disable)

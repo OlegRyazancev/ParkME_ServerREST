@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Zone Controller", description = "Zone API")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class ZoneController {
 
     private final ZoneService zoneService;

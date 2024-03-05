@@ -19,7 +19,7 @@ import ru.ryazancev.parkingreservationsystem.web.dto.user.UserDTO;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Auth Controller", description = "Auth API")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;

@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "User Controller", description = "User API")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;

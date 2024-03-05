@@ -21,7 +21,6 @@ import ru.ryazancev.parkingreservationsystem.web.dto.car.CarDTO;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Car Controller", description = "Car API")
-@CrossOrigin(origins = "*")
 public class CarController {
 
     private final CarService carService;

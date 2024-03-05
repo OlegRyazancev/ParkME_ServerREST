@@ -1,7 +1,9 @@
 # Parking Reservation System Monolithic Project
 
-[![Coverage](https://img.shields.io/badge/coverage-${{ steps.extract_coverage.outputs.coverage }}%25-green)](https://olegryazancev.github.io/ParkME_Server/coverage-report/index.html)
-
+[![codecov](https://codecov.io/gh/OlegRyazancev/ParkME_Server/graph/badge.svg?token=VKDE6V1J7Q)](https://codecov.io/gh/OlegRyazancev/ParkME_Server)
+[![maven-build](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml/badge.svg?branch=master)](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml)
+[![Docker Image CI](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/docker.yml/badge.svg)](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/docker.yml)
+![last commit (master)](https://img.shields.io/github/last-commit/OlegRyazancev/ParkME_Server/master)
 
 Welcome to the Parking Reservation System project. This project serves as the
 backend for a full-stack
@@ -49,7 +51,7 @@ providing a seamless experience for end-users.
 
 ## Technologies Used
 
-**Spring Boot, Spring Security, JWT (JSON Web Tokens), Docker, PostgreSQL, Liquibase, GraphQL**
+**Spring Boot, Spring Security, JWT (JSON Web Tokens), Docker, PostgreSQL, Liquibase, GraphQL, Swagger**
 
 ## Environment Variables
 

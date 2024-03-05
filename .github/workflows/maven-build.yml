@@ -32,7 +32,31 @@ jobs:
         uses: atomicjar/testcontainers-cloud-setup-action@v1
         with:
           token: ${{ secrets.TC_CLOUD_TOKEN }}
+
       - name: Wait for PostgreSQL container to be ready
-        run: sleep 30
+        run: sleep 15
+
       - name: Build and test with Maven
         run: mvn clean install
+
+      - name: Extract Coverage Percentage
+        id: extract_coverage
+        run: |
+          COVERAGE=$(xmlstarlet sel -t -v "sum(//counter[@type='INSTRUCTION']/@covered) div sum(//counter[@type='INSTRUCTION']/@missed)" target/site/jacoco/jacoco.xml)
+          echo "::set-output name=coverage::$COVERAGE"
+
+      - name: Update README with Coverage Percentage
+        run: |
+          sed -i "s/coverage-[0-9]*%25-green/coverage-${{ steps.extract_coverage.outputs.coverage }}%25-green/" README.md
+
+      - name: Publish Coverage Report to GitHub Pages
+        run: |
+          mkdir -p coverage-report
+          cp -R target/site/jacoco/* coverage-report/
+          cd coverage-report
+          git init
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
+          git commit -m "Publish coverage report to GitHub Pages"
+          git push --force "https://github.com/${{ github.repository }}.git" master:gh-pages

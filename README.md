@@ -1,6 +1,7 @@
 # Parking Reservation System Monolithic Project
 
 [![codecov](https://codecov.io/gh/OlegRyazancev/ParkME_Server/graph/badge.svg?token=VKDE6V1J7Q)](https://codecov.io/gh/OlegRyazancev/ParkME_Server)
+[![maven-build](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml/badge.svg?branch=master)](https://github.com/OlegRyazancev/ParkME_Server/actions/workflows/maven-build.yml)
 
 
 Welcome to the Parking Reservation System project. This project serves as the

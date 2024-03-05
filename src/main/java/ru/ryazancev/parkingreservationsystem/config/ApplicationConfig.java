@@ -77,19 +77,11 @@ public class ApplicationConfig {
                         cors.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
                             config.setAllowedOrigins(
-                                    List.of("http://localhost:3000",
-                                            "https://parkmeclient-productio"
-                                                    + "n.up.railway.app"));
+                                    List.of("*"));
                             config.setAllowedMethods(
-                                    List.of("GET",
-                                            "POST",
-                                            "PUT",
-                                            "DELETE",
-                                            "OPTIONS"));
+                                    List.of("*"));
                             config.setAllowedHeaders(
-                                    List.of("Authorization",
-                                            "Content-Type",
-                                            "Accept"));
+                                    List.of("*"));
                             config.setAllowCredentials(true);
                             config.setMaxAge(3600L);
                             return config;

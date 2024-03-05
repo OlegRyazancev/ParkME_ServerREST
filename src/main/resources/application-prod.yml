@@ -1,3 +1,5 @@
+server:
+  port: ${PORT}
 spring:
   application:
     name: parkme_server
@@ -32,3 +34,4 @@ security:
 
 springdoc:
   override-with-generic-response: false
+

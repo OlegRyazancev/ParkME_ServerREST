@@ -81,6 +81,8 @@ public class ApplicationConfig {
                                     Collections.singletonList("*"));
                             config.setAllowedMethods(List.of("*"));
                             config.setAllowedHeaders(List.of("*"));
+                            config.setAllowCredentials(true);
+                            config.setMaxAge(3600L);
                             return config;
                         }))
                 .csrf(AbstractHttpConfigurer::disable)

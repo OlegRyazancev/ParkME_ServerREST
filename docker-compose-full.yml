@@ -5,7 +5,7 @@ services:
     container_name: backend
     image: extenz16/parkme_backend:latest
     ports:
-      - "8080:8080"
+      - "9091:9091"
     restart: unless-stopped
     env_file:
       - .env
@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
     environment:
       - REACT_APP_PROFILE_ACTIVE=docker
-      - REACT_APP_BACKEND_PORT=8080
+      - REACT_APP_BACKEND_PORT=9091
     networks:
       - parkme
 

@@ -14,7 +14,7 @@ management etc. Built using **Spring Boot (v3.1.4)**, the system
 ensures robustness and scalability.
 
 You can access Swagger and see all available endpoints by
-visiting `http://localhost:8080/swagger-ui/index.html`
+visiting `http://localhost:9090/swagger-ui/index.html`
 
 ## Table of contents
 
